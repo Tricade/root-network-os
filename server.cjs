@@ -12,6 +12,8 @@ const API_VERSION = 8;
 const RELEASE = require('./package.json').version;
 const MAX_BODY = 16 * 1024 * 1024;
 const { createStaticFiles } = require('./server/static-files.cjs');
+const { createOriginPolicy } = require('./server/request-origin.cjs');
+const { installShutdown } = require('./server/shutdown.cjs');
 const FILES = createStaticFiles(ROOT);
 
 let writeQueue = Promise.resolve();
@@ -147,29 +149,10 @@ async function readSave(dataDir = DATA_DIR) {
   return { save: null, revision: 'empty' };
 }
 
-function sameOrigin(req) {
-  const localPort = req.socket.localPort || PORT;
-  const origin = req.headers.origin;
-  if (origin) {
-    try {
-      const parsed = new URL(origin);
-      if (parsed.hostname !== '127.0.0.1' && parsed.hostname !== 'localhost') return false;
-      if (Number(parsed.port || (parsed.protocol === 'https:' ? 443 : 80)) !== localPort)
-        return false;
-      if (parsed.protocol !== 'http:') return false;
-    } catch {
-      return false;
-    }
-  }
-  const fetchSite = req.headers['sec-fetch-site'];
-  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'none') return false;
-  const host = req.headers.host;
-  return !host || host === `127.0.0.1:${localPort}` || host === `localhost:${localPort}`;
-}
-
 function createServer(options = {}) {
   const port = options.port ?? PORT;
   const dataDir = options.dataDir ? path.resolve(options.dataDir) : DATA_DIR;
+  const sameOrigin = createOriginPolicy(options.publicOrigin);
   const server = http.createServer(async (req, res) => {
     let pathname;
     try {
@@ -337,7 +320,11 @@ function createServer(options = {}) {
 }
 
 function start() {
-  const server = createServer();
+  const host = process.env.ROOT_HOST || '127.0.0.1';
+  const server = createServer({ publicOrigin: process.env.ROOT_PUBLIC_ORIGIN });
+  // Fail at startup rather than running a seemingly healthy, unwritable volume.
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  fs.accessSync(DATA_DIR, fs.constants.W_OK);
   server.on('error', (error) => {
     console.error(
       error.code === 'EADDRINUSE'
@@ -346,8 +333,9 @@ function start() {
     );
     process.exitCode = 1;
   });
-  server.listen(PORT, '127.0.0.1', () => {
-    console.log(`ROOT läuft unter http://127.0.0.1:${PORT}`);
+  server.listen(PORT, host, () => {
+    installShutdown(server, () => writeQueue);
+    console.log(`ROOT: http://${host}:${server.address().port}`);
   });
   return server;
 }

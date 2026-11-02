@@ -1,5 +1,5 @@
 [![Checks](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml)
-[![Vorschau 1.6.0](https://img.shields.io/badge/Preview-1.6.0-8ab4f8)](package.json)
+[![Vorschau 1.6.1](https://img.shields.io/badge/Preview-1.6.1-8ab4f8)](package.json)
 [![Lizenz: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![KI-Transparenz](https://img.shields.io/badge/AI-transparency_notice-6f42c1)](AI-DISCLOSURE.md)
 [![Auf Ko-fi unterstützen](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/tricade)
@@ -32,7 +32,7 @@ Dir gefällt ROOT? **Gib dem Repository einen ⭐ [Stern auf GitHub](https://git
 </p>
 
 <p align="center">
-  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Lokal im Browser · Weboberfläche und Ego-Ansicht · Deutsch und Englisch · Vorschau 1.6.0 · Entwicklung mit KI-Unterstützung" width="1200"></a>
+  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Lokal im Browser · Weboberfläche und Ego-Ansicht · Deutsch und Englisch · Vorschau 1.6.1 · Entwicklung mit KI-Unterstützung" width="1200"></a>
 </p>
 
 ## Vom ersten Rack zum Cyberbunker
@@ -207,6 +207,17 @@ Raumtüren sind von beiden Seiten bedienbar und schließen nach dem Durchgehen. 
 
 Node.js muss dafür nicht separat installiert werden. Portable speichert im benachbarten `ROOT-data`-Ordner; behalte ihn beim Austausch der Anwendung. Installierte Ausgaben bieten **Einstellungen → Desktop & Updates** zum Prüfen, Herunterladen und Installieren nach bestätigtem Speichern. Die Vorschaupakete sind unsigniert. AppImage benötigt FUSE und erlaubte Chromium-Sandbox/Benutzernamensräume. [Einrichtung, Fortschritt übernehmen und Update-Details →](docs/desktop.md)
 
+### Docker / NAS
+
+Die Browser-Version mit dauerhaftem Speicherstand läuft auf x86-64 und ARM64. [compose.yaml](compose.yaml) speichern und im gleichen Ordner starten:
+
+```sh
+docker compose pull
+docker compose up -d --no-build --wait
+```
+
+Danach [127.0.0.1:18473](http://127.0.0.1:18473/) öffnen. Weboberfläche und 3D laufen im Browser; der Fortschritt bleibt beim Container-Austausch im benannten Volume erhalten. [Ports, NAS/Proxy, Sicherungen und Updates →](docs/docker.md)
+
 ### Lokal im Browser
 
 Benötigt wird **Node.js 24**, geprüft mit **24.22.1**. Repository klonen oder herunterladen und im Ordner starten:
@@ -233,12 +244,12 @@ Danach **[127.0.0.1:18473](http://127.0.0.1:18473/)** öffnen. Unter Windows kan
 - JSON-Export und -Import umfassen das komplette Netzwerk. Unterstützte Speicherstände der Versionen 1 bis 3 lassen sich importieren. Vor dem Wechsel auf ältere Versionen exportieren.
 - Beim Zurückkehren werden bis zu **zwölf Stunden** nachgerechnet, einschließlich Arbeit, Einnahmen, Wartung und Baufortschritt. Längere Abwesenheit wird begrenzt. Die Berechnung erfolgt im Client; auf dem Server läuft keine dauerhafte Wirtschaftssimulation.
 - Widersprüchliche Sitzungen überschreiben neueren Fortschritt nicht stillschweigend. Eine veraltete Sitzung pausiert; ihre abweichende Browserkopie bleibt exportierbar.
-- Der Dienst bindet nur an Loopback. Es gibt **keine Telemetrie, Analyse-Dienste oder Online-KI-Aufrufe**. Installierte Ausgaben können optional GitHub auf Updates prüfen; Simulation, Browser-Modus und Portable funktionieren offline. Hardware, Agenten und KI-Aufträge werden simuliert; ROOT trainiert keine Modelle auf deinem Rechner. Optionale Unterstützungslinks führen zu externen Webseiten. [Sicherheits- und Bereitstellungsgrenzen →](SECURITY.md)
+- Der lokale Dienst und der Docker-Hostport sind standardmäßig auf Loopback begrenzt; LAN-Zugriff wird ausdrücklich konfiguriert. Es gibt **keine Telemetrie, Analyse-Dienste oder Online-KI-Aufrufe**. Installierte Ausgaben können optional GitHub auf Updates prüfen; Simulation, Browser-Modus und Portable funktionieren offline. Hardware, Agenten und KI-Aufträge werden simuliert; ROOT trainiert keine Modelle auf deinem Rechner. Optionale Unterstützungslinks führen zu externen Webseiten. [Sicherheits- und Bereitstellungsgrenzen →](SECURITY.md)
 
 <details>
 <summary><strong>Vorschaustatus, technische Grenzen und Prüfungen</strong></summary>
 
-ROOT ist eine laufend entwickelte **Vorschau 1.6.0**. Balancing, Übersetzung, Barrierefreiheit und 3D-Darstellung freuen sich über Beiträge. Der Ausbau endet nicht nach sechs Racks. Die Datenprüfung akzeptiert derzeit bis zu 10.000 Racks, 10.000 Server und 1.000.000 Sektoren sowie 100 Stufen zentraler Anlagen. Nur der ausgewählte Raum wird gerendert. Eine erfolgreiche Datenprüfung am Maximum belegt keine gute Echtzeit-Performance bei dieser Größe.
+ROOT ist eine laufend entwickelte **Vorschau 1.6.1**. Balancing, Übersetzung, Barrierefreiheit und 3D-Darstellung freuen sich über Beiträge. Der Ausbau endet nicht nach sechs Racks. Die Datenprüfung akzeptiert derzeit bis zu 10.000 Racks, 10.000 Server und 1.000.000 Sektoren sowie 100 Stufen zentraler Anlagen. Nur der ausgewählte Raum wird gerendert. Eine erfolgreiche Datenprüfung am Maximum belegt keine gute Echtzeit-Performance bei dieser Größe.
 
 [Integrationsprüfung](docs/verification-construction.md), [Laufzeit-Hinweise](docs/runtime-1.4.md) und [Asset-Prüfungen](docs/asset-audit.md) dokumentieren Nachweise und Grenzen. Die Desktop-Paketprüfungen ergänzen die früheren Nachweise der Version 1.4; siehe [Prüfumfang und Grenzen](docs/desktop.md).
 

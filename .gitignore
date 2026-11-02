@@ -30,3 +30,6 @@ dist/
 .desktop-build/
 artifacts/
 ROOT-data/
+
+# Private Docker backups created by the documented backup command
+root-backup/

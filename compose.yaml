@@ -1,0 +1,19 @@
+services:
+  root:
+    image: ghcr.io/tricade/root-network-os:${ROOT_IMAGE_TAG:-latest}
+    build: .
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 25s
+    ports:
+      - '${ROOT_BIND_ADDRESS:-127.0.0.1}:${ROOT_HTTP_PORT:-18473}:18473'
+    environment:
+      ROOT_PUBLIC_ORIGIN: '${ROOT_PUBLIC_ORIGIN:-http://127.0.0.1:${ROOT_HTTP_PORT:-18473}}'
+    volumes:
+      - root-data:/data
+
+volumes:
+  root-data:

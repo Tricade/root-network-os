@@ -1,5 +1,5 @@
 [![Checks](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml)
-[![Preview 1.6.0](https://img.shields.io/badge/Preview-1.6.0-8ab4f8)](package.json)
+[![Preview 1.6.1](https://img.shields.io/badge/Preview-1.6.1-8ab4f8)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![AI transparency](https://img.shields.io/badge/AI-transparency_notice-6f42c1)](AI-DISCLOSURE.md)
 [![Support on Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/tricade)
@@ -32,7 +32,7 @@ Enjoying ROOT? **Give the repository a ⭐ [star on GitHub](https://github.com/T
 </p>
 
 <p align="center">
-  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Local browser runtime · web and first person · English and German · 1.6.0 preview · AI-assisted development" width="1200"></a>
+  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Local browser runtime · web and first person · English and German · 1.6.1 preview · AI-assisted development" width="1200"></a>
 </p>
 
 ## From one rack to a cyberbunker
@@ -207,6 +207,17 @@ Room doors work from both sides and close after passage. Mouse drag remains avai
 
 No separate Node.js installation is needed. Portable progress stays in `ROOT-data` beside the application; keep it when replacing the executable. Installed editions offer **Settings → Desktop & updates** for checks, explicit downloads and installation after saving. Preview packages are unsigned. AppImage needs FUSE and permitted Chromium sandbox/user namespaces. [Setup, save migration and update details →](docs/desktop.md)
 
+### Docker / NAS
+
+Run the browser edition with persistent saves on x86-64 or ARM64. Save [compose.yaml](compose.yaml), then:
+
+```sh
+docker compose pull
+docker compose up -d --no-build --wait
+```
+
+Open [127.0.0.1:18473](http://127.0.0.1:18473/). The complete UI and 3D view run in your browser; progress survives container replacement in a named volume. [Ports, NAS/proxy setup, backups and upgrades →](docs/docker.md)
+
 ### Local browser mode
 
 **Node.js 24** is required; **24.22.1** is the verified version. Clone or download the repository, then run from its directory:
@@ -233,12 +244,12 @@ Open **[127.0.0.1:18473](http://127.0.0.1:18473/)**. On Windows, double-click **
 - JSON export/import covers the full network. Supported v1–v3 saves can be imported; export before trying an older release.
 - Returning simulates up to **12 hours** of offline progress, including work, income, maintenance and construction. Longer absences are capped. This is catch-up simulation in the client, not a continuously running server-side economy.
 - Conflicting sessions cannot silently overwrite newer progress. An outdated session pauses and keeps its differing browser copy exportable.
-- The local service binds to loopback. There is **no telemetry, analytics or online AI inference**. Installed editions can optionally contact GitHub for updates; simulation, browser mode and portable mode work offline. Hardware, agents and AI workloads are simulated; ROOT does not train models on your machine. Optional support links lead to external websites. [Security and deployment scope →](SECURITY.md)
+- The local service and default Docker host port bind to loopback; LAN access is an explicit Docker configuration. There is **no telemetry, analytics or online AI inference**. Installed editions can optionally contact GitHub for updates; simulation, browser mode and portable mode work offline. Hardware, agents and AI workloads are simulated; ROOT does not train models on your machine. Optional support links lead to external websites. [Security and deployment scope →](SECURITY.md)
 
 <details>
 <summary><strong>Preview status, progression limits and verification</strong></summary>
 
-ROOT is an evolving **1.6.0 preview**. Balance, localization, accessibility and 3D presentation remain open to contributions. Progression extends beyond six racks; current validation ceilings are 10,000 racks, 10,000 servers and 1,000,000 sectors, with 100 central-utility levels. Only the selected room is rendered. Maximum-size save validation does not establish acceptable real-time performance at that size.
+ROOT is an evolving **1.6.1 preview**. Balance, localization, accessibility and 3D presentation remain open to contributions. Progression extends beyond six racks; current validation ceilings are 10,000 racks, 10,000 servers and 1,000,000 sectors, with 100 central-utility levels. Only the selected room is rendered. Maximum-size save validation does not establish acceptable real-time performance at that size.
 
 See the [integration verification](docs/verification-construction.md), [runtime notes](docs/runtime-1.4.md) and [asset checks](docs/asset-audit.md) for tested behavior and limits. Desktop package tests complement the earlier 1.4 integration evidence; see the [desktop verification scope and limits](docs/desktop.md).
 
