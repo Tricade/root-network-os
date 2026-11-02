@@ -28,6 +28,7 @@ export function createRackView(ctx) {
   }
 
   function actionQuote(action, payload, label) {
+    if (action === 'upgradeRack') return ctx.maintenanceModal(payload);
     const q = ctx.E.quoteHardware(ctx.state(), action, payload);
     return `<div class="hardware-confirm"><div class="hardware-inspector-icon">${ctx.icon(action === 'buyRack' ? 'server' : 'settings')}</div><h3>${ctx.esc(q.label)}</h3><p data-hw-quote-description>${ctx.esc(q.description)}</p><div class="hardware-confirm-cost" data-hw-quote-cost>${q.cost ? ctx.fmt(q.cost) + ' CR' : 'Keine Credits'}${q.duration ? ' · ' + ctx.duration(q.duration) : ''}</div>${q.warnings?.length ? '<ul class="hardware-consequences">' + q.warnings.map((message) => '<li>' + ctx.esc(message) + '</li>').join('') + '</ul>' : ''}<p class="hardware-confirm-reason" data-hw-quote-reason>${ctx.esc(q.reason || '')}</p>${ctx.button(action, payload, label || 'Maßnahme starten', 'primary block')}</div>`;
   }

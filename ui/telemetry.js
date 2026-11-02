@@ -134,7 +134,9 @@ export function createTelemetryUI(ctx) {
           : r.failed
             ? 'BETRIEB EINGESCHRÄNKT'
             : r.repairing || facility.operation
-              ? 'WARTUNG AKTIV'
+              ? facility.operation?.noticeRemaining
+                ? 'WARTUNG ANGEKÜNDIGT'
+                : 'WARTUNG AKTIV'
               : limited
                 ? 'KAPAZITÄT BEGRENZT'
                 : 'SYSTEM ONLINE',

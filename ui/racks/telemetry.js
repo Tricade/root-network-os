@@ -34,7 +34,9 @@ export function createRackTelemetry(ctx) {
         usedUnits: ctx.fmt(m.usedUnits),
         totalPower: ctx.watts(m.totalPowerW),
         networkFactor: ctx.fmt(m.networkFactor * 100) + ' %',
-        operationEta: m.operation ? ctx.duration(m.operation.remaining) : '',
+        operationEta: m.operation
+          ? ctx.duration(m.operation.noticeRemaining || m.operation.remaining)
+          : '',
       },
       meters = {};
     const setLed = (selector, on, blink = false) =>
@@ -156,7 +158,13 @@ export function createRackTelemetry(ctx) {
       el.classList.toggle('over-budget', n > 100);
     });
     liveQuery('[data-hw-operation-progress]').forEach((el) => {
-      if (m.operation) el.style.width = (1 - m.operation.remaining / m.operation.total) * 100 + '%';
+      if (m.operation)
+        el.style.width =
+          (m.operation.noticeRemaining
+            ? 1 - m.operation.noticeRemaining / m.operation.noticeLead
+            : 1 - m.operation.remaining / m.operation.total) *
+            100 +
+          '%';
     });
     liveQuery('[data-hw-action]').forEach((b) => {
       let p;
@@ -184,6 +192,7 @@ export function createRackTelemetry(ctx) {
           );
       }
     });
+    ctx.updateMaintenance?.();
     ctx.drawCables(m);
   }
   return { updateLive };

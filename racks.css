@@ -2058,3 +2058,51 @@
 .mini-ai i {
   background: #a389bd;
 }
+
+/* The maintenance form keeps choices and the final paid action in one viewport. */
+.maintenance-planner {
+  display: grid;
+  gap: 1rem;
+}
+.maintenance-planner fieldset {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.maintenance-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+.maintenance-choice input {
+  margin-top: 0.3rem;
+  flex: none;
+}
+.maintenance-choice span {
+  display: grid;
+  gap: 0.3rem;
+}
+.maintenance-choice small {
+  color: var(--muted);
+  line-height: 1.5;
+}
+.maintenance-costs {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+.maintenance-costs > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.maintenance-costs dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.maintenance-choice input {
+  accent-color: var(--accent);
+}

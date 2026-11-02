@@ -8,7 +8,7 @@
   return function createDomain(context) {
     const { catalog, RESILIENCE_MAX } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
-    const addLog = (...args) => context.addLog(...args);
+    const addLog = (s, severity, message) => context.addLog(s, severity, message, 'incidents');
     const rand = (...args) => context.rand(...args);
     const serverLinkState = (...args) => context.serverLinkState(...args);
     const uid = (...args) => context.uid(...args);

@@ -140,6 +140,7 @@
           warnings,
         );
       }
+      if (action === 'upgradeRackBatch') return context.quoteRackMaintenance(s, payload);
       if (action === 'upgradeRack') {
         const rack = s.facility.racks.find((r) => r.id === payload.rackId);
         if (!rack || !['switch', 'power', 'cooling'].includes(payload.component))

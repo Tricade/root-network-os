@@ -11,6 +11,8 @@ export const RESEARCH_EFFECT_LABELS = {
   research: 'Laufende Forschungspunkte',
   aiReward: 'KI-Auftragsvergütung',
   inferenceIncome: 'KI-Inferenzumsatz',
+  noticeCost: 'Kosten der Kundenankündigung',
+  noticeLead: 'Vorlauf der Kundenankündigung',
 };
 export function researchEffectPreview(E, state, node) {
   if (!node?.effects) return [];

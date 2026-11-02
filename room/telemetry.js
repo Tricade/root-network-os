@@ -191,7 +191,7 @@ export function createRoomTelemetry(sceneContext) {
         sceneContext.canvas.setAttribute(
           'aria-label',
           sceneContext.tr(
-            `Begehbarer Serverraum: ${sceneContext.rackGroups.size} Racks und ${sceneContext.serverGroups.size} eingebaute Server. WASD bewegen, Shift sprinten, Maus oder Pfeiltasten drehen, E Gerät öffnen, Escape zurück.`,
+            `Begehbarer Serverraum: ${sceneContext.rackGroups.size} Racks und ${sceneContext.serverGroups.size} eingebaute Server. WASD bewegen, Shift sprinten, Maus oder Pfeiltasten drehen, E Gerät öffnen, Escape gibt die Maus frei.`,
           ),
         );
       const status = resilience.safetyMode
@@ -200,11 +200,13 @@ export function createRoomTelemetry(sceneContext) {
           ? 'NETZWERK OFFLINE'
           : resilience.failed
             ? 'BETRIEB EINGESCHRÄNKT'
-            : resilience.repairing
-              ? 'WARTUNG AKTIV'
-              : model.racks.some((r) => r.status === 'limited' || r.status === 'maintenance')
-                ? 'WARTUNG / LASTBEGRENZUNG'
-                : 'SYSTEM ONLINE';
+            : model.operation?.noticeRemaining
+              ? 'WARTUNG ANGEKÜNDIGT'
+              : resilience.repairing
+                ? 'WARTUNG AKTIV'
+                : model.racks.some((r) => r.status === 'limited' || r.status === 'maintenance')
+                  ? 'WARTUNG / LASTBEGRENZUNG'
+                  : 'SYSTEM ONLINE';
       if (sceneContext.statusLine) {
         sceneContext.statusLine.textContent = sceneContext.tr(status);
         sceneContext.shell.classList.toggle(
@@ -275,13 +277,15 @@ export function createRoomTelemetry(sceneContext) {
           ' %</b> Uplink-Leistung</span><span><b>' +
           (failures
             ? failures + ' Störung' + (failures > 1 ? 'en' : '')
-            : resilience.repairing
-              ? 'Reparatur läuft'
-              : model.operation
-                ? 'Rack-Wartung'
-                : model.racks.some((r) => r.status === 'limited')
-                  ? 'Kapazität begrenzt'
-                  : 'Betrieb stabil') +
+            : model.operation?.noticeRemaining
+              ? 'WARTUNG ANGEKÜNDIGT'
+              : resilience.repairing
+                ? 'Reparatur läuft'
+                : model.operation
+                  ? 'Rack-Wartung'
+                  : model.racks.some((r) => r.status === 'limited')
+                    ? 'Kapazität begrenzt'
+                    : 'Betrieb stabil') +
           '</b></span><span>' +
           operationText +
           '</span><span>' +

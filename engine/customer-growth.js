@@ -6,6 +6,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function createDomain(ctx) {
+    const customerLog = (s, severity, message) => ctx.addLog(s, severity, message, 'customers');
     const WINDOWS = [3600, 14400, 43200];
     const CHECK_INTERVAL = 21600;
     const REQUEST_EXPIRY = 86400;
@@ -101,7 +102,7 @@
       const request = requestFor(s, payload.id);
       if (action === 'declineCustomerGrowth') {
         s.customerGrowth.requests = s.customerGrowth.requests.filter((r) => r.id !== request.id);
-        ctx.addLog(s, 'system', `${request.client}: Erweiterungsanfrage abgelehnt.`);
+        customerLog(s, 'system', `${request.client}: Erweiterungsanfrage abgelehnt.`);
         return { ok: true, message: 'Erweiterungsanfrage abgelehnt.' };
       }
       s.credits -= q.cost;
@@ -116,7 +117,7 @@
         contractId: null,
         latePenaltyApplied: false,
       });
-      ctx.addLog(
+      customerLog(
         s,
         'system',
         `${request.client}: Erweiterung bis zum vereinbarten Liefertermin zugesagt; ${q.cost} Credits sind reserviert.`,
@@ -159,7 +160,7 @@
         latePenaltyApplied: false,
       });
       g.usedOrigins.push(source.id);
-      ctx.addLog(s, 'system', `${source.client}: Fragt eine begrenzte Diensterweiterung an.`);
+      customerLog(s, 'system', `${source.client}: Fragt eine begrenzte Diensterweiterung an.`);
       return true;
     }
 
@@ -169,7 +170,7 @@
       s.reputation = Math.max(0, s.reputation - 5);
       if (source) source.satisfaction = Math.max(0, source.satisfaction - 10);
       request.latePenaltyApplied = true;
-      ctx.addLog(
+      customerLog(
         s,
         'system',
         `${request.client}: Lieferfenster für die Erweiterung verpasst; Ansehen und Kundenbindung sinken.`,
@@ -227,7 +228,7 @@
       s.customerGrowth.linkedContracts.push(contract.id);
       ctx.syncCustomerGroups(s);
       ctx.assignCustomerWork(s);
-      ctx.addLog(
+      customerLog(
         s,
         'system',
         `${request.client}: Erweiterung wird mit der normalen Kundenprovisionierung eingerichtet.`,
@@ -243,7 +244,7 @@
       g.linkedContracts = g.linkedContracts.filter((id) => contractIds.has(id));
       for (const request of [...g.requests])
         if (request.status === 'offered' && request.expiresAt <= s.time) {
-          ctx.addLog(
+          customerLog(
             s,
             'system',
             `${request.client}: Ungenutzte Erweiterungsanfrage ist abgelaufen.`,
@@ -294,7 +295,7 @@
           if (contract.stage === 'active') {
             if (s.time > request.deadlineAt) applyLatePenalty(s, request);
             else
-              ctx.addLog(
+              customerLog(
                 s,
                 'success',
                 `${request.client}: Erweiterung rechtzeitig bereitgestellt.`,

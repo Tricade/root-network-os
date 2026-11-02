@@ -52,6 +52,12 @@
           { rackId: s.facility.operation.rackId, component: s.facility.operation.kind },
           s.facility.operation.targetLevel,
         );
+      if (s.facility.operation?.kind === 'rack-batch')
+        for (const change of s.facility.operation.changes)
+          upgradeRack(
+            { rackId: s.facility.operation.rackId, component: change.component },
+            change.targetLevel,
+          );
       if (s.facility.centralOperation)
         projected.facility.central[s.facility.centralOperation.system] =
           s.facility.centralOperation.targetLevel;
@@ -61,6 +67,9 @@
         if (item.action === 'buildServiceRoom') complete('service', 1, item.payload.roomType);
         if (item.action === 'upgradeCentral') projected.facility.central[item.payload.system]++;
         if (item.action === 'upgradeRack') upgradeRack(item.payload);
+        if (item.action === 'upgradeRackBatch')
+          for (const component of item.payload.components)
+            upgradeRack({ ...item.payload, component });
       }
       return projected;
     }
@@ -100,6 +109,14 @@
     function planStepPossible(s, item, preceding) {
       const projected = projectedPlanState(s, preceding),
         p = item.payload;
+      if (item.action === 'upgradeRackBatch')
+        return p.components.every((component) =>
+          planStepPossible(
+            s,
+            { action: 'upgradeRack', payload: { rackId: p.rackId, component } },
+            preceding,
+          ),
+        );
       if (item.action === 'upgradeRack') {
         const rack = projected.facility.racks.find((r) => r.id === p.rackId);
         return Boolean(

@@ -90,7 +90,7 @@ test(
       const get = await fetch(`${base}/api/save`, { signal: AbortSignal.timeout(25000) });
       assert.equal(get.status, 200);
       const loaded = (await get.json()).save;
-      assert.equal(loaded.version, 8);
+      assert.equal(loaded.version, 9);
       assert.equal(loaded.sector, 5000);
       assert.equal(loaded.servers.length, 10000);
       assert.equal(loaded.facility.racks.length, 625);

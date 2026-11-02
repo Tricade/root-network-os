@@ -44,11 +44,24 @@
       return id;
     }
 
-    function addLog(s, type, message) {
+    const LOG_CATEGORIES = [
+      'incidents',
+      'customers',
+      'decisions',
+      'rewards',
+      'research',
+      'upgrades',
+      'construction',
+      'maintenance',
+      'jobs',
+      'activity',
+    ];
+    function addLog(s, type, message, category = 'activity') {
       s.log.unshift({
         id: uid(s, 'log'),
         time: s.time,
         type,
+        category: LOG_CATEGORIES.includes(category) ? category : 'activity',
         message: String(message).slice(0, 180),
       });
       if (s.log.length > MAX.log) s.log.length = MAX.log;
@@ -185,6 +198,7 @@
       context.migrateCustomers(s);
       context.migrateResearch(s);
       context.migratePlanning(s);
+      s.version = 9;
       s.offers.push(makeJob(s), makeJob(s));
       addLog(s, 'system', 'ROOT ist bereit. Dein erster Überwachungsauftrag läuft.');
       updateAchievementUnlocks(s);
@@ -200,6 +214,6 @@
           s.achievementUnlocks[achievement.id] = true;
       }
     }
-    return { rand, hasId, uid, addLog, createState, updateAchievementUnlocks };
+    return { rand, hasId, uid, addLog, createState, updateAchievementUnlocks, LOG_CATEGORIES };
   };
 });

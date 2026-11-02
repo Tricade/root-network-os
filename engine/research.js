@@ -120,6 +120,7 @@
         s,
         'success',
         `Forschung abgeschlossen: ${researchDefinition(p.id).name}, Stufe ${p.targetLevel}.`,
+        'research',
       );
       return `Forschung abgeschlossen: ${researchDefinition(p.id).name}, Stufe ${p.targetLevel}.`;
     }

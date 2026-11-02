@@ -6,6 +6,7 @@ export function createCapitalPlanUI(ctx) {
     buildServiceRoom: 'Technikraum bauen',
     upgradeCentral: 'Zentralanlage ausbauen',
     upgradeRack: 'Rack ausbauen',
+    upgradeRackBatch: 'Rack-Wartungsfenster',
     convertRoomSupply: 'Raumversorgung umbauen',
     createBackup: 'Betriebssicherung',
   };
@@ -16,6 +17,8 @@ export function createCapitalPlanUI(ctx) {
     system: 'cooling',
     rackId: '',
     component: 'cooling',
+    batchComponents: 'power,cooling,switch',
+    announce: 'false',
     roomId: 'room-1',
     supplySystem: 'cooling',
     mode: 'central',
@@ -37,6 +40,12 @@ export function createCapitalPlanUI(ctx) {
     if (draft.action === 'upgradeCentral') payload.system = draft.system;
     if (draft.action === 'upgradeRack')
       Object.assign(payload, { rackId: draft.rackId, component: draft.component });
+    if (draft.action === 'upgradeRackBatch')
+      Object.assign(payload, {
+        rackId: draft.rackId,
+        components: draft.batchComponents.split(','),
+        announce: draft.announce === 'true',
+      });
     if (draft.action === 'convertRoomSupply')
       Object.assign(payload, {
         roomId: draft.roomId,
@@ -51,7 +60,7 @@ export function createCapitalPlanUI(ctx) {
     };
   }
   function estimate(q) {
-    return `<strong>${ctx.fmt(q.cost)} CR · ${ctx.duration(q.duration || 0)}</strong><p>${ctx.esc(ctx.tr(q.description || q.label))}</p>${q.reason ? `<p class="modal-alert">${ctx.esc(ctx.tr(q.reason))}</p>` : ''}`;
+    return `<strong>${ctx.fmt(q.cost)} CR · ${ctx.duration(q.duration || 0)}</strong>${q.noticeLead ? `<p>${ctx.tr('Kundenankündigung')}: ${ctx.fmt(q.noticeFee)} CR · ${ctx.tr('Vorlauf')}: ${ctx.duration(q.noticeLead)}</p>` : ''}<p>${ctx.esc(ctx.tr(q.description || q.label))}</p>${q.reason ? `<p class="modal-alert">${ctx.esc(ctx.tr(q.reason))}</p>` : ''}`;
   }
   function capitalMarkup() {
     const o = ctx.E.getOperations(ctx.state),
@@ -105,6 +114,26 @@ export function createCapitalPlanUI(ctx) {
           ['power', 'Strom'],
           ['cooling', 'Kühlung'],
           ['switch', 'Switch'],
+        ]),
+    )}${section(
+      'upgradeRackBatch',
+      field(
+        'rackId',
+        'Rack',
+        ctx.state.facility.racks.map((r) => [r.id, r.name]),
+      ) +
+        field('batchComponents', 'Komponenten', [
+          ['power,cooling,switch', 'Strom + Kühlung + Switch'],
+          ['power,cooling', 'Strom + Kühlung'],
+          ['power,switch', 'Strom + Switch'],
+          ['cooling,switch', 'Kühlung + Switch'],
+          ['power', 'Strom'],
+          ['cooling', 'Kühlung'],
+          ['switch', 'Switch'],
+        ]) +
+        field('announce', 'Kundenankündigung', [
+          ['false', 'Ohne Ankündigung'],
+          ['true', 'Mit kostenpflichtiger Ankündigung'],
         ]),
     )}${section(
       'convertRoomSupply',

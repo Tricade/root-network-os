@@ -1,6 +1,6 @@
 # Laboratory and research atlas
 
-The atlas contains **96 technologies in eight connected branches**, plus five repeatable research tracks. Drag to explore, use the wheel or buttons to zoom, search by name/effect, or focus a branch. Selecting a technology highlights its prerequisite path and shows its actual before/after effects. The focus view expands the map; Escape returns to the ordinary console. Keyboard users can tab to nodes, pan with arrow keys and fit the map with Home.
+The atlas contains **97 technologies in eight connected branches**, plus five repeatable research tracks. Drag to explore, use the wheel or buttons to zoom, search by name/effect, or focus a branch. Selecting a technology highlights its prerequisite path and shows its actual before/after effects. The focus view expands the map; Escape returns to the ordinary console. Keyboard users can tab to nodes, pan with arrow keys and fit the map with Home.
 
 Research is paid work over time. The lab runs **one project at a time**, reserves **10% of project throughput**, and charges research points when it starts. Its effect activates once, on completion. Cancelling frees the lab but refunds neither points nor elapsed time. Losing all reachable servers, or entering a global data/utility crisis, pauses the lab. It resumes after recovery, including during offline catch-up.
 
@@ -51,10 +51,12 @@ These are limits for the new atlas nodes, not final network-wide percentages. St
 
 ## Save and extension boundary
 
-Schema 7 introduced the paid research ledger; current schema 8 retains its structure. Completed IDs and the active project's paid cost, target level and remaining time are validated. Duplicate specializations, invalid IDs, unmet dependencies and fabricated project payments are rejected. The current catalog is loaded in the same order by Node, browser and worker.
+Schema 7 introduced the paid research ledger; current schema 9 retains its structure. Completed IDs and the active project's paid cost, target level and remaining time are validated. Duplicate specializations, invalid IDs, unmet dependencies and fabricated project payments are rejected. The current catalog is loaded in the same order by Node, browser and worker.
 
 `research-catalog.js` preserves the original definitions; three domain catalog modules supply the expansion, and `research-expansion.js` owns its tier rules and bounded aggregation. UI layout and camera controls live in separate modules. Add translations, reachable dependency paths, effect-bound tests and save round-trips when extending the atlas. The current eight-district layout must also be reconsidered if adding further branches.
 
 Achievements remain a separate menu page and do not occupy the laboratory.
 
 For a completed, non-repeatable technology, the detail dialog shows its active effect and completion state. Lab restrictions, purchase cost and the disabled start button are omitted. If the project completes while its dialog is open, that view updates to the completed state. Repeatable tracks continue to show the quote for their next level.
+
+Maintenance communications is an optional business-branch project (sector 4, 450 RP, two hours). With Customer desk and Preventive maintenance prerequisites, it reduces the extra customer-notice fee by 25% and notice lead time from 120 to 60 seconds. It does not waive SLA shortfalls or increase the 50% satisfaction protection.

@@ -50,8 +50,7 @@
           );
           const networkFactor = linked ? physicalNode.networkFactor : 0;
           const status =
-            (s.facility.operation && s.facility.operation.rackId === rack.id) ||
-            context.preventiveRackOffline(s, rack.id)
+            context.rackMaintenanceOffline(s, rack.id) || context.preventiveRackOffline(s, rack.id)
               ? 'maintenance'
               : server.status === 'failed'
                 ? 'failed'
@@ -153,8 +152,7 @@
         if (row.demand > row.uplink)
           warnings.push(`Uplink überlastet: ${Math.round(row.demand)} / ${row.uplink} Mbit/s.`);
         const status =
-          (s.facility.operation && s.facility.operation.rackId === rack.id) ||
-          context.preventiveRackOffline(s, rack.id)
+          context.rackMaintenanceOffline(s, rack.id) || context.preventiveRackOffline(s, rack.id)
             ? 'maintenance'
             : row.powerW > row.powerCapacityW ||
                 row.temperature > 35 ||
@@ -207,6 +205,8 @@
               total: s.facility.operation.total,
               targetLevel: s.facility.operation.targetLevel,
               cost: s.facility.operation.cost,
+              noticeRemaining: s.facility.operation.noticeRemaining || 0,
+              noticeLead: s.facility.operation.noticeLead || 0,
             }
           : null,
         totalUnits: all.length * RACK_UNITS,

@@ -2,7 +2,7 @@
 
 const path = require('node:path');
 const fs = require('node:fs');
-const { spawn } = require('node:child_process');
+const { spawn, spawnSync } = require('node:child_process');
 
 const root = path.resolve(__dirname, '../..');
 const flags = process.argv.slice(2);
@@ -28,6 +28,8 @@ if (
 }
 if (smoke) {
   fs.mkdirSync(output, { recursive: true });
+  // A reused diagnostics directory must never supply a previous passing result.
+  fs.rmSync(path.join(output, 'result.json'), { force: true });
   args.push('--self-test', '--test-output=' + output);
 }
 // Codex and other Electron hosts may export this for their own helpers.
@@ -42,11 +44,30 @@ if (smoke) {
 }
 const child = spawn(executable, args, { cwd: root, env, stdio: 'inherit', windowsHide: true });
 let timeout;
+let timedOut = false;
+// NSIS portable extracts before launching Electron and cleans up after it exits.
+// Keep the app's own 60s test deadline; allow that separate bootstrap/cleanup here.
+const deadlineMs =
+  process.platform === 'win32' && process.env.ROOT_EXPECT_INSTALLATION === 'portable'
+    ? 180000
+    : 90000;
 if (smoke)
   timeout = setTimeout(() => {
-    child.kill();
+    timedOut = true;
+    console.error(
+      `Desktop launcher exceeded ${deadlineMs / 1000}s including bootstrap and cleanup.`,
+    );
+    if (process.platform === 'win32' && child.pid) {
+      // Killing only the portable wrapper leaves its Electron child running.
+      const killed = spawnSync('taskkill', ['/pid', String(child.pid), '/t', '/f'], {
+        windowsHide: true,
+        stdio: 'ignore',
+        timeout: 10000,
+      });
+      if (killed.status !== 0) child.kill();
+    } else child.kill();
     process.exitCode = 1;
-  }, 90000);
+  }, deadlineMs);
 child.on('error', (error) => {
   console.error(error.message);
   process.exitCode = 1;
@@ -54,7 +75,7 @@ child.on('error', (error) => {
 });
 child.on('exit', (code, signal) => {
   clearTimeout(timeout);
-  process.exitCode = code === 0 && !signal ? 0 : 1;
+  process.exitCode = code === 0 && !signal && !timedOut ? 0 : 1;
   if (smoke) {
     try {
       const report = JSON.parse(fs.readFileSync(path.join(output, 'result.json'), 'utf8'));

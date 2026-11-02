@@ -87,7 +87,10 @@ test('all 256 full-tree doctrine builds remain bounded and smaller nodes have di
     const f = E.getResearchEffects(s);
     for (const [key, value] of Object.entries(f)) {
       assert.ok(Number.isFinite(value), key);
-      assert.ok(value >= (key === 'retentionBonus' ? 0 : 0.55) && value < 1.8, `${key}: ${value}`);
+      assert.ok(
+        value >= (key === 'retentionBonus' ? 0 : key === 'noticeLead' ? 0.5 : 0.55) && value < 1.8,
+        `${key}: ${value}`,
+      );
     }
     assert.ok(f.retentionBonus < 0.25);
     assert.ok(0.65 + f.retentionBonus < 1, 'customer retention never certain');
@@ -116,7 +119,7 @@ test('research districts and nodes have English copy and a collision-free stable
   const { researchLayout, researchAncestors, MAP_SIZE } = await import('../ui/research-map.js');
   const { zoomResearchCamera } = await import('../ui/research-map-input.js');
   const layout = researchLayout(model);
-  assert.equal(layout.size, 96);
+  assert.equal(layout.size, 97);
   const points = [...layout.values()];
   for (const p of points) {
     assert.ok(p.x > 100 && p.y > 100 && p.x < MAP_SIZE - 100 && p.y < MAP_SIZE - 100);

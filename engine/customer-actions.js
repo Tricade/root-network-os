@@ -6,6 +6,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function (ctx) {
+    const customerLog = (s, severity, message) => ctx.addLog(s, severity, message, 'customers');
     function customerQuote(s, action, p = {}) {
       let reason = '',
         cost = 0,
@@ -107,7 +108,7 @@
         s.customers.won = Math.min(1e9, s.customers.won + 1);
         ctx.syncCustomerGroups(s);
         ctx.assignCustomerWork(s);
-        ctx.addLog(
+        customerLog(
           s,
           'system',
           `${contract.client}: Vertrag angenommen. Ein Agent muss den Dienst einrichten.`,

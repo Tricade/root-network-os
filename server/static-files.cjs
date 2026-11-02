@@ -5,6 +5,20 @@ const path = require('node:path');
 // A closed allowlist keeps local saves and build sources outside the HTTP surface.
 function createStaticFiles(root) {
   const FILES = new Map([
+    ['/ui/notification-view.js', ['ui/notification-view.js', 'text/javascript; charset=utf-8']],
+    [
+      '/ui/notification-preferences.js',
+      ['ui/notification-preferences.js', 'text/javascript; charset=utf-8'],
+    ],
+    ['/ui/racks/maintenance.js', ['ui/racks/maintenance.js', 'text/javascript; charset=utf-8']],
+    [
+      '/engine/rack-maintenance.js',
+      ['engine/rack-maintenance.js', 'text/javascript; charset=utf-8'],
+    ],
+    [
+      '/engine/save-maintenance.js',
+      ['engine/save-maintenance.js', 'text/javascript; charset=utf-8'],
+    ],
     ['/achievements.css', ['achievements.css', 'text/css; charset=utf-8']],
     ['/release.js', ['release.js', 'text/javascript; charset=utf-8']],
     ['/ui/startup.js', ['ui/startup.js', 'text/javascript; charset=utf-8']],
@@ -154,6 +168,7 @@ function createStaticFiles(root) {
     ['/room/station-content.js', ['room/station-content.js', 'text/javascript; charset=utf-8']],
     ['/room/telemetry.js', ['room/telemetry.js', 'text/javascript; charset=utf-8']],
     ['/room/input.js', ['room/input.js', 'text/javascript; charset=utf-8']],
+    ['/room/pointer.js', ['room/pointer.js', 'text/javascript; charset=utf-8']],
     ['/room/exploration.js', ['room/exploration.js', 'text/javascript; charset=utf-8']],
     ['/room/renderer.js', ['room/renderer.js', 'text/javascript; charset=utf-8']],
     ['/room-navigation.js', ['room-navigation.js', 'text/javascript; charset=utf-8']],

@@ -280,7 +280,7 @@ test('schema 7 migration opts into schema 8 defaults; two idle days remain finit
   delete old.preventiveMaintenance;
   delete old.servicePriorities;
   const migrated = roundTrip(old);
-  assert.equal(migrated.version, 8);
+  assert.equal(migrated.version, 9);
   assert.equal(migrated.preventiveMaintenance.policy.automatic, false);
   assert.deepEqual(migrated.servicePriorities, {});
 

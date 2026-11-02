@@ -1,3 +1,5 @@
+import { NOTIFICATION_TYPES, notificationType } from './notification-preferences.js';
+import { notificationBody } from './notification-view.js';
 import { attentionEntries, uniqueAttentionEntries } from './attention-model.js';
 import { dashboardModel } from './dashboard-model.js';
 import {
@@ -21,8 +23,10 @@ export function createNotificationCenter(ctx) {
     history = [],
     current = [],
     signature = '';
+  let seenLogs = null;
   const persist = () => ctx.storageSet(key, JSON.stringify(saved));
-  const text = (value) => ctx.esc(ctx.tr(value || ''));
+  const notificationPreference = (category) =>
+    saved.preferences[category] || saved.preferences.activity;
 
   function sync(metrics, resilience, agents) {
     if (!ctx.state) return;
@@ -34,6 +38,21 @@ export function createNotificationCenter(ctx) {
       ),
     );
     history = notificationHistory(ctx.state, saved.messages);
+    const logs = history.filter((entry) => entry.source === 'log');
+    const fresh = seenLogs ? logs.filter((entry) => !seenLogs.has(entry.id)) : [];
+    seenLogs = new Set(logs.map((entry) => entry.id));
+    for (const entry of fresh.reverse()) {
+      const type = notificationType(entry);
+      if (notificationPreference(type).toast)
+        ctx.toast?.(
+          entry.message,
+          entry.type === 'error',
+          NOTIFICATION_TYPES[type].target,
+          false,
+          type,
+          true,
+        );
+    }
     current = [...pending, ...history];
     // Existing saves may carry months of history. Only pending work starts unread;
     // log events created after enabling the center are new notifications.
@@ -50,21 +69,25 @@ export function createNotificationCenter(ctx) {
   }
   function counts() {
     const read = new Set(saved.read);
-    return { unread: current.filter((entry) => !read.has(entry.id)).length, read };
+    const unread = current.filter((entry) => !read.has(entry.id));
+    return {
+      unread: unread.filter((entry) => notificationPreference(notificationType(entry)).badge)
+        .length,
+      unreadAll: unread.length,
+      read,
+    };
   }
   function centerBody() {
-    const { unread, read } = counts(),
-      entries = tab === 'pending' ? pending : history;
-    const groups = [...new Map(pending.map((e) => [e.group, e.category])).entries()];
-    if (group !== 'all' && !groups.some(([id]) => id === group)) group = 'all';
-    const filtered =
-      tab === 'pending' && group !== 'all' ? entries.filter((e) => e.group === group) : entries;
-    const visible = filtered.slice(0, limit);
-    return `<div class="notification-toolbar"><div class="notification-tabs" role="group" aria-label="${text('Meldungen filtern')}"><button class="button small ${tab === 'pending' ? 'selected' : ''}" data-notification-tab="pending" aria-pressed="${tab === 'pending'}">${text('Offene Vorgänge')} <span>${pending.length}</span></button><button class="button small ${tab === 'history' ? 'selected' : ''}" data-notification-tab="history" aria-pressed="${tab === 'history'}">${text('Verlauf')} <span>${history.length}</span></button></div><button class="text-button" data-notification-read-all ${unread ? '' : 'disabled'}>${text('Alle als gelesen markieren')}</button></div>
-      ${tab === 'pending' ? `<label class="notification-filter">${text('Meldungstyp')}<select class="select" data-notification-group><option value="all">${text('Alle Bereiche')} (${pending.length})</option>${groups.map(([id, label]) => `<option value="${id}" ${id === group ? 'selected' : ''}>${text(label)} (${pending.filter((e) => e.group === id).length})</option>`).join('')}</select></label>` : ''}
-      <p class="notification-note">${text('Gelesene Meldungen bleiben offen, bis der Vorgang erledigt ist.')}</p>
-      <div class="notification-list">${visible.map((entry) => `<section class="notification-row ${read.has(entry.id) ? '' : 'unread'}" data-notification-id="${ctx.esc(entry.id)}"><div class="notification-summary"><div>${tab === 'pending' ? `<small>${text(entry.category)}</small><button class="text-button notification-title" data-notification-expand="${ctx.esc(entry.id)}" aria-expanded="${expanded === entry.id}">${text(entry.title)}${ctx.icon('chevron')}</button>` : `<p>${text(entry.message)}</p><small>${text('Betriebszeit')} ${ctx.clock(entry.time)}</small>`}</div>${read.has(entry.id) ? `<span class="notification-read">${ctx.icon('check')}<span class="sr-only">${text('Gelesen')}</span></span>` : `<button class="icon-button" data-notification-read="${ctx.esc(entry.id)}" aria-label="${text('Als gelesen markieren')}">${ctx.icon('check')}</button>`}</div>${tab === 'pending' && expanded === entry.id ? ctx.attentionCard(entry) : ''}${tab === 'history' && entry.target ? `<button class="text-button" data-nav="${ctx.esc(entry.target)}">${text('Details öffnen')}${ctx.icon('arrow')}</button>` : ''}</section>`).join('') || `<div class="empty-state">${ctx.icon('bell')}<strong>${text(tab === 'pending' ? 'Keine offenen Vorgänge' : 'Noch keine Einträge')}</strong></div>`}</div>
-      ${filtered.length > limit ? `<button class="button block" data-notification-more>${text('Weitere Meldungen laden')} · ${filtered.length - limit}</button>` : ''}`;
+    return notificationBody(ctx, {
+      tab,
+      group,
+      expanded,
+      limit,
+      pending,
+      history,
+      preferences: saved.preferences,
+      ...counts(),
+    });
   }
   function notificationModal() {
     sync();
@@ -96,6 +119,7 @@ export function createNotificationCenter(ctx) {
       expanded,
       limit,
       saved.read,
+      saved.preferences,
       pending.map((e) => [
         e.id,
         e.detail,
@@ -139,7 +163,10 @@ export function createNotificationCenter(ctx) {
     }
     let handled = true;
     if (target.hasAttribute('data-notification-tab')) {
-      tab = target.dataset.notificationTab;
+      tab = ['pending', 'history', 'settings'].includes(target.dataset.notificationTab)
+        ? target.dataset.notificationTab
+        : 'pending';
+      group = 'all';
       limit = 12;
     } else if (target.hasAttribute('data-notification-expand'))
       expanded =
@@ -160,6 +187,20 @@ export function createNotificationCenter(ctx) {
     return handled;
   }
   function notificationChange(el) {
+    if (el.hasAttribute('data-notification-preference')) {
+      const [type, option] = el.dataset.notificationPreference.split(':');
+      if (
+        !Object.hasOwn(saved.preferences, type) ||
+        !Object.hasOwn(saved.preferences[type], option)
+      )
+        return false;
+      saved.preferences[type][option] = Boolean(el.checked);
+      persist();
+      // Updating the badge does not rebuild focused controls while toggling options.
+      signature = '';
+      updateNotificationCenter();
+      return true;
+    }
     if (!el.hasAttribute('data-notification-group')) return false;
     group = el.value;
     limit = 12;
@@ -167,7 +208,7 @@ export function createNotificationCenter(ctx) {
     ctx.updateAttentionCards();
     return true;
   }
-  function recordNotification(message, error, target) {
+  function recordNotification(message, error, target, category) {
     if (
       !ctx.state ||
       target === 'achievements' ||
@@ -185,6 +226,7 @@ export function createNotificationCenter(ctx) {
       message,
       error,
       target,
+      category: notificationType({ category, error, target, message }),
       time: ctx.state.time,
     });
     saved.messages = saved.messages.slice(0, 30);
@@ -192,7 +234,8 @@ export function createNotificationCenter(ctx) {
     updateNotificationCenter();
   }
   function resetNotifications() {
-    saved = loadNotificationState();
+    saved = loadNotificationState(JSON.stringify({ preferences: saved.preferences }));
+    seenLogs = null;
     firstSync = true;
     expanded = null;
     tab = 'pending';
@@ -200,7 +243,14 @@ export function createNotificationCenter(ctx) {
     limit = 12;
     persist();
   }
+  // An explicit action already has a direct acknowledgement. Keep its durable
+  // history and badge entry, but do not also announce the same log automatically.
+  function acknowledgeLogToast(id) {
+    seenLogs?.add(`log:${id}`);
+  }
   return {
+    acknowledgeLogToast,
+    notificationPreference,
     notificationModal,
     updateNotificationCenter,
     notificationClick,

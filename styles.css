@@ -1598,8 +1598,8 @@ tr:last-child td {
 #toast-root {
   position: fixed;
   bottom: 27px;
-  left: calc(50% + 112px);
-  transform: translateX(-50%);
+  right: 24px;
+  left: auto;
   z-index: 1010;
   display: grid;
   justify-items: center;
@@ -1810,7 +1810,8 @@ tr:last-child td {
     gap: 12px;
   }
   #toast-root {
-    left: calc(50% + 97px);
+    right: 24px;
+    left: auto;
   }
 }
 @media (max-width: 1000px) {
@@ -1965,7 +1966,8 @@ tr:last-child td {
     grid-template-columns: 1fr;
   }
   #toast-root {
-    left: 50%;
+    right: 4vw;
+    left: auto;
     max-width: 92vw;
     width: max-content;
     bottom: 18px;
@@ -2547,4 +2549,18 @@ tr:last-child td {
 .release-notes li {
   margin: 16px 0;
   padding-left: 5px;
+}
+
+#toast-root {
+  max-width: min(540px, 92vw);
+  justify-items: stretch;
+}
+.toast {
+  width: 100%;
+  max-width: 100%;
+}
+.toast-dismiss {
+  flex: none;
+  width: 28px;
+  height: 28px;
 }

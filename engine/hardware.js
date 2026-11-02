@@ -64,7 +64,7 @@
           !row.supply.converting &&
           !context.incidentAffects(s, server, row.rack) &&
           !context.preventiveRackOffline(s, server.rackId) &&
-          !(s.facility.operation && s.facility.operation.rackId === server.rackId);
+          !context.rackMaintenanceOffline(s, server.rackId);
         const demand =
           available && !row.rack.disabledPorts.includes(server.port)
             ? serverDemandMbps(server, workload)
@@ -129,9 +129,7 @@
 
     function advanceTemperatures(s, dt) {
       for (const row of hardwareSnapshot(s).values()) {
-        const passiveCooling = Boolean(
-          s.facility.operation && s.facility.operation.rackId === row.rack.id,
-        );
+        const passiveCooling = Boolean(context.rackMaintenanceOffline(s, row.rack.id));
         const tau = row.targetTemperature > row.temperature ? 45 : passiveCooling ? 180 : 120;
         const next =
           row.targetTemperature + (row.temperature - row.targetTemperature) * Math.exp(-dt / tau);
@@ -155,7 +153,7 @@
         server.bootRemaining <= 0 &&
         !rack.disabledPorts.includes(server.port) &&
         !context.preventiveRackOffline(s, rack.id) &&
-        !(s.facility.operation && s.facility.operation.rackId === rack.id) &&
+        !context.rackMaintenanceOffline(s, rack.id) &&
         !context.incidentAffects(s, server, rack) &&
         !context.roomState(s, rack.roomId)?.conversion,
       );

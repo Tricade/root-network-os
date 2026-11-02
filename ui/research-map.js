@@ -51,7 +51,7 @@ export function researchLayout(model) {
         ];
     nodes.forEach((node, i) => {
       const [radial, tangent] = slots[i] || [
-        1110 + 130 * Math.floor((i - 12) / 2),
+        1110 + 130 * (1 + Math.floor((i - 12) / 2)),
         (i % 2 ? 1 : -1) * 135,
       ];
       positions.set(node.id, {

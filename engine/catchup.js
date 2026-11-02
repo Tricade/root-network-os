@@ -17,6 +17,7 @@
         eventCount = 0;
       const constructionCompleted = [];
       const researchCompleted = [];
+      const upgradesCompleted = [];
       return {
         state,
         get progress() {
@@ -30,6 +31,7 @@
           eventCount += report.eventCount;
           constructionCompleted.push(...report.constructionCompleted);
           researchCompleted.push(...report.researchCompleted);
+          upgradesCompleted.push(...report.upgradesCompleted);
           return elapsed < total;
         },
         report() {
@@ -41,6 +43,7 @@
             eventCount,
             constructionCompleted,
             researchCompleted,
+            upgradesCompleted,
             capped: seconds > 43200,
           };
         },

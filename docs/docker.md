@@ -13,7 +13,7 @@ docker compose up -d --no-build --wait
 
 Open [http://127.0.0.1:18473](http://127.0.0.1:18473). `docker compose ps` shows readiness; `docker compose logs root` shows startup errors. Keep that directory/project name when upgrading: Compose uses it to identify your existing save volume.
 
-The image is `ghcr.io/tricade/root-network-os:latest`. Set `ROOT_IMAGE_TAG=1.6.1` in a `.env` file to pin this release instead. Version tags omit the leading `v` used by Git tags. There is no updater inside the container.
+The image is `ghcr.io/tricade/root-network-os:latest`. Set `ROOT_IMAGE_TAG=1.7.0` in a `.env` file to pin this release instead. Version tags omit the leading `v` used by Git tags. There is no updater inside the container.
 
 To build from a checkout instead of downloading an image:
 

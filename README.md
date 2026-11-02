@@ -1,5 +1,5 @@
 [![Checks](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml)
-[![Preview 1.6.1](https://img.shields.io/badge/Preview-1.6.1-8ab4f8)](package.json)
+[![Preview 1.7.0](https://img.shields.io/badge/Preview-1.7.0-8ab4f8)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![AI transparency](https://img.shields.io/badge/AI-transparency_notice-6f42c1)](AI-DISCLOSURE.md)
 [![Support on Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/tricade)
@@ -32,7 +32,7 @@ Enjoying ROOT? **Give the repository a ⭐ [star on GitHub](https://github.com/T
 </p>
 
 <p align="center">
-  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Local browser runtime · web and first person · English and German · 1.6.1 preview · AI-assisted development" width="1200"></a>
+  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Local browser runtime · web and first person · English and German · 1.7.0 preview · AI-assisted development" width="1200"></a>
 </p>
 
 ## From one rack to a cyberbunker
@@ -56,6 +56,8 @@ The interface is grouped into **Control room, Business, Data center, Team & deve
 Physical hardware is also fully manageable from the ordinary interface: server specifications, GPU usage, switch ports, wiring, power profiles and upgrade consequences are exposed directly.
 
 The compact attention list shows one actionable decision, enquiry, repair or reward at a time beside its category. Browse pending items without a nested scroll area; wider screens keep the category list compact and place decision choices side by side. The notification bell brings pending work and activity history together; marking a message read does not resolve the underlying task. Research nodes open a compact detail dialog over the map. Completed technologies show their active effect instead of an obsolete purchase form.
+
+Notification types have their own icons and separate controls for visibility, the bell counter and automatic pop-ups. Routine job completions stay quiet by default. Research and upgrade completions appear at the bottom right, with a direct link to their workspace and a dismiss button.
 
 [![Dashboard with compact attention categories and actionable customer enquiries](screenshots/readme/dashboard-attention.png)](screenshots/readme/dashboard-attention.png)
 
@@ -133,7 +135,7 @@ _Real application captures using a separate synthetic demonstration save. Click 
 - **Automatic self-maintenance:** individual units can temporarily go offline. Their normal contributions and paid assignments pause; other systems continue, rewards are preserved, and units return automatically. [Recruitment and balance rules →](docs/personnel.md)
 - **Special assignments:** network diagnostics reduce risk, load optimization improves throughput, and research assignments deliver research points. The assigned agent contributes nothing to normal operations until completion, then has a cooldown. Matching roles complete their specialist work more efficiently.
 - **Competing contracts:** monitoring, migration, audits, optimization, recovery, research and AI work share finite capacity. Rewards, reputation and research arrive when a contract finishes. Automatic acceptance can favor a balanced mix, income or research.
-- **Timed research atlas:** 96 technologies in eight connected branches, a searchable zoomable map and five ongoing research tracks. Sixteen terminal specializations form eight trade-off pairs; switching costs points and 24 hours of lab time again. Additional bonuses have diminishing returns. One paid lab project reserves 10% of project throughput; cancellation gives no refund. Existing research levels survive migration. [Laboratory rules →](docs/research.md)
+- **Timed research atlas:** 97 technologies in eight connected branches, a searchable zoomable map and five ongoing research tracks. Sixteen terminal specializations form eight trade-off pairs; switching costs points and 24 hours of lab time again. Additional bonuses have diminishing returns. One paid lab project reserves 10% of project throughput; cancellation gives no refund. Existing research levels survive migration. [Laboratory rules →](docs/research.md)
 - **Visible upgrade consequences:** agent development compares actual before/after throughput, research, risk, wear, capabilities and running costs, including capped benefits.
 - **25 achievements:** category/status filters, live progress and one-time rewards, including 1,000 jobs, 70 technologies, three basements and 10,000 CR of recurring net income per minute. Lifetime earnings, current balance and income rate are distinct. [Milestone rules →](docs/achievements.md)
 - **First-run orientation:** a short welcome dialog introduces the dashboard. After an application version change, release notes appear once; both dialogs can be reopened from the guide.
@@ -249,7 +251,7 @@ Open **[127.0.0.1:18473](http://127.0.0.1:18473/)**. On Windows, double-click **
 <details>
 <summary><strong>Preview status, progression limits and verification</strong></summary>
 
-ROOT is an evolving **1.6.1 preview**. Balance, localization, accessibility and 3D presentation remain open to contributions. Progression extends beyond six racks; current validation ceilings are 10,000 racks, 10,000 servers and 1,000,000 sectors, with 100 central-utility levels. Only the selected room is rendered. Maximum-size save validation does not establish acceptable real-time performance at that size.
+ROOT is an evolving **1.7.0 preview**. Balance, localization, accessibility and 3D presentation remain open to contributions. Progression extends beyond six racks; current validation ceilings are 10,000 racks, 10,000 servers and 1,000,000 sectors, with 100 central-utility levels. Only the selected room is rendered. Maximum-size save validation does not establish acceptable real-time performance at that size.
 
 See the [integration verification](docs/verification-construction.md), [runtime notes](docs/runtime-1.4.md) and [asset checks](docs/asset-audit.md) for tested behavior and limits. Desktop package tests complement the earlier 1.4 integration evidence; see the [desktop verification scope and limits](docs/desktop.md).
 
