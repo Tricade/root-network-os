@@ -214,6 +214,18 @@
         effects: { inferenceIncome: 1.06 },
       },
     ];
+    TECHNOLOGIES.push({
+      id: 'business-maintenance',
+      tree: 'business',
+      name: 'Wartungsankündigungen',
+      description:
+        'Optionale Kundenankündigungen kosten 25 % weniger und benötigen nur 60 statt 120 Sekunden Vorlauf. Zufriedenheitsschutz bleibt bei 50 %; SLA und Lieferausfälle bleiben unverändert.',
+      cost: 450,
+      duration: 7200,
+      sector: 4,
+      requires: ['business-desk', 'automation-maintenance'],
+      effects: { noticeCost: 0.75, noticeLead: 0.5 },
+    });
     RESEARCH_TREES.push(...ctx.EXPANSION_TREES);
     TECHNOLOGIES.push(...ctx.EXPANSION_TECHNOLOGIES);
     const REPEATABLE_GATES = {
@@ -244,6 +256,8 @@
         research: 1,
         aiReward: 1,
         inferenceIncome: 1,
+        noticeCost: 1,
+        noticeLead: 1,
       };
       for (const node of TECHNOLOGIES)
         if (owned.has(node.id) && !node.expansion)

@@ -31,6 +31,7 @@
     'personnel-market',
     'building',
     'central',
+    'rack-maintenance',
     'hardware',
     'gpu',
     'service-resources',
@@ -62,6 +63,7 @@
     'save-customers',
     'save-research',
     'save-planning',
+    'save-maintenance',
     'saves',
     'catchup',
   ];

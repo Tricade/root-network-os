@@ -185,6 +185,7 @@
       context.migrateCustomers(s);
       context.migrateResearch(s);
       context.migratePlanning(s);
+      s.version = 9;
       s.offers.push(makeJob(s), makeJob(s));
       addLog(s, 'system', 'ROOT ist bereit. Dein erster Überwachungsauftrag läuft.');
       updateAchievementUnlocks(s);

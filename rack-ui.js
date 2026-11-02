@@ -1,6 +1,7 @@
 import { createRackFaces } from './ui/racks/faces.js';
 import { createRackWiring } from './ui/racks/wiring.js';
 import { createRackInspector } from './ui/racks/inspector.js';
+import { createRackMaintenanceUI } from './ui/racks/maintenance.js';
 import { createRackView } from './ui/racks/view.js';
 import { createRackTelemetry } from './ui/racks/telemetry.js';
 const names = {
@@ -146,6 +147,7 @@ export function createRacks(services) {
   Object.assign(ctx, createRackFaces(ctx));
   Object.assign(ctx, createRackWiring(ctx));
   Object.assign(ctx, createRackInspector(ctx));
+  Object.assign(ctx, createRackMaintenanceUI(ctx));
   Object.assign(ctx, createRackView(ctx));
   Object.assign(ctx, createRackTelemetry(ctx));
   function current() {
@@ -224,6 +226,7 @@ export function createRacks(services) {
     return null;
   }
   function change(el) {
+    if (ctx.maintenanceChange(el)) return {};
     if (el.dataset.rackChange === 'room') {
       const room = E.getFacilityLayout(state()).rooms.find((r) => r.id === el.value);
       if (room) {
@@ -252,6 +255,7 @@ export function createRacks(services) {
     return [
       m.operation?.kind,
       m.operation?.rackId,
+      Boolean(m.operation?.noticeRemaining),
       ...m.racks.map((r) =>
         [
           r.id,

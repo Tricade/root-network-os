@@ -37,7 +37,7 @@
               server.status === 'online' &&
               server.condition > 0 &&
               !context.incidentAffects(s, server, racks.get(server.rackId)) &&
-              !(s.facility.operation && s.facility.operation.rackId === server.rackId),
+              !context.rackMaintenanceOffline(s, server.rackId),
           )
           .map((server) => server.rackId),
       );

@@ -5,6 +5,15 @@ const path = require('node:path');
 // A closed allowlist keeps local saves and build sources outside the HTTP surface.
 function createStaticFiles(root) {
   const FILES = new Map([
+    ['/ui/racks/maintenance.js', ['ui/racks/maintenance.js', 'text/javascript; charset=utf-8']],
+    [
+      '/engine/rack-maintenance.js',
+      ['engine/rack-maintenance.js', 'text/javascript; charset=utf-8'],
+    ],
+    [
+      '/engine/save-maintenance.js',
+      ['engine/save-maintenance.js', 'text/javascript; charset=utf-8'],
+    ],
     ['/achievements.css', ['achievements.css', 'text/css; charset=utf-8']],
     ['/release.js', ['release.js', 'text/javascript; charset=utf-8']],
     ['/ui/startup.js', ['ui/startup.js', 'text/javascript; charset=utf-8']],

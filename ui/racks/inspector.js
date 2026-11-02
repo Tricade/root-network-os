@@ -49,7 +49,7 @@ export function createRackInspector(ctx) {
   function operation(m) {
     if (!m.operation) return '';
     const op = m.operation;
-    return `<div class="rack-operation"><div>${ctx.icon('settings')}<strong>${ctx.esc(op.label)}</strong><span>${ctx.esc(m.racks.find((r) => r.id === op.rackId)?.name || 'Rack')} ist während des Umbaus nicht verfügbar.</span></div><strong data-hw-stat="operationEta"></strong><div class="rack-operation-track"><i data-hw-operation-progress></i></div></div>`;
+    return `<div class="rack-operation"><div>${ctx.icon('settings')}<strong>${ctx.esc(op.label)}</strong><span>${ctx.esc(m.racks.find((r) => r.id === op.rackId)?.name || 'Rack')} · ${ctx.esc(ctx.tr(op.noticeRemaining ? 'Angekündigt · bis zum Start online' : 'Während der Wartung offline'))}</span></div><strong data-hw-stat="operationEta"></strong><div class="rack-operation-track"><i data-hw-operation-progress></i></div></div>`;
   }
   return { componentInspector, portInspector, serverInspector, inspector, operation };
 }

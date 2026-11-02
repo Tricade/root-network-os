@@ -7,6 +7,17 @@
   'use strict';
   return function (ctx) {
     function planPayload(action, p) {
+      if (
+        action === 'upgradeRackBatch' &&
+        typeof p.rackId === 'string' &&
+        ctx.maintenanceComponents(p.components) &&
+        typeof p.announce === 'boolean'
+      )
+        return {
+          rackId: p.rackId,
+          components: ctx.maintenanceComponents(p.components),
+          announce: p.announce,
+        };
       if (action === 'createBackup') return {};
       if (action === 'buildFloor') return {};
       if (

@@ -66,7 +66,7 @@
       s.customers.lost = Math.min(1e9, s.customers.lost + 1);
       ctx.addLog(s, 'system', `${c.client}: Kundenvertrag beendet (${reason}).`);
     }
-    function advanceCustomers(s, dt, supply) {
+    function advanceCustomers(s, dt, supply, announced = null) {
       const book = s.customers;
       if (!book) return;
       const window = Math.floor(s.time / 3600) * 3600;
@@ -129,8 +129,16 @@
             86400,
             Math.max(0, c.deficit + (supplied < 0.95 ? (1 - supplied) * dt : -dt / 2)),
           );
+          // Notice only softens the shortfall attributable to this paid outage.
+          // Actual delivery deficits, complaints and SLA cancellation remain unchanged.
+          const protectedShortfall = announced?.notified.has(c.id)
+            ? announced.protection * Math.max(0, (announced.supply[c.kind] ?? 0) - supplied)
+            : 0;
           c.satisfaction = ctx.clamp(
-            c.satisfaction + (supplied < 0.95 ? (-(1 - supplied) * dt) / 180 : dt / 900),
+            c.satisfaction +
+              (supplied < 0.95
+                ? (-Math.max(0, 1 - supplied - protectedShortfall) * dt) / 180
+                : dt / 900),
             0,
             100,
           );

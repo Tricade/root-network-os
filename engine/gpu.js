@@ -60,7 +60,7 @@
       if (!aiServers.length) return 'Kein ROOT A480 mit verfügbaren GPUs installiert.';
       if (
         s.facility.operation &&
-        aiServers.some((server) => server.rackId === s.facility.operation.rackId)
+        aiServers.some((server) => context.rackMaintenanceOffline(s, server.rackId))
       )
         return 'KI-Aufträge pausieren während der Rack-Wartung.';
       if (aiServers.every((server) => !server.powered))

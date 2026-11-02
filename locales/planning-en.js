@@ -5,6 +5,62 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate) {
   return {
     pairs: [
+      ['WARTUNG ANGEKÜNDIGT', 'MAINTENANCE ANNOUNCED'],
+      ['Kunde', 'Customer'],
+      ['Rack-Wartungsfenster', 'Rack maintenance window'],
+      ['Wartungsankündigungen', 'Maintenance communications'],
+      ['Kosten der Kundenankündigung', 'Customer notice cost'],
+      ['Vorlauf der Kundenankündigung', 'Customer notice lead time'],
+      [
+        'Optionale Kundenankündigungen kosten 25 % weniger und benötigen nur 60 statt 120 Sekunden Vorlauf. Zufriedenheitsschutz bleibt bei 50 %; SLA und Lieferausfälle bleiben unverändert.',
+        'Optional customer notices cost 25% less and need only 60 instead of 120 seconds of lead time. Satisfaction protection stays at 50%; SLA and delivery shortfalls remain unchanged.',
+      ],
+      [
+        'Wähle ein Rack und ein bis drei unterschiedliche Komponenten.',
+        'Choose a rack and one to three different components.',
+      ],
+      [
+        'In diesem Raum gibt es keine aktiven Kunden für eine Ankündigung.',
+        'There are no active customers in this room to notify.',
+      ],
+      [
+        'Ein gemeinsamer Stillstand für alle gewählten Komponenten. Bestehende Defekte bleiben bestehen.',
+        'One shared outage for all selected components. Existing faults remain.',
+      ],
+      [
+        'Kundenankündigung versendet. Das Rack bleibt bis zum Wartungsbeginn online.',
+        'Customer notice sent. The rack stays online until maintenance starts.',
+      ],
+      ['Rack-Wartungsfenster gestartet.', 'Rack maintenance window started.'],
+      [
+        'Angekündigtes Rack-Wartungsfenster begonnen.',
+        'Announced rack maintenance window started.',
+      ],
+      ['Ungültiges Rack-Wartungsfenster.', 'Invalid rack maintenance window.'],
+      [
+        'Bis zu drei Komponenten, ein gemeinsamer Stillstand. Jede Komponente steigt um eine Stufe; Kosten und Arbeitszeiten werden addiert.',
+        'Up to three components in one shared outage. Each component gains one level; costs and work times are added together.',
+      ],
+      ['Komponenten', 'Components'],
+      ['Kunden vorab informieren (optional)', 'Notify customers in advance (optional)'],
+      [
+        'Simulierte Kundenmail gegen Credits. Das Rack bleibt während des Vorlaufs online. Anschließend sinkt die Zufriedenheit durch diese Wartung 50 % langsamer. SLA und Lieferausfälle zählen weiterhin.',
+        'Send a simulated customer email for credits. The rack stays online during the notice period. Satisfaction then falls 50% more slowly due to this maintenance. SLA and delivery shortfalls still count.',
+      ],
+      ['Ausbauten', 'Upgrades'],
+      ['Kundenankündigung', 'Customer notice'],
+      ['Vorlauf / Stillstand', 'Lead time / downtime'],
+      ['Wartungsfenster starten', 'Start maintenance window'],
+      ['Angekündigt · bis zum Start online', 'Announced · online until start'],
+      ['Während der Wartung offline', 'Offline during maintenance'],
+      ['Strom + Kühlung + Switch', 'Power + cooling + switch'],
+      ['Strom + Kühlung', 'Power + cooling'],
+      ['Strom + Switch', 'Power + switch'],
+      ['Kühlung + Switch', 'Cooling + switch'],
+      ['Ohne Ankündigung', 'Without notice'],
+      ['Mit kostenpflichtiger Ankündigung', 'With paid notice'],
+      ['Vorlauf', 'Lead time'],
+
       ['Nordlicht Mobilität', 'Nordlicht Mobility'],
       ['Kranich Verlag', 'Kranich Publishing'],
       ['Hanseatische Werkstätten', 'Hanseatic Workshops'],
@@ -619,6 +675,16 @@
       ['Fenster bis', 'Window ends'],
     ],
     patterns: [
+      [
+        /^Wartung angekündigt: (.+); (\d+) Kunden informiert; Beginn in (\d+) Sekunden\.$/,
+        (_, rack, n, secs) =>
+          `Maintenance announced: ${rack}; ${n} customers notified; starting in ${secs} seconds.`,
+      ],
+      [
+        /^Rack-Wartungsfenster (begonnen|abgeschlossen): (.+); (\d+) Ausbauten\.$/,
+        (_, phase, rack, n) =>
+          `Rack maintenance window ${phase === 'begonnen' ? 'started' : 'completed'}: ${rack}; ${n} upgrades.`,
+      ],
       [
         /^Benötigt (\d+) Ersatzteile; vorhanden sind (\d+)\.$/,
         '$1 spare parts required; $2 available.',

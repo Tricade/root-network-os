@@ -41,7 +41,14 @@
         return { ok: true, message: `${q.label} begonnen.` };
       }
       if (
-        ['buyRack', 'upgradeRack', 'setServerPower', 'setSwitchPort', 'moveServer'].includes(action)
+        [
+          'buyRack',
+          'upgradeRack',
+          'upgradeRackBatch',
+          'setServerPower',
+          'setSwitchPort',
+          'moveServer',
+        ].includes(action)
       ) {
         const q = quoteHardware(s, action, payload);
         if (!q.enabled)
@@ -66,6 +73,7 @@
           );
           return { ok: true, message: 'Rack installiert.' };
         }
+        if (action === 'upgradeRackBatch') return context.startRackMaintenance(s, payload);
         if (action === 'upgradeRack') {
           const rack = s.facility.racks.find((x) => x.id === payload.rackId),
             component = payload.component,

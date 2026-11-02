@@ -35,7 +35,12 @@
       const rackById = new Map(s.facility.racks.map((rack) => [rack.id, rack]));
       // One-second deterministic slices keep work, rewards, and generated opportunities consistent online/offline.
       while (remaining > 0) {
-        const dt = Math.min(1, remaining);
+        const batch = s.facility.operation?.kind === 'rack-batch' ? s.facility.operation : null;
+        const dt = Math.min(
+          1,
+          remaining,
+          batch ? batch.noticeRemaining || batch.remaining : Infinity,
+        );
         remaining -= dt;
         s.time += dt;
         context.advancePersonnel(s, s.time - dt);
@@ -64,8 +69,9 @@
             1e15,
             s.business.unserved + (m.serviceUnits - m.serviceDelivered) * dt,
           );
+          const announced = context.announcedMaintenanceSupply(s);
           context.advanceServices(s, dt);
-          context.advanceCustomers(s, dt, m.customerSupply);
+          context.advanceCustomers(s, dt, m.customerSupply, announced);
           context.advanceSupply(s, dt);
         }
         const researchNotice = context.advanceResearch(s, dt, m);
@@ -147,7 +153,7 @@
         for (const server of s.servers)
           if (server.bootRemaining > 0)
             server.bootRemaining = Math.max(0, server.bootRemaining - dt);
-        if (s.facility.operation) {
+        if (!context.advanceRackMaintenance(s, dt) && s.facility.operation) {
           s.facility.operation.remaining = Math.max(0, s.facility.operation.remaining - dt);
           if (s.facility.operation.remaining <= 0) {
             const op = s.facility.operation,

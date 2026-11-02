@@ -50,11 +50,11 @@ test('research is funded once, binds the lab and project throughput, and applies
   assert.deepEqual(s, after);
 });
 
-test('tree prerequisites, sector gates and all 96 technologies are finite and form an acyclic extensible graph', () => {
+test('tree prerequisites, sector gates and all 97 technologies are finite and form an acyclic extensible graph', () => {
   assert.equal(RESEARCH_TREES.length, 8);
-  assert.equal(TECHNOLOGIES.length, 96);
+  assert.equal(TECHNOLOGIES.length, 97);
   const ids = new Set(TECHNOLOGIES.map((n) => n.id));
-  assert.equal(ids.size, 96);
+  assert.equal(ids.size, 97);
   const visited = new Set(),
     visiting = new Set();
   function visit(id) {
@@ -133,7 +133,7 @@ test('schema 6 upgrades and balances survive research migration; crafted paid pr
   assert.deepEqual(prior, source);
   assert.deepEqual(s.upgrades, prior.upgrades);
   assert.equal(s.research, prior.research);
-  assert.equal(s.version, 8);
+  assert.equal(s.version, 9);
   assert.deepEqual(s.lab, { version: 1, owned: [], project: null });
   assert.ok(E.act(s, 'buyResearch', { id: 'network-fabric' }).ok);
   for (const mutate of [
