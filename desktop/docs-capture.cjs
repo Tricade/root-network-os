@@ -118,11 +118,14 @@ async function captureDocumentation({ window, output }) {
     files.push({ name, title: rendered.title });
     if (view === 'research') {
       await contents.executeJavaScript(
-        `document.querySelector('.research-branch-heading').scrollIntoView({block:'start'})`,
+        `document.querySelector('[data-atlas-control="expand"]').click()`,
       );
       await fs.writeFile(
         path.join(directory, 'research-tree.jpg'),
         (await presentedFrame(contents)).toJPEG(88),
+      );
+      await contents.executeJavaScript(
+        `document.querySelector('[data-atlas-control="expand"]').click()`,
       );
     }
   }

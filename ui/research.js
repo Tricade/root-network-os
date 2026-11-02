@@ -1,9 +1,13 @@
 import { createResearchCards } from './research-cards.js';
+import { createResearchMapInput } from './research-map-input.js';
+import { researchEffectTable } from './research-effects.js';
 
 /** Research routing, funded-project feedback and laboratory decisions. */
 export function createResearchUI(ctx) {
-  let selectedTree = 'network';
+  let selectedTree = 'network',
+    selectedNode = null;
   const cards = createResearchCards(ctx);
+  const atlas = createResearchMapInput(ctx);
   function researchView() {
     const model = ctx.E.getResearch(ctx.state),
       tree = model.trees.find((t) => t.id === selectedTree) || model.trees[0];
@@ -15,7 +19,7 @@ export function createResearchUI(ctx) {
       ) +
       `<section class="panel research-project">${ctx.panelHeader('Labor', `<span class="tag ${model.project ? 'blue' : 'green'}" data-research-status>${ctx.tr(model.project ? (model.paused ? 'Pausiert' : 'Forschung läuft') : 'Bereit')}</span>`)}<div class="panel-body"><h3 data-research-project-name>${ctx.esc(ctx.tr(model.project?.name || 'Kein aktives Forschungsprojekt'))}</h3>${model.project ? `<p><span>Verbleibende Laborzeit</span>: <strong data-research-remaining>${ctx.duration(model.project.remaining)}</strong></p><div class="progress-track"><div class="progress-fill blue" data-research-progress></div></div><button class="button small ghost" data-research-cancel>Abbruch prüfen</button>` : '<p>Wähle einen Forschungszweig. Ein Projekt belegt das Labor und bindet 10 % des Projektdurchsatzes. Punktkosten werden beim Start bezahlt; ein Abbruch erstattet sie nicht.</p>'}</div></section>
       <nav class="research-tree-tabs" aria-label="Forschungszweige">${model.trees.map((t) => `<button class="button ${t.id === tree.id ? 'selected' : ''}" data-research-tree="${t.id}" aria-pressed="${t.id === tree.id}">${ctx.esc(ctx.tr(t.name))}<span>${ctx.state.lab.owned.filter((id) => model.technologies.find((n) => n.id === id)?.tree === t.id).length} / ${model.technologies.filter((n) => n.tree === t.id).length}</span></button>`).join('')}</nav>
-      ${cards.researchBranch(tree, model)}<div class="section-heading"><h2>Fortlaufende Forschungsreihen</h2><p>Vorhandene Stufen bleiben aktiv. Neue Stufen benötigen ihre Grundlagen und Laborzeit.</p></div><div class="card-grid">${model.repeatables.map((n) => cards.researchCard(n, model)).join('')}</div>`
+      ${cards.researchBranch(tree, model, selectedNode)}<div class="section-heading"><h2>Fortlaufende Forschungsreihen</h2><p>Vorhandene Stufen bleiben aktiv. Neue Stufen benötigen ihre Grundlagen und Laborzeit.</p></div><div class="card-grid">${model.repeatables.map((n) => cards.researchCard(n, model)).join('')}</div>`
     );
   }
   function researchConfirm(extra) {
@@ -26,12 +30,20 @@ export function createResearchUI(ctx) {
     const q = ctx.E.quoteResearch(ctx.state, extra.id),
       model = ctx.E.getResearch(ctx.state);
     const def = [...model.technologies, ...model.repeatables].find((n) => n.id === extra.id);
-    return `<h3>${ctx.esc(ctx.tr(def?.name || ''))}</h3><p class="modal-intro">${ctx.esc(ctx.tr(def?.description || ''))}</p><div class="status-row"><span>Punktkosten bei Start</span><strong>${ctx.fmt(q.cost)} ${ctx.tr('FP')}</strong></div><div class="status-row"><span>Belegte Laborzeit</span><strong>${ctx.duration(q.duration)}</strong></div><p>Das Labor bearbeitet ein Projekt gleichzeitig. Währenddessen sinkt der Projektdurchsatz um 10 %. Ohne erreichbare Server pausiert die Laborarbeit. Ein Abbruch erstattet keine Forschungspunkte.</p>${q.reason ? `<p class="modal-alert">${ctx.esc(ctx.tr(q.reason))}</p>` : ''}<button class="button primary block" data-research-confirm="start" data-id="${ctx.esc(extra.id)}" ${q.enabled ? '' : 'disabled'}>Forschungsprojekt starten</button>`;
+    return `<h3>${ctx.esc(ctx.tr(def?.name || ''))}</h3><p class="modal-intro">${ctx.esc(ctx.tr(def?.description || ''))}</p>${researchEffectTable(ctx, def)}${q.replaces?.length ? `<p class="modal-alert">${ctx.tr('Ersetzt bei Abschluss')}: ${q.replaces.map((id) => ctx.esc(ctx.tr(model.technologies.find((n) => n.id === id).name))).join(', ')}</p>` : ''}<div class="status-row"><span>Punktkosten bei Start</span><strong>${ctx.fmt(q.cost)} ${ctx.tr('FP')}</strong></div><div class="status-row"><span>Belegte Laborzeit</span><strong>${ctx.duration(q.duration)}</strong></div><p>Das Labor bearbeitet ein Projekt gleichzeitig. Währenddessen sinkt der Projektdurchsatz um 10 %. Ohne erreichbare Server pausiert die Laborarbeit. Ein Abbruch erstattet keine Forschungspunkte.</p>${q.reason ? `<p class="modal-alert">${ctx.esc(ctx.tr(q.reason))}</p>` : ''}<button class="button primary block" data-research-confirm="start" data-id="${ctx.esc(extra.id)}" ${q.enabled ? '' : 'disabled'}>Forschungsprojekt starten</button>`;
   }
   function researchClick(target) {
+    if (target.hasAttribute('data-atlas-control')) {
+      atlas.control(target.dataset.atlasControl);
+      return true;
+    }
     if (target.hasAttribute('data-research-tree')) {
       selectedTree = target.dataset.researchTree;
+      selectedNode = ctx.E.getResearch(ctx.state).technologies.find(
+        (n) => n.tree === selectedTree,
+      )?.id;
       ctx.render();
+      atlas.focusTree(selectedTree);
       return true;
     }
     if (target.hasAttribute('data-research-focus')) {
@@ -40,8 +52,10 @@ export function createResearchUI(ctx) {
       );
       if (n) {
         selectedTree = n.tree;
+        selectedNode = n.id;
+        const inMap = Boolean(target.closest('[data-atlas-world]'));
         ctx.render();
-        ctx.$(`[data-research-node="${n.id}"]`)?.scrollIntoView({ block: 'center' });
+        if (!inMap) atlas.focus(selectedNode);
       }
       return true;
     }
@@ -94,5 +108,16 @@ export function createResearchUI(ctx) {
         reason.textContent = node.quote.unique && node.quote.level ? '' : ctx.tr(node.quote.reason);
     }
   }
-  return { researchView, researchConfirm, researchClick, researchSignature, updateResearch };
+  function mountResearch(container) {
+    const model = ctx.E.getResearch(ctx.state);
+    atlas.mount(container, model, selectedNode || model.project?.id || model.technologies[0].id);
+  }
+  return {
+    researchView,
+    researchConfirm,
+    researchClick,
+    researchSignature,
+    updateResearch,
+    mountResearch,
+  };
 }
