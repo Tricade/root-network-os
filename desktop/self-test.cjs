@@ -7,9 +7,20 @@ const assert = require('node:assert/strict');
 
 async function runSelfTest({ app, output, startDesktop }) {
   require('node:fs').mkdirSync(output, { recursive: true });
-  const result = { ok: false, version: app.getVersion(), runtime: { ...process.versions } };
+  const started = Date.now();
+  const result = {
+    ok: false,
+    version: app.getVersion(),
+    runtime: { ...process.versions },
+    startedAt: new Date(started).toISOString(),
+  };
+  console.log(`Desktop self-test started at ${result.startedAt}`);
   const write = () =>
-    fs.writeFile(path.join(output, 'result.json'), JSON.stringify(result, null, 2) + '\n');
+    fs.writeFile(
+      path.join(output, 'result.json'),
+      JSON.stringify({ ...result, elapsedMs: Date.now() - started }, null, 2) + '\n',
+    );
+  await write();
   const deadline = setTimeout(
     async () => {
       result.error = 'Desktop did not finish within 60 seconds';
