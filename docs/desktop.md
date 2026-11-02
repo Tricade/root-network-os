@@ -48,6 +48,12 @@ The explicit install step downloads pinned Electron. Native packages go to ignor
 
 Main-process modules separate the local service/protocol, profile, window policy, IPC, save-close coordination and updater. The sandboxed renderer gets a narrow isolated bridge, without Node, generic IPC, arbitrary paths or arbitrary external URLs. A privileged `root://app/` scheme keeps a stable storage origin while the private HTTP service binds an ephemeral loopback port. Browser mode retains its HTTP API and static allowlist.
 
+## First-run introduction and version notes
+
+The browser and desktop editions share `ui/startup.js`. A new profile without a save sees the welcome dialog once; existing installations are quietly baselined when no version marker exists. A later version change shows the bilingual notes from `release.js` once. An offline report is presented first, and the arrival sequence waits until startup dialogs are dismissed. The guide can reopen either dialog. Markers are local to the profile and do not change the network save.
+
+When preparing a release, update `release.js` with the matching `package.json` version and concise German/English notes for that published version. The version-match test deliberately fails if these drift apart. Development branches keep the current release version until the maintainer prepares the next release.
+
 ## Release workflow
 
 Pull requests build and launch native packages in disposable Windows/Linux runners alongside existing checks. The Linux runner relaxes its own user-namespace restriction for portable AppImages; renderer sandboxing stays enabled. CI additionally opts into Chromium's documented SwiftShader WebGL mode for trusted synthetic tests on GPU-less Linux runners. This changes no production flags. These checks do not prove hardware performance or compatibility with every distribution's default policy.

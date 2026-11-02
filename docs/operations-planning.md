@@ -2,6 +2,12 @@
 
 The dashboard's attention list and upcoming work summarize the same simulation used by the room displays. Customer filters, facility search, favorites and compact staff views organize the current network; they do not create a separate 3D economy.
 
+## Finding a plan
+
+The operations page has four sections: **Budgets & procurement**, **Expansion plan**, **Maintenance planning** and **Agent projects**. Counts summarize active deliveries, queued steps, scheduled maintenance and projects. Section switches retain unsaved form values; importing another save or starting a new network discards those old drafts. The same sections are available in the 3D console.
+
+The dashboard shows one actionable pending item at a time, with previous/next controls when more remain. It does not put a second vertical scroll region inside the page or room console. Wide screens retain a compact category column and place decision choices side by side.
+
 ## Customer expansion promises
 
 Established active customers can request more capacity. Eligibility is reviewed every six simulated hours with a bounded chance, and at most twelve requests are retained. A request grows the source service by roughly 15%, bounded to one through ten units, and expires after 24 hours.
@@ -32,7 +38,7 @@ Central cooling level 1 uses the inexpensive open pump skid. Higher levels repla
 
 Construction barriers, boards and pallets represent actual building work. Environmental displays and a maintenance robot, dock and cart remain **prepared assets only**. They are not automatically scattered through occupied rooms. All eleven operations models are original procedural ROOT geometry with editable source and an offline generator.
 
-The twelve original raster illustrations supply project, research, achievement and building-card artwork. Prompts, dimensions and hashes are in the asset pack. Small functional icons and graph edges remain vector UI.
+Twenty original raster illustrations supply project, research, achievement, decision and building-card artwork. All six decision types have their own image; built server rooms and vacant excavation plots use different subjects. Prompts, dimensions and hashes are in the asset pack. Small functional icons and graph edges remain vector UI.
 
 ## State and verification
 

@@ -55,7 +55,7 @@ Das Menü gliedert sich in **Leitstelle, Geschäft, Rechenzentrum, Team & Entwic
 
 Auch die physische Infrastruktur lässt sich vollständig in der normalen Oberfläche verwalten: Gerätespezifikationen, GPU-Auslastung, Switch-Ports, Verkabelung, Stromprofile und die Folgen von Ausbauten sind direkt zugänglich.
 
-Die kompakte Aufmerksamkeitsliste zeigt neben der gewählten Kategorie konkrete Entscheidungen, Anfragen, Reparaturen und Belohnungen mit Aktionen und aktuellen Angeboten. Die Glocke sammelt offene Vorgänge und den Verlauf; „gelesen“ erledigt die zugrunde liegende Aufgabe nicht. Forschungsknoten öffnen ihre Details direkt über der Karte. Bereits erforschte Technologien zeigen ihre aktive Wirkung statt eines überholten Kaufbereichs.
+Die kompakte Aufmerksamkeitsliste zeigt neben der gewählten Kategorie konkrete Entscheidungen, Anfragen, Reparaturen und Belohnungen mit Aktionen und aktuellen Angeboten. Der Detailbereich zeigt jeweils einen Vorgang mit Vor-/Zurück-Navigation und benötigt keine eigene Scrollleiste. Auch auf großen Bildschirmen bleiben Kategorien und normale Aktionsbuttons kompakt. Die Glocke sammelt offene Vorgänge und den Verlauf; „gelesen“ erledigt die zugrunde liegende Aufgabe nicht. Forschungsknoten öffnen ihre Details direkt über der Karte. Bereits erforschte Technologien zeigen ihre aktive Wirkung statt eines überholten Kaufbereichs.
 
 [![Dashboard mit kompakten Kategorien und direkt bearbeitbaren Kundenanfragen](screenshots/readme/dashboard-attention.png)](screenshots/readme/dashboard-attention.png)
 
@@ -70,19 +70,23 @@ Die kompakte Aufmerksamkeitsliste zeigt neben der gewählten Kategorie konkrete 
   </tr>
   <tr>
     <td width="50%"><a href="screenshots/readme/research-tree.jpg"><img src="screenshots/readme/research-tree.jpg" alt="Forschungszweige: Voraussetzungen verfolgen und entscheiden, welches bezahlte Projekt Laborzeit bekommt." width="480"></a><br><strong>Forschungszweige</strong><br>Voraussetzungen verfolgen und entscheiden, welches bezahlte Projekt Laborzeit bekommt.</td>
-    <td width="50%"><a href="screenshots/readme/achievements.jpg"><img src="screenshots/readme/achievements.jpg" alt="Erfolge: Eigene Seite für Meilensteine, Fortschritt und abholbereite Belohnungen." width="480"></a><br><strong>Erfolge</strong><br>Eigene Seite für Meilensteine, Fortschritt und abholbereite Belohnungen.</td>
+    <td width="50%"><a href="screenshots/readme/achievements.png"><img src="screenshots/readme/achievements.png" alt="Erfolge: Eigene Seite für Meilensteine, Fortschritt und abholbereite Belohnungen." width="480"></a><br><strong>Erfolge</strong><br>Eigene Seite für Meilensteine, Fortschritt und abholbereite Belohnungen.</td>
   </tr>
   <tr>
     <td width="50%"><a href="screenshots/readme/jobs.jpg"><img src="screenshots/readme/jobs.jpg" alt="Projektaufträge: Ressourcenbedarf und Belohnung neben laufenden Kundenverträgen abwägen." width="480"></a><br><strong>Projektaufträge</strong><br>Ressourcenbedarf und Belohnung neben laufenden Kundenverträgen abwägen.</td>
     <td width="50%"><a href="screenshots/readme/resilience.jpg"><img src="screenshots/readme/resilience.jpg" alt="Störungen & Backups: Defekte, Reparaturen, Ersatzteile, Reserven und Betriebsbackups verwalten." width="480"></a><br><strong>Störungen & Backups</strong><br>Defekte, Reparaturen, Ersatzteile, Reserven und Betriebsbackups verwalten.</td>
   </tr>
   <tr>
-    <td width="50%"><a href="screenshots/readme/construction.jpg"><img src="screenshots/readme/construction.jpg" alt="Gebäude & Versorgung: Flächen kaufen, Raumprofile, Teams, Reserven und zentrale Anschlüsse planen." width="480"></a><br><strong>Gebäude & Versorgung</strong><br>Flächen kaufen, Raumprofile, Teams, Reserven und zentrale Anschlüsse planen.</td>
+    <td width="50%"><a href="screenshots/readme/construction.png"><img src="screenshots/readme/construction.png" alt="Gebäude & Versorgung: Flächen kaufen, Raumprofile, Teams, Reserven und zentrale Anschlüsse planen." width="480"></a><br><strong>Gebäude & Versorgung</strong><br>Flächen kaufen, Raumprofile, Teams, Reserven und zentrale Anschlüsse planen.</td>
     <td width="50%"><a href="screenshots/readme/room-console.jpg"><img src="screenshots/readme/room-console.jpg" alt="Dieselbe Verwaltung in 3D: Gruppierte Navigation und aktuelle Geschäftszahlen in der Raumkonsole." width="480"></a><br><strong>Dieselbe Verwaltung in 3D</strong><br>Gruppierte Navigation und aktuelle Geschäftszahlen in der Raumkonsole.</td>
   </tr>
   <tr>
     <td width="50%"><a href="screenshots/readme/notifications.png"><img src="screenshots/readme/notifications.png" alt="Benachrichtigungszentrale mit Kategorien und direkt abholbarem Erfolg" width="480"></a><br><strong>Alle Meldungen an einem Ort</strong><br>Offene Vorgänge filtern, einzelne Aufgaben bearbeiten und den Verlauf ansehen.</td>
     <td width="50%"><a href="screenshots/readme/research-details.png"><img src="screenshots/readme/research-details.png" alt="Abgeschlossene Forschung in einem kompakten Dialog mit ihrer aktiven Wirkung" width="480"></a><br><strong>Forschungsdetails direkt an der Karte</strong><br>Wirkungen und Voraussetzungen prüfen, ohne die Position auf der Karte zu verlieren.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/operation-plans.png"><img src="screenshots/readme/operation-plans.png" alt="Vier getrennte Bereiche für Budgets, Ausbau, Wartung und Agentenprojekte" width="480"></a><br><strong>Gegliederte Betriebspläne</strong><br>Bereiche wechseln, ohne ungespeicherte Eingaben zu verlieren.</td>
+    <td width="50%"><a href="screenshots/readme/welcome.png"><img src="screenshots/readme/welcome.png" alt="Einführung beim ersten Start mit drei konkreten Schritten für die Leitstelle" width="480"></a><br><strong>Ein klarer Einstieg</strong><br>Einführung beim ersten Start, Neuerungen nach einem Update.</td>
   </tr>
 </table>
 
@@ -113,11 +117,12 @@ _Echte Aufnahmen mit einem getrennten, synthetischen Demostand und englischer Ob
 ### Geplanter Betrieb und Übersicht
 
 - **Kunden wachsen mit:** Bestandskunden fragen Erweiterungen an. Sage ein Lieferfenster von 1, 4 oder 12 Stunden und ein Budget zu; Agenten müssen die Leistung rechtzeitig bereitstellen.
+- **Getrennte Planungsbereiche:** Budgets & Beschaffung, Ausbauplan, Wartung und Agentenprojekte haben eigene Reiter. Ungespeicherte Formulareingaben bleiben beim Wechsel erhalten.
 - **Ausbauplan:** bis zu zwölf geordnete Bau- und Anlagenschritte mit Preisgrenzen, frühestem Start und geschützter Geldreserve.
 - **Vorbeugende Rackwartung:** Techniker, Ersatzteile, Wartungsfenster und Kundenversorgung begrenzen die Ausführung. Die Automatik bleibt standardmäßig aus.
 - **Verbindliche Prioritäten:** vor Engpässen auswählen, welche Dienstklasse zuerst versorgt wird; eine Stunde Bindung und keine zusätzliche Kapazität.
 - **Bessere Orientierung:** offene Arbeit und nächste Termine im Dashboard, Kundenfilter, Standortsuche, Favoriten und kompakte Agentenlisten.
-- **Originale Bildmotive:** zwölf generierte Rasterillustrationen für Aufträge, Forschung, Erfolge und Baukarten. [Regeln, Grenzen und 3D-Darstellung →](docs/operations-planning.md)
+- **Originale Bildmotive:** zwanzig eigene generierte Rasterillustrationen für Aufträge, Forschung, Erfolge, alle sechs Ereignisthemen sowie unterschiedliche Karten für gebaute Räume und freie Bauplätze. [Regeln, Grenzen und 3D-Darstellung →](docs/operations-planning.md)
 
 ### Agenten, Aufträge und Forschung
 
@@ -129,7 +134,8 @@ _Echte Aufnahmen mit einem getrennten, synthetischen Demostand und englischer Ob
 - **Konkurrierende Kundenaufträge:** Monitoring, Migration, Audits, Optimierung, Wiederherstellung, Forschung und KI-Arbeit teilen sich begrenzte Kapazitäten. Credits, Ansehen und Forschung werden bei Abschluss vergeben. Die automatische Annahme kann ausgewogen, auf Einnahmen oder auf Forschung ausgerichtet werden.
 - **Forschung mit Laborzeit:** 96 Technologien in acht verbundenen Zweigen, eine zoombare Karte mit Suche und fünf fortlaufende Forschungsreihen. 16 abschließende Spezialisierungen bieten paarweise Vorteile und Nachteile; ein Wechsel kostet erneut Punkte und 24 Stunden Laborzeit. Neue Boni haben abnehmenden Zusatznutzen. Ein bezahltes Projekt belegt das Labor und bindet 10 % des Projektdurchsatzes. Abbruch erstattet keine Punkte; vorhandene Forschungsstufen bleiben erhalten. [Laborregeln →](docs/research.md)
 - **Upgrade-Folgen sichtbar:** Agentenentwicklung vergleicht tatsächlichen Durchsatz, Forschung, Risiko, Verschleiß, Fähigkeiten und Betriebskosten vor und nach dem Kauf. Erreichte Grenzen werden berücksichtigt.
-- **Eigene Erfolge-Seite:** Meilensteine, Fortschritt und Belohnungen bekommen eine eigene Seite, Menüanzeige und Benachrichtigungen.
+- **25 Erfolge:** Filter nach Kategorie und Status, laufender Fortschritt und einmalige Belohnungen. Schwierige Ziele umfassen 1.000 Aufträge, 70 Technologien, drei Untergeschosse und 10.000 CR laufenden Nettosaldo pro Minute. Gesamtertrag, Guthaben und Ertrag pro Minute werden klar unterschieden. [Meilensteinregeln →](docs/achievements.md)
+- **Orientierung beim ersten Start:** ein Begrüßungsdialog erklärt den Einstieg im Dashboard. Nach einem Versionswechsel erscheinen einmalig die Neuerungen; beide Dialoge bleiben im Handbuch erreichbar.
 - **Normaler Kundenbetrieb:** automatische Anfragen, Agenteneinrichtung, Verträge über einen, drei oder sieben Tage, Betreuung, Verlängerung und geschäftliche Kündigungen. Anhaltende Defizite haben Folgen; optionale Automatik beachtet ein Stundenbudget. [Vertragsregeln →](docs/customer-contracts.md)
 - **Entscheidungen und Sektoren:** Optionale Ereignisse bieten verschiedene Vorteile und warten ohne Zeitlimit; bis zu drei können gleichzeitig offen sein. Neue Sektoren verlangen Credits und Betriebsmeilensteine und eröffnen weitere Entwicklung. Räume entstehen dadurch nicht kostenlos.
 

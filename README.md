@@ -55,7 +55,7 @@ The interface is grouped into **Control room, Business, Data center, Team & deve
 
 Physical hardware is also fully manageable from the ordinary interface: server specifications, GPU usage, switch ports, wiring, power profiles and upgrade consequences are exposed directly.
 
-The compact attention list shows actual decisions, enquiries, repairs and rewards beside the selected category, with actions and current quotes. The notification bell brings pending work and activity history together; marking a message read does not resolve the underlying task. Research nodes open a compact detail dialog over the map. Completed technologies show their active effect instead of an obsolete purchase form.
+The compact attention list shows one actionable decision, enquiry, repair or reward at a time beside its category. Browse pending items without a nested scroll area; wider screens keep the category list compact and place decision choices side by side. The notification bell brings pending work and activity history together; marking a message read does not resolve the underlying task. Research nodes open a compact detail dialog over the map. Completed technologies show their active effect instead of an obsolete purchase form.
 
 [![Dashboard with compact attention categories and actionable customer enquiries](screenshots/readme/dashboard-attention.png)](screenshots/readme/dashboard-attention.png)
 
@@ -70,19 +70,23 @@ The compact attention list shows actual decisions, enquiries, repairs and reward
   </tr>
   <tr>
     <td width="50%"><a href="screenshots/readme/research-tree.jpg"><img src="screenshots/readme/research-tree.jpg" alt="Research branches: Follow prerequisites and choose which paid lab project gets the next time slot." width="480"></a><br><strong>Research branches</strong><br>Follow prerequisites and choose which paid lab project gets the next time slot.</td>
-    <td width="50%"><a href="screenshots/readme/achievements.jpg"><img src="screenshots/readme/achievements.jpg" alt="Achievements: A dedicated page for milestones, progress and claimable rewards." width="480"></a><br><strong>Achievements</strong><br>A dedicated page for milestones, progress and claimable rewards.</td>
+    <td width="50%"><a href="screenshots/readme/achievements.png"><img src="screenshots/readme/achievements.png" alt="Achievements: A dedicated page for milestones, progress and claimable rewards." width="480"></a><br><strong>Achievements</strong><br>A dedicated page for milestones, progress and claimable rewards.</td>
   </tr>
   <tr>
     <td width="50%"><a href="screenshots/readme/jobs.jpg"><img src="screenshots/readme/jobs.jpg" alt="Project jobs: Compare resource demands and rewards alongside ongoing customer commitments." width="480"></a><br><strong>Project jobs</strong><br>Compare resource demands and rewards alongside ongoing customer commitments.</td>
     <td width="50%"><a href="screenshots/readme/resilience.jpg"><img src="screenshots/readme/resilience.jpg" alt="Incidents & backups: Manage defects, repairs, parts, reserves and operations backups." width="480"></a><br><strong>Incidents & backups</strong><br>Manage defects, repairs, parts, reserves and operations backups.</td>
   </tr>
   <tr>
-    <td width="50%"><a href="screenshots/readme/construction.jpg"><img src="screenshots/readme/construction.jpg" alt="Buildings & utilities: Buy space and configure room profiles, crews, reserves and central connections." width="480"></a><br><strong>Buildings & utilities</strong><br>Buy space and configure room profiles, crews, reserves and central connections.</td>
+    <td width="50%"><a href="screenshots/readme/construction.png"><img src="screenshots/readme/construction.png" alt="Buildings & utilities: Buy space and configure room profiles, crews, reserves and central connections." width="480"></a><br><strong>Buildings & utilities</strong><br>Buy space and configure room profiles, crews, reserves and central connections.</td>
     <td width="50%"><a href="screenshots/readme/room-console.jpg"><img src="screenshots/readme/room-console.jpg" alt="The same controls in 3D: Grouped navigation and live business readings inside the room console." width="480"></a><br><strong>The same controls in 3D</strong><br>Grouped navigation and live business readings inside the room console.</td>
   </tr>
   <tr>
     <td width="50%"><a href="screenshots/readme/notifications.png"><img src="screenshots/readme/notifications.png" alt="Notification center with category filtering and a directly claimable achievement" width="480"></a><br><strong>One notification center</strong><br>Filter pending work, act on individual items and review the history.</td>
     <td width="50%"><a href="screenshots/readme/research-details.png"><img src="screenshots/readme/research-details.png" alt="Completed research shown in a compact dialog with its active effect" width="480"></a><br><strong>Research details in place</strong><br>Inspect effects and prerequisites without losing your position on the map.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/operation-plans.png"><img src="screenshots/readme/operation-plans.png" alt="Four planning sections keep budgets, expansion, maintenance and agent projects organized" width="480"></a><br><strong>Focused operation plans</strong><br>Switch sections without losing unfinished entries.</td>
+    <td width="50%"><a href="screenshots/readme/welcome.png"><img src="screenshots/readme/welcome.png" alt="First-run introduction with three concrete steps for the new control room" width="480"></a><br><strong>A clear first start</strong><br>Introduction first; version notes after an update.</td>
   </tr>
 </table>
 
@@ -114,11 +118,12 @@ _Real application captures using a separate synthetic demonstration save. Click 
 ### Planned operations and overview
 
 - **Growing customers:** existing clients request expansion. Commit to a 1, 4 or 12 hour delivery window and budget; agents must provision the service in time.
+- **Focused planning sections:** budgets & procurement, expansion plans, maintenance and agent projects have separate tabs. Unsaved form values survive section changes.
 - **Capital plans:** up to twelve ordered construction and plant steps with price ceilings, earliest starts and a protected reserve.
 - **Preventive rack maintenance:** technicians, parts, service windows and customer delivery constrain execution. Automatic maintenance is off by default.
 - **Committed priorities:** choose the service class to receive capacity first before a shortage; one-hour commitment, without creating resources.
 - **Finding work and equipment:** dashboard attention and upcoming work, customer filters, facility search, favorites and compact agent rosters.
-- **Original illustrated cards:** twelve generated raster images for projects, research, achievements and buildings. [Rules, limits and physical representation →](docs/operations-planning.md)
+- **Original illustrated cards:** twenty original generated raster images for projects, research, achievements, all six decision topics and distinct built/vacant room cards. [Rules, limits and physical representation →](docs/operations-planning.md)
 
 ### Agents, contracts and research
 
@@ -130,7 +135,8 @@ _Real application captures using a separate synthetic demonstration save. Click 
 - **Competing contracts:** monitoring, migration, audits, optimization, recovery, research and AI work share finite capacity. Rewards, reputation and research arrive when a contract finishes. Automatic acceptance can favor a balanced mix, income or research.
 - **Timed research atlas:** 96 technologies in eight connected branches, a searchable zoomable map and five ongoing research tracks. Sixteen terminal specializations form eight trade-off pairs; switching costs points and 24 hours of lab time again. Additional bonuses have diminishing returns. One paid lab project reserves 10% of project throughput; cancellation gives no refund. Existing research levels survive migration. [Laboratory rules →](docs/research.md)
 - **Visible upgrade consequences:** agent development compares actual before/after throughput, research, risk, wear, capabilities and running costs, including capped benefits.
-- **Dedicated achievements:** milestones, progress and claimable rewards have their own page, badge and notifications.
+- **25 achievements:** category/status filters, live progress and one-time rewards, including 1,000 jobs, 70 technologies, three basements and 10,000 CR of recurring net income per minute. Lifetime earnings, current balance and income rate are distinct. [Milestone rules →](docs/achievements.md)
+- **First-run orientation:** a short welcome dialog introduces the dashboard. After an application version change, release notes appear once; both dialogs can be reopened from the guide.
 - **Decisions and sectors:** optional events offer different benefits and wait without a timer; up to three can remain pending. Sector expansion requires credits and operational milestones; it unlocks further progression without creating free rooms.
 
 ### Failures, repairs and backups
