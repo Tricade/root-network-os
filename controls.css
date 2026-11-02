@@ -1,0 +1,105 @@
+/* Shared native selects: form values, labels and keyboard navigation stay native.
+   Browsers without customizable selects retain their standard picker. */
+select option {
+  background: var(--panel2);
+  color: var(--text);
+}
+
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+@supports (appearance: base-select) and selector(::picker(select)) {
+  select:not([multiple]):not([size]),
+  select:not([multiple]):not([size])::picker(select) {
+    appearance: base-select;
+  }
+
+  select:not([multiple]):not([size]) {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    padding-inline: 10px;
+    gap: 16px;
+    cursor: pointer;
+  }
+
+  select:not([multiple]):not([size]):focus-visible {
+    outline: 2px solid var(--accent2);
+    outline-offset: 2px;
+  }
+
+  select::picker(select) {
+    font: 13px / 1.45 var(--font);
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid #46543e;
+    border-radius: 10px;
+    padding: 5px;
+    margin-block: 6px;
+    max-block-size: min(320px, 60dvh);
+    max-inline-size: calc(100dvw - 24px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    box-shadow: 0 8px 24px #0006;
+  }
+
+  select::picker-icon {
+    color: var(--muted);
+    margin-inline-start: auto;
+  }
+
+  select:open::picker-icon {
+    color: var(--accent);
+  }
+
+  select option {
+    gap: 16px;
+    min-block-size: 36px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: transparent;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+  }
+
+  select option:checked {
+    background: #2b3825;
+    color: var(--accent);
+  }
+
+  select option:not(:disabled):hover,
+  select option:not(:disabled):focus-visible {
+    background: #35422d;
+    color: var(--text);
+    outline: 1px solid #7b9368;
+    outline-offset: -1px;
+  }
+
+  select option::checkmark {
+    order: 1;
+    margin-inline-start: auto;
+    color: var(--accent);
+  }
+
+  select option:disabled {
+    color: var(--muted);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@media (forced-colors: active) {
+  select::picker(select) {
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+  select option:checked,
+  select option:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}

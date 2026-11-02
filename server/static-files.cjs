@@ -75,6 +75,7 @@ function createStaticFiles(root) {
     ['/', ['index.html', 'text/html; charset=utf-8']],
     ['/index.html', ['index.html', 'text/html; charset=utf-8']],
     ['/styles.css', ['styles.css', 'text/css; charset=utf-8']],
+    ['/controls.css', ['controls.css', 'text/css; charset=utf-8']],
     ['/racks.css', ['racks.css', 'text/css; charset=utf-8']],
     ['/ui/chrome.js', ['ui/chrome.js', 'text/javascript; charset=utf-8']],
     ['/ui/overview.js', ['ui/overview.js', 'text/javascript; charset=utf-8']],

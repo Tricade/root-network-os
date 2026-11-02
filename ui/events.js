@@ -191,6 +191,13 @@ export function createEventsUI(ctx, platform = globalThis) {
       }
     });
     platform.document.addEventListener('keydown', (event) => {
+      // The native picker owns Escape/Tab until it closes; keep its parent dialog open.
+      if (
+        event.defaultPrevented ||
+        (platform.CSS?.supports('selector(select:open)') &&
+          platform.document.querySelector('select:open'))
+      )
+        return;
       if (
         !ctx.modal &&
         (ctx.Room.isExploring() ||

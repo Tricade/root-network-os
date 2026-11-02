@@ -235,6 +235,12 @@ export function createRoomInput(sceneContext) {
   }
 
   function onKeyDown(event) {
+    // A dropdown is above the console/room in the browser's top layer.
+    if (
+      event.defaultPrevented ||
+      (globalThis.CSS?.supports('selector(select:open)') && document.querySelector('select:open'))
+    )
+      return;
     if (sceneContext.arrival) {
       if (event.code === 'Escape') {
         event.preventDefault();
