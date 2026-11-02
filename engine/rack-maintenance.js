@@ -129,13 +129,9 @@
       if (rack)
         for (const change of op.changes) rack[change.component + 'Level'] = change.targetLevel;
       s.facility.operation = null;
-      ctx.addLog(
-        s,
-        'success',
-        `Rack-Wartungsfenster abgeschlossen: ${rack?.name || 'Rack'}; ${op.changes.length} Ausbauten.`,
-        'upgrade',
-      );
-      return true;
+      const message = `Rack-Wartungsfenster abgeschlossen: ${rack?.name || 'Rack'}; ${op.changes.length} Ausbauten.`;
+      ctx.addLog(s, 'success', message, 'upgrades');
+      return message;
     }
     function announcedMaintenanceSupply(s) {
       const op = s.facility.operation;

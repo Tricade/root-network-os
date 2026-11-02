@@ -11,6 +11,7 @@ export function createEventsUI(ctx, platform = globalThis) {
       }
       if (target.disabled || ctx.desktopClosing?.()) return;
       if (target.dataset.dashboardTour !== undefined) return ctx.Room.enter();
+      if (ctx.dismissToast?.(target)) return;
       if (ctx.notificationClick?.(target)) return;
       if (ctx.attentionClick?.(target)) return;
       if (ctx.dashboardClick?.(target)) return;

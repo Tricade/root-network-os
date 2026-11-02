@@ -191,7 +191,7 @@
         if (s.credits < price) return fail(`Es fehlen ${Math.ceil(price - s.credits)} Credits.`);
         s.credits -= price;
         x.level++;
-        addLog(s, 'success', `${x.name} auf Stufe ${x.level} ausgebaut.`);
+        addLog(s, 'success', `${x.name} auf Stufe ${x.level} ausgebaut.`, 'upgrades');
         return { ok: true, message: 'Server ausgebaut.' };
       }
       if (action === 'setServerMode') {

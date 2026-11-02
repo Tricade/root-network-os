@@ -5,6 +5,22 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate) {
   return {
     pairs: [
+      ['Störungen & Versorgung', 'Incidents & supply'],
+      ['Hardware-Ausbau', 'Hardware upgrades'],
+      ['Baufortschritt', 'Construction'],
+      ['Wartung & Backups', 'Maintenance & backups'],
+      ['Auftragsabschlüsse', 'Job completions'],
+      ['Sonstige Aktivität', 'Other activity'],
+      ['Meldungen einstellen', 'Notification settings'],
+      ['Anzeigen', 'Show'],
+      ['Glockenzähler', 'Bell counter'],
+      ['Pop-up', 'Pop-up'],
+      ['Meldung schließen', 'Dismiss notification'],
+      [
+        'Lege je Typ fest, was in der Glocke erscheint, den Zähler erhöht oder automatisch als Pop-up unten rechts erscheint. Direkte Rückmeldungen auf deine Eingaben bleiben sichtbar, ebenso offene Aufgaben im Dashboard.',
+        'Choose which types appear in the bell, increase its counter or automatically show a bottom-right pop-up. Direct feedback on your actions stays visible, as does pending work on the dashboard.',
+      ],
+
       ['WARTUNG ANGEKÜNDIGT', 'MAINTENANCE ANNOUNCED'],
       ['Kunde', 'Customer'],
       ['Rack-Wartungsfenster', 'Rack maintenance window'],

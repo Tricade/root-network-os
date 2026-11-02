@@ -491,6 +491,10 @@ import { createRoom } from './room.js';
       ctx.updateLive();
       return;
     }
+    for (const entry of state.log) {
+      if (entry.id === previousLogId) break;
+      ctx.acknowledgeLogToast(entry.id);
+    }
     render();
     if (modal) {
       if (modal.type.startsWith('hardware-')) ctx.closeModal();
@@ -513,7 +517,8 @@ import { createRoom } from './room.js';
     ctx.save();
     // The detailed engine log is the durable notification; the short success toast
     // remains transient when both describe the same action.
-    ctx.toast(result.message, false, '', state.log[0]?.id === previousLogId);
+    const newLog = state.log[0]?.id !== previousLogId ? state.log[0] : null;
+    ctx.toast(result.message, false, '', !newLog, newLog?.category);
     ctx.announceAchievements();
   }
 

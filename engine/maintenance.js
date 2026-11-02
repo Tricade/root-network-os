@@ -8,7 +8,7 @@
   return function createDomain(context) {
     const { finite } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
-    const addLog = (...args) => context.addLog(...args);
+    const addLog = (s, severity, message) => context.addLog(s, severity, message, 'maintenance');
     const getResilience = (...args) => context.getResilience(...args);
     const repairQuotes = (...args) => context.repairQuotes(...args);
     const workSnapshot = (...args) => context.workSnapshot(...args);

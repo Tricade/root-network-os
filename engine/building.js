@@ -196,7 +196,7 @@
         message = `Raum ${b.rooms.length} auf Untergeschoss ${p.floor} fertiggestellt. Sechs Rackplätze sind verfügbar.`;
       }
       b.project = null;
-      context.addLog(s, 'success', message);
+      context.addLog(s, 'success', message, 'construction');
       return message;
     }
 

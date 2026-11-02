@@ -1,3 +1,4 @@
+import { notificationPreferences, notificationType } from './notification-preferences.js';
 /** Local presentation state; reading a message never changes simulation or money. */
 export function loadNotificationState(raw) {
   let value;
@@ -7,6 +8,7 @@ export function loadNotificationState(raw) {
     value = {};
   }
   return {
+    preferences: notificationPreferences(value?.preferences),
     read: [
       ...new Set(
         Array.isArray(value?.read)
@@ -26,6 +28,7 @@ export function loadNotificationState(raw) {
         error: Boolean(m.error),
         target: typeof m.target === 'string' ? m.target.slice(0, 40) : '',
         time: m.time,
+        category: notificationType(m),
       })),
   };
 }
@@ -37,7 +40,12 @@ export function reconcileNotificationReads(read, entries) {
 
 export function notificationHistory(state, messages) {
   // Engine actions often also emit a toast. Display that event once, using its durable log ID.
-  const logs = state.log.map((entry) => ({ ...entry, id: `log:${entry.id}`, source: 'log' }));
+  const logs = state.log.map((entry) => ({
+    ...entry,
+    id: `log:${entry.id}`,
+    source: 'log',
+    category: notificationType(entry),
+  }));
   const seenMessages = new Set(logs.map((entry) => entry.message));
   return [
     ...messages

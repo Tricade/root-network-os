@@ -6,6 +6,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function (ctx) {
+    const customerLog = (s, severity, message) => ctx.addLog(s, severity, message, 'customers');
     function assignCustomerWork(s) {
       if (!s.customers.autoAssign) return;
       const assignments = ctx.customerReadModel(s).assignments;
@@ -22,11 +23,11 @@
       if (c.work === 'setup') {
         c.stage = 'active';
         c.reviewAt = s.time + 21600;
-        ctx.addLog(s, 'success', `${c.client}: Dienst eingerichtet. Der Vertrag läuft jetzt.`);
+        customerLog(s, 'success', `${c.client}: Dienst eingerichtet. Der Vertrag läuft jetzt.`);
       } else if (c.work === 'support') {
         c.issue = supplied < 0.95 ? 'observing' : '';
         c.satisfaction = Math.min(100, c.satisfaction + 5);
-        ctx.addLog(
+        customerLog(
           s,
           'success',
           `${c.client}: Kundenanfrage bearbeitet. Die technische Versorgung bleibt entscheidend.`,
@@ -43,7 +44,7 @@
           c.deficit = 0;
           c.satisfaction = Math.max(75, c.satisfaction);
         }
-        ctx.addLog(
+        customerLog(
           s,
           accepted ? 'success' : 'system',
           `${c.client}: Rückgewinnung ${accepted ? 'erfolgreich' : 'abgelehnt'}.`,
@@ -64,7 +65,7 @@
       });
       s.customers.history.length = Math.min(20, s.customers.history.length);
       s.customers.lost = Math.min(1e9, s.customers.lost + 1);
-      ctx.addLog(s, 'system', `${c.client}: Kundenvertrag beendet (${reason}).`);
+      customerLog(s, 'system', `${c.client}: Kundenvertrag beendet (${reason}).`);
     }
     function advanceCustomers(s, dt, supply, announced = null) {
       const book = s.customers;
@@ -145,12 +146,12 @@
           if (c.issue === 'observing' && supplied >= 0.95) c.issue = '';
           if (c.deficit >= 900 && !c.issue) {
             c.issue = 'outage';
-            ctx.addLog(s, 'system', `${c.client}: Beschwerde wegen unzureichender Versorgung.`);
+            customerLog(s, 'system', `${c.client}: Beschwerde wegen unzureichender Versorgung.`);
           }
           if (c.deficit >= 7200 * (ctx.researchEffects?.(s).patience || 1) && !c.notice) {
             c.departure = 'sla';
             c.notice = Math.max(1, Math.min(21600, c.remaining));
-            ctx.addLog(
+            customerLog(
               s,
               'system',
               `${c.client}: Kündigung wegen anhaltender Versorgungsprobleme angekündigt.`,
@@ -166,7 +167,7 @@
           if (!c.notice && draw % 10000 < 125) {
             c.departure = ['budget', 'consolidation', 'competitor'][(draw >>> 16) % 3];
             c.notice = Math.max(1, c.remaining);
-            ctx.addLog(
+            customerLog(
               s,
               'system',
               `${c.client}: Kündigung zum Vertragsende angekündigt (${c.departure}).`,
@@ -186,7 +187,7 @@
             c.premium = s.business.rooms
               .find((r) => r.roomId === c.roomId)
               .groups.find((g) => g.kind === c.kind).nextPremium;
-            ctx.addLog(s, 'system', `${c.client}: Kundenvertrag verlängert.`);
+            customerLog(s, 'system', `${c.client}: Kundenvertrag verlängert.`);
           } else {
             ended.add(c.id);
             endCustomer(s, c, 'term');

@@ -48,14 +48,14 @@
           );
         s.offers = s.offers.filter((v) => v.id !== j.id);
         s.jobs.push(j);
-        addLog(s, 'system', `Auftrag angenommen: ${j.title}.`);
+        addLog(s, 'system', `Auftrag angenommen: ${j.title}.`, 'jobs');
         return { ok: true, message: 'Auftrag angenommen.' };
       }
       if (action === 'declineJob') {
         const j = s.offers.find((v) => v.id === payload.id);
         if (!j) return fail('Dieser Auftrag ist nicht mehr verfügbar.');
         s.offers = s.offers.filter((v) => v.id !== j.id);
-        addLog(s, 'system', `Auftrag abgelehnt: ${j.title}.`);
+        addLog(s, 'system', `Auftrag abgelehnt: ${j.title}.`, 'jobs');
         return { ok: true, message: 'Auftrag aus der Liste entfernt.' };
       }
       if (action === 'setPolicy') {
@@ -109,7 +109,7 @@
         s.lifetimeCredits += outcome[0];
         s.research += outcome[1];
         s.reputation = clamp(s.reputation + outcome[2], 0, 1e6);
-        addLog(s, 'success', `${e.title}: ${choice.label} umgesetzt.`);
+        addLog(s, 'success', `${e.title}: ${choice.label} umgesetzt.`, 'decisions');
         s.events = s.events.filter((v) => v.id !== e.id);
         s.counters.events++;
         return { ok: true, message: 'Entscheidung umgesetzt.' };
@@ -146,7 +146,7 @@
         s.achievementUnlocks[a.id] = true;
         s.credits += a.reward;
         s.lifetimeCredits += a.reward;
-        addLog(s, 'success', `Meilenstein eingelöst: ${a.name} (+${a.reward} Credits).`);
+        addLog(s, 'success', `Meilenstein eingelöst: ${a.name} (+${a.reward} Credits).`, 'rewards');
         return { ok: true, message: `${a.name}: +${a.reward} Credits.` };
       }
       if (action === 'renameNetwork') {

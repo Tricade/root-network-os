@@ -106,8 +106,13 @@ test('reading pending work persists across reloads, not across replacement, and 
 test('bounded notification history deduplicates action toasts and rejects corrupt local state', async () => {
   const [, , { notificationHistory, loadNotificationState, reconcileNotificationReads }] =
     await modules;
-  assert.deepEqual(loadNotificationState('invalid'), { read: [], messages: [] });
-  assert.deepEqual(loadNotificationState('null'), { read: [], messages: [] });
+  const defaults = loadNotificationState();
+  assert.deepEqual(loadNotificationState('invalid'), defaults);
+  assert.deepEqual(loadNotificationState('null'), defaults);
+  assert.deepEqual(defaults.read, []);
+  assert.deepEqual(defaults.messages, []);
+  assert.equal(defaults.preferences.jobs.badge, false);
+  assert.equal(defaults.preferences.research.toast, true);
   const stored = loadNotificationState(
     JSON.stringify({
       read: ['event:one', 7, 'event:one'],

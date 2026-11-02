@@ -185,6 +185,7 @@
         time: num(l.time, 'log.time'),
         type: str(l.type, 'log.type', 24),
         message: str(l.message, 'log.message', 180),
+        ...(context.LOG_CATEGORIES.includes(l.category) ? { category: l.category } : {}),
       }));
       const upgradeInput = input.upgrades ?? {};
       if (!upgradeInput || typeof upgradeInput !== 'object' || Array.isArray(upgradeInput))

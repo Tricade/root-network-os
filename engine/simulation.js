@@ -32,6 +32,7 @@
         initialResearch = s.research;
       const constructionCompleted = [];
       const researchCompleted = [];
+      const upgradesCompleted = [];
       const rackById = new Map(s.facility.racks.map((rack) => [rack.id, rack]));
       // One-second deterministic slices keep work, rewards, and generated opportunities consistent online/offline.
       while (remaining > 0) {
@@ -97,6 +98,7 @@
                 s,
                 'success',
                 `${j.title} für ${j.client} abgeschlossen: ${Math.round(reward)} Credits.`,
+                'jobs',
               );
             }
             s.jobs = s.jobs.filter((j) => j.work < j.totalWork);
@@ -153,17 +155,17 @@
         for (const server of s.servers)
           if (server.bootRemaining > 0)
             server.bootRemaining = Math.max(0, server.bootRemaining - dt);
-        if (!context.advanceRackMaintenance(s, dt) && s.facility.operation) {
+        const batchResult = context.advanceRackMaintenance(s, dt);
+        if (typeof batchResult === 'string') upgradesCompleted.push(batchResult);
+        if (!batchResult && s.facility.operation) {
           s.facility.operation.remaining = Math.max(0, s.facility.operation.remaining - dt);
           if (s.facility.operation.remaining <= 0) {
             const op = s.facility.operation,
               rack = s.facility.racks.find((x) => x.id === op.rackId);
             if (rack) rack[op.kind + 'Level'] = op.targetLevel;
-            addLog(
-              s,
-              'success',
-              `${op.label} in ${rack ? rack.name : 'Rack'} abgeschlossen. Versorgung und Verbindungen sind wieder verfügbar.`,
-            );
+            const message = `${op.label} in ${rack ? rack.name : 'Rack'} abgeschlossen. Versorgung und Verbindungen sind wieder verfügbar.`;
+            addLog(s, 'success', message, 'upgrades');
+            upgradesCompleted.push(message);
             s.facility.operation = null;
           }
         }
@@ -176,7 +178,9 @@
             const op = s.facility.centralOperation,
               system = CENTRAL_SYSTEMS.find((item) => item.id === op.system);
             s.facility.central[op.system] = op.targetLevel;
-            addLog(s, 'success', `${system.name} auf Stufe ${op.targetLevel} ausgebaut.`);
+            const message = `${system.name} auf Stufe ${op.targetLevel} ausgebaut.`;
+            addLog(s, 'success', message, 'upgrades');
+            upgradesCompleted.push(message);
             s.facility.centralOperation = null;
           }
         }
@@ -238,6 +242,7 @@
         eventCount,
         constructionCompleted,
         researchCompleted,
+        upgradesCompleted,
       };
     }
     return { advance };

@@ -57,6 +57,8 @@ Physical hardware is also fully manageable from the ordinary interface: server s
 
 The compact attention list shows one actionable decision, enquiry, repair or reward at a time beside its category. Browse pending items without a nested scroll area; wider screens keep the category list compact and place decision choices side by side. The notification bell brings pending work and activity history together; marking a message read does not resolve the underlying task. Research nodes open a compact detail dialog over the map. Completed technologies show their active effect instead of an obsolete purchase form.
 
+Notification types have their own icons and separate controls for visibility, the bell counter and automatic pop-ups. Routine job completions stay quiet by default. Research and upgrade completions appear at the bottom right, with a direct link to their workspace and a dismiss button.
+
 [![Dashboard with compact attention categories and actionable customer enquiries](screenshots/readme/dashboard-attention.png)](screenshots/readme/dashboard-attention.png)
 
 <table>

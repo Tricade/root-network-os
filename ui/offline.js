@@ -100,9 +100,11 @@ export function createOfflineUI(ctx, platform = globalThis) {
         ctx.lastTick = now;
         ctx.state.savedAt = now;
         for (const message of result.report.constructionCompleted)
-          ctx.toast(message, false, 'facility');
+          ctx.toast(message, false, 'facility', true, 'construction', true);
         for (const message of result.report.researchCompleted || [])
-          ctx.toast(message, false, 'research');
+          ctx.toast(message, false, 'research', true, 'research', true);
+        for (const message of result.report.upgradesCompleted || [])
+          ctx.toast(message, false, 'network', true, 'upgrades', true);
         return result.report;
       } catch {
         failed = true;
