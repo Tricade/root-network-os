@@ -53,6 +53,8 @@ export function createTelemetryUI(ctx) {
     ctx.updateBusiness?.(m);
     ctx.updateResearch?.(m);
     ctx.updateDashboard?.(m, r, a);
+    ctx.updateNotificationCenter?.(m, r, a);
+    ctx.updateAttentionCards?.(m);
     ctx.updateAgentDevelopment?.();
     const serverRows = new Map(
       facility.racks.flatMap((rack) => rack.servers.map((server) => [server.id, server])),

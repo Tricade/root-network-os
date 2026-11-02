@@ -60,16 +60,7 @@ export function createDashboardUI(ctx) {
         el.classList.toggle('positive', model.net >= 0);
       }
     });
-    const key = JSON.stringify([
-      model.actions,
-      ctx.state.resilience.parts,
-      model.protection.incident?.description,
-    ]);
-    ctx.$$('[data-dashboard-attention]').forEach((container) => {
-      if (container.dataset.signature === key) return;
-      container.innerHTML = attention.attentionMarkup(model);
-      container.dataset.signature = key;
-    });
+    attention.updateAttention(model);
     const upcomingPanel = ctx.$('[data-dashboard-upcoming]');
     if (upcomingPanel) {
       const content = upcoming(model);

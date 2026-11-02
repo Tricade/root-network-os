@@ -5,6 +5,10 @@ const path = require('node:path');
 // A closed allowlist keeps local saves and build sources outside the HTTP surface.
 function createStaticFiles(root) {
   const FILES = new Map([
+    ['/ui/attention-model.js', ['ui/attention-model.js', 'text/javascript; charset=utf-8']],
+    ['/ui/attention-cards.js', ['ui/attention-cards.js', 'text/javascript; charset=utf-8']],
+    ['/ui/notification-state.js', ['ui/notification-state.js', 'text/javascript; charset=utf-8']],
+    ['/ui/notification-center.js', ['ui/notification-center.js', 'text/javascript; charset=utf-8']],
     [
       '/engine/research-infrastructure-catalog.js',
       ['engine/research-infrastructure-catalog.js', 'text/javascript; charset=utf-8'],

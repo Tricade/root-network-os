@@ -97,6 +97,7 @@ export function createDialogsUI(ctx) {
     const titles = {
       servers: 'Dein Netzwerk erweitern',
       agents: 'Arbeitsamt',
+      notifications: 'Benachrichtigungen',
       sector: 'Nächsten Sektor erschließen',
       help: 'Willkommen bei ROOT',
       settings: 'Einstellungen',
@@ -118,7 +119,8 @@ export function createDialogsUI(ctx) {
       'preventive-confirm': 'Rackwartung prüfen',
     };
     let content = '';
-    if (type === 'agent-upgrade') content = ctx.agentUpgradeModal(extra);
+    if (type === 'notifications') content = ctx.notificationModal();
+    else if (type === 'agent-upgrade') content = ctx.agentUpgradeModal(extra);
     else if (type === 'research-confirm') content = ctx.researchConfirm(extra);
     else if (type === 'business-confirm') content = ctx.businessConfirm(extra);
     else if (type === 'operations-confirm') content = ctx.operationsConfirm(extra);
@@ -141,7 +143,7 @@ export function createDialogsUI(ctx) {
     else if (type === 'import')
       content = `<p class="modal-intro">Der Netzwerkstand wurde geprüft. Wiederherstellen ersetzt den aktuellen Fortschritt. Dieser wird zuvor als Datei exportiert.</p><div class="breakdown"><div class="status-row"><span>Netzwerk</span><strong>${ctx.esc(ctx.importing.networkName)}</strong></div><div class="status-row"><span>Sektor / Server / Agenten</span><strong>${ctx.importing.sector} / ${ctx.importing.servers.length} / ${ctx.importing.agents.length}</strong></div><div class="status-row"><span>Credits</span><strong>${ctx.fmt(ctx.importing.credits)} CR</strong></div></div><button class="button primary block" data-command="import-confirm">${ctx.icon('upload')}Sicherung wiederherstellen</button>`;
     ctx.$('#modal-root').innerHTML =
-      `<div class="modal-backdrop" data-backdrop="true"><section class="modal ${['servers', 'agents', 'repair', 'agent-task', 'hardware-shop', 'hardware-move'].includes(type) ? 'wide' : ''} ${type === 'research-confirm' && !extra?.cancel ? 'research-dialog' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1"><div class="modal-header"><h2 id="modal-title">${titles[type] || 'ROOT'}</h2><button class="icon-button" data-command="close" aria-label="Dialog schließen">${ctx.icon('cross')}</button></div><div class="modal-body">${content}</div></section></div>`;
+      `<div class="modal-backdrop" data-backdrop="true"><section class="modal ${['servers', 'agents', 'repair', 'agent-task', 'hardware-shop', 'hardware-move'].includes(type) ? 'wide' : ''} ${type === 'research-confirm' && !extra?.cancel ? 'research-dialog' : type === 'notifications' ? 'notification-dialog' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1"><div class="modal-header"><h2 id="modal-title">${titles[type] || 'ROOT'}</h2><button class="icon-button" data-command="close" aria-label="Dialog schließen">${ctx.icon('cross')}</button></div><div class="modal-body">${content}</div></section></div>`;
     window.ROOTI18N?.localize?.(ctx.$('#modal-root'));
     ctx.updateDesktopControls?.();
     ctx.$('#app').inert = true;

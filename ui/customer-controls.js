@@ -16,7 +16,9 @@ export function createCustomerControls(ctx) {
     const payload = { id: target.dataset.id };
     if (action === 'acceptCustomerLead') payload.roomId = target.dataset.roomId;
     if (action === 'assignCustomerAgent')
-      payload.agentId = ctx.$(`[data-customer-agent="${payload.id}"]`)?.value;
+      payload.agentId =
+        target.closest('[data-customer-id],.attention-item')?.querySelector('[data-customer-agent]')
+          ?.value || ctx.$(`[data-customer-agent="${payload.id}"]`)?.value;
     if (action === 'setCustomerRenewal') payload.value = target.dataset.value === 'true';
     if (action === 'setCustomerPolicy') {
       payload.key = target.dataset.key;

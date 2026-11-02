@@ -5,6 +5,28 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate) {
   return {
     pairs: [
+      ['Meldungstyp', 'Notification type'],
+      ['Alle Bereiche', 'All categories'],
+      ['Benachrichtigungen', 'Notifications'],
+      ['Meldungen filtern', 'Filter notifications'],
+      ['Offene Vorgänge', 'Pending items'],
+      ['Verlauf', 'History'],
+      ['Alle als gelesen markieren', 'Mark all as read'],
+      [
+        'Gelesene Meldungen bleiben offen, bis der Vorgang erledigt ist.',
+        'Reading a notification does not resolve the underlying item.',
+      ],
+      ['Gelesen', 'Read'],
+      ['Als gelesen markieren', 'Mark as read'],
+      ['Weitere Meldungen laden', 'Load more notifications'],
+      ['Weitere Vorgänge laden', 'Load more items'],
+      ['ungelesen', 'unread'],
+      ['Raum für die Einrichtung', 'Provision in room'],
+      ['Wartet auf einen freien Agenten', 'Waiting for an available agent'],
+      ['Noch kein weiteres Projekt verfügbar.', 'No further project is available yet.'],
+      ['Erweiterung prüfen', 'Review expansion'],
+      ['Gerät ausgefallen', 'Device failed'],
+
       ['Netzwerkstand gespeichert.', 'Network saved.'],
       ['19 Zoll · 18 HE', '19 in · 18 RU'],
       [

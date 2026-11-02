@@ -1,3 +1,5 @@
+import { createAttentionCards } from './ui/attention-cards.js';
+import { createNotificationCenter } from './ui/notification-center.js';
 import { createCustomerGrowthUI } from './ui/customer-growth.js';
 import { createPreventiveMaintenanceUI } from './ui/preventive-maintenance.js';
 import { NAVIGATION_ITEMS } from './ui/navigation.js';
@@ -357,6 +359,7 @@ import { createRoom } from './room.js';
       view = value;
     },
   };
+  Object.assign(ctx, createAttentionCards(ctx));
   Object.assign(ctx, createChromeUI(ctx));
   Object.assign(ctx, createOverviewUI(ctx));
   Object.assign(ctx, createDashboardUI(ctx));
@@ -376,6 +379,7 @@ import { createRoom } from './room.js';
   Object.assign(ctx, createTelemetryUI(ctx));
   Object.assign(ctx, createPersistenceUI(ctx));
   Object.assign(ctx, createNotificationsUI(ctx));
+  Object.assign(ctx, createNotificationCenter(ctx));
   Object.assign(ctx, createFacilityUI(ctx));
   Object.assign(ctx, createEventsUI(ctx));
   Object.assign(ctx, createDesktopUI(ctx));
@@ -415,12 +419,7 @@ import { createRoom } from './room.js';
         : protection.failed > 0 && !['overview', 'resilience'].includes(view)
           ? `<aside class="protection-banner warning" role="status"><span class="signal-icon">${icon('server')}</span><div><strong>${protection.failed} Server ausgefallen</strong><span>Kapazität und Einnahmen sind reduziert. Prüfe die verfügbaren Reparaturen.</span></div><button class="button small" data-nav="resilience">Betrieb & Schutz${icon('arrow')}</button></aside>`
           : '';
-    const rewards = pendingAchievements();
-    const rewardAlert =
-      rewards.length && !['overview', 'achievements'].includes(view)
-        ? `<aside class="reward-banner" role="status">${icon('trophy')}<div><strong>${rewards.length === 1 ? 'Ein Erfolg wartet auf dich' : rewards.length + ' Erfolge warten auf dich'}</strong><span>${rewards.map((a) => '<span>' + esc(a.name) + '</span>').join(' · ')} · ${ctx.stat('achievementReward')} <span>CR abholbereit</span></span></div><button class="button small" data-nav="achievements">Belohnung abholen${icon('arrow')}</button></aside>`
-        : '';
-    container.innerHTML = `${saveError ? `<div class="save-warning" role="status">${esc(saveError)}${saveConflict ? '<button class="button small" data-command="reload">Aktuellen Stand laden</button>' : ''}</div>` : ''}${alert}${rewardAlert}<div class="view-content">${roomMode && view === 'overview' ? ctx.consoleOverviewView() : viewFunctions[view]()}</div><footer class="bottom-caption"><span><i class="live-dot"></i>${ctx.stat('systemStatus')} · ${ctx.stat('runtime')}</span><span>DEIN NETZWERK. DEINE REGELN.</span></footer>`;
+    container.innerHTML = `${saveError ? `<div class="save-warning" role="status">${esc(saveError)}${saveConflict ? '<button class="button small" data-command="reload">Aktuellen Stand laden</button>' : ''}</div>` : ''}${alert}<div class="view-content">${roomMode && view === 'overview' ? ctx.consoleOverviewView() : viewFunctions[view]()}</div><footer class="bottom-caption"><span><i class="live-dot"></i>${ctx.stat('systemStatus')} · ${ctx.stat('runtime')}</span><span>DEIN NETZWERK. DEINE REGELN.</span></footer>`;
     $$('.nav-item[data-nav]').forEach((el) => {
       el.classList.toggle('active', el.dataset.nav === view);
       if (el.dataset.nav === view) el.setAttribute('aria-current', 'page');
@@ -483,6 +482,7 @@ import { createRoom } from './room.js';
       ctx.toast('Bitte warte, bis die Abwesenheit nachberechnet wurde.', true);
       return;
     }
+    const previousLogId = state.log[0]?.id;
     const result = E.act(state, action, payload);
     if (!result.ok) {
       ctx.toast(result.message, true);
@@ -509,7 +509,9 @@ import { createRoom } from './room.js';
         ctx.closeModal();
     }
     ctx.save();
-    ctx.toast(result.message);
+    // The detailed engine log is the durable notification; the short success toast
+    // remains transient when both describe the same action.
+    ctx.toast(result.message, false, '', state.log[0]?.id === previousLogId);
     ctx.announceAchievements();
   }
 

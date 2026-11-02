@@ -597,7 +597,7 @@ export function createRoomWorld(sceneContext) {
     sceneContext.consolePanel.hidden = true;
     sceneContext.consolePanel.setAttribute('aria-label', 'Raumkonsole');
     sceneContext.consolePanel.innerHTML =
-      '<header class="room-console-header"><div><span>ROOT / OPERATIONS TERMINAL</span><strong data-room-console-title>Leitstelle</strong></div><button type="button" data-room-console-close>Zurück in den Raum · Esc</button></header><nav class="room-console-nav" aria-label="Bereiche der Raumkonsole">' +
+      '<header class="room-console-header"><div><span>ROOT / OPERATIONS TERMINAL</span><strong data-room-console-title>Leitstelle</strong></div><button type="button" class="notification-bell" data-modal="notifications" data-notification-bell aria-label="Benachrichtigungen">Benachrichtigungen <span class="notification-count" data-notification-count hidden></span></button><button type="button" data-room-console-close>Zurück in den Raum · Esc</button></header><nav class="room-console-nav" aria-label="Bereiche der Raumkonsole">' +
       consoleNavigation('overview', sceneContext.tr) +
       '</nav><div class="room-console-content" tabindex="-1"></div>';
     sceneContext.shell.appendChild(sceneContext.consolePanel);

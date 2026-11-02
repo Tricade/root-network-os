@@ -41,12 +41,13 @@ export function dashboardModel(
       count: customers.notices,
       severity: 'warning',
     });
-  if (customers.attention)
+  const supportCases = state.customers.contracts.filter((c) => c.issue).length;
+  if (supportCases)
     actions.push({
       id: 'support',
       route: 'business',
       label: 'Kundenfälle bearbeiten',
-      count: customers.attention,
+      count: supportCases,
       severity: 'warning',
     });
   if (supply !== null && supply < 0.95)

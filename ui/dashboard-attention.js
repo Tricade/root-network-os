@@ -1,120 +1,65 @@
-/** Selected attention item. This is a read model; all mutations use normal domain actions. */
-export function attentionDetail(state, model, id) {
-  const action = model.actions.find((entry) => entry.id === id) || model.actions[0];
-  if (!action) return null;
-  const failed = state.servers.filter((server) => server.status === 'failed');
-  const contracts = state.customers.contracts;
-  const result = { ...action, facts: [], explanation: '', button: 'Vorgang öffnen' };
-  switch (action.id) {
-    case 'incident':
-      result.explanation = model.protection.incident.description;
-      result.button = 'Vorfall öffnen';
-      break;
-    case 'repairs':
-      result.explanation =
-        'Ein Gerätefehler betrifft seine Kapazität. Andere erreichbare Server arbeiten weiter.';
-      result.facts = [
-        ['Ausgefallene Geräte', failed.length],
-        ['Ersatzteile auf Lager', state.resilience.parts],
-      ];
-      result.entityId = failed[0]?.id;
-      result.button = 'Reparaturen prüfen';
-      break;
-    case 'notices':
-    case 'support':
-    case 'staff': {
-      const entries = contracts.filter((c) =>
-        action.id === 'notices'
-          ? c.notice > 0
-          : action.id === 'staff'
-            ? c.work && !c.agentId
-            : c.issue,
-      );
-      result.explanation =
-        action.id === 'staff'
-          ? 'Die Einrichtung oder Betreuung wartet auf einen Agenten. Noch nicht eingerichtete Dienste erzeugen keinen Umsatz.'
-          : 'Prüfe betroffene Verträge, Versorgung und verbleibende Zeit. Betreuung ersetzt keine fehlende Kapazität.';
-      result.filter = action.id === 'notices' ? 'notice' : 'attention';
-      result.facts = [
-        ['Betroffene Verträge', entries.length],
-        ['Kunde', entries[0]?.client || '—'],
-      ];
-      result.button = 'Betroffene Verträge öffnen';
-      break;
-    }
-    case 'supply':
-      result.explanation =
-        'Versorgung und Reserven gelten nur für angeschlossene Räume. Prüfe zuerst den begrenzenden Anschluss.';
-      result.button = 'Versorgung prüfen';
-      break;
-    case 'margin':
-      result.explanation =
-        'Laufende Kosten übersteigen die laufenden Einnahmen. Projektbelohnungen sind zusätzliche Einmalzahlungen.';
-      result.facts = [['Aktive Verträge', model.customers.active]];
-      result.button = 'Bilanz öffnen';
-      break;
-    case 'enquiries':
-      result.explanation =
-        'Anfragen sind unverbindlich. Erst eine Zusage reserviert Kapazität und verursacht Einrichtungskosten.';
-      result.filter = 'leads';
-      result.button = 'Anfragen prüfen';
-      break;
-    case 'growth':
-    case 'growth-due':
-      result.explanation =
-        'Eine zugesagte Erweiterung braucht zusätzliche Kapazität und Agentenzeit vor dem Liefertermin. Erlös entsteht erst nach Einrichtung.';
-      result.button = 'Erweiterungen öffnen';
-      break;
-    case 'plan':
-    case 'maintenance':
-      result.explanation = action.detail;
-      result.button = 'Plan prüfen';
-      break;
-    case 'rewards':
-      result.explanation = 'Freigeschaltete Meilensteine warten auf die Abholung ihrer Belohnung.';
-      result.button = 'Erfolge öffnen';
-      break;
-    case 'decisions':
-      result.explanation =
-        'Offene Betriebsentscheidungen stehen im Posteingang mit Kosten und Folgen zur Auswahl.';
-      result.button = 'Posteingang öffnen';
-      break;
-    case 'research':
-      result.explanation =
-        'Wähle Voraussetzungen und Nutzen bewusst. Ein Projekt bindet Laborzeit und 10 % des Projektdurchsatzes.';
-      result.button = 'Forschungsbaum öffnen';
-      break;
-  }
-  return result;
-}
+import { attentionEntries } from './attention-model.js';
 
+/** Categories stay compact; the selected pane contains the actual pending work. */
 export function createDashboardAttention(ctx) {
   let selected = null,
-    expanded = false;
-  const detail = (model) => attentionDetail(ctx.state, model, selected);
+    expanded = false,
+    itemLimit = 5;
   function attentionMarkup(model) {
-    const item = detail(model);
-    selected = item?.id || null;
-    const shown = expanded ? model.actions : model.actions.slice(0, 3);
-    return `<div class="command-attention"><section class="panel command-inbox">${ctx.panelHeader('Jetzt wichtig', `<span class="count">${model.actions.length}</span>`)}<div class="command-action-list">${shown.map((a) => `<button class="command-action ${a.severity}" data-dashboard-select="${a.id}" aria-pressed="${a.id === selected}"><span class="command-action-icon">${ctx.icon(a.severity === 'urgent' ? 'shield' : a.severity === 'warning' ? 'pulse' : 'arrow')}</span><span><strong>${ctx.esc(ctx.tr(a.label))}</strong>${a.detail ? `<small>${ctx.esc(ctx.tr(a.detail))}</small>` : ''}</span>${a.count ? `<b>${ctx.fmt(a.count)}</b>` : ctx.icon('chevron')}</button>`).join('') || `<p class="panel-body">${ctx.tr('Keine offenen Vorgänge')}</p>`}</div><div class="panel-footer"><span>${shown.length} / ${model.actions.length} ${ctx.tr('Hinweise')}</span>${model.actions.length > 3 ? `<button class="text-button" data-dashboard-more aria-expanded="${expanded}">${ctx.tr(expanded ? 'Weniger anzeigen' : 'Alle anzeigen')}</button>` : ''}</div></section><section class="panel command-detail" aria-label="${ctx.tr('Ausgewählter Vorgang')}">${item ? `<span class="eyebrow">${ctx.tr('NÄCHSTE HANDLUNG')}</span><h3>${ctx.esc(ctx.tr(item.label))}</h3><p>${ctx.esc(ctx.tr(item.explanation || item.detail || ''))}</p>${item.facts.length ? `<dl>${item.facts.map(([key, value]) => `<dt>${ctx.esc(ctx.tr(key))}</dt><dd>${ctx.esc(typeof value === 'number' ? ctx.fmt(value) : ctx.tr(value ?? '—'))}</dd>`).join('')}</dl>` : ''}<button class="button primary block" data-dashboard-open="${item.id}">${ctx.esc(ctx.tr(item.button))}${ctx.icon('arrow')}</button>` : `<h3>${ctx.tr('Betrieb im Blick')}</h3><p>${ctx.tr('Neue Vorgänge erscheinen hier automatisch. Deine Regeln arbeiten im Hintergrund weiter.')}</p>`}</section></div>`;
+    const category = model.actions.find((entry) => entry.id === selected) || model.actions[0];
+    selected = category?.id || null;
+    const shown = expanded ? model.actions : model.actions.slice(0, 4);
+    const entries = attentionEntries(ctx.E, ctx.state, model).filter(
+      (entry) => entry.group === selected,
+    );
+    return `<div class="command-attention"><section class="panel command-inbox">${ctx.panelHeader('Jetzt wichtig', `<span class="count">${model.actions.length}</span>`)}<div class="command-action-list">${shown.map((a) => `<button class="command-action ${a.severity}" data-dashboard-select="${a.id}" aria-pressed="${a.id === selected}"><span class="command-action-icon">${ctx.icon(a.severity === 'urgent' ? 'shield' : a.severity === 'warning' ? 'pulse' : 'arrow')}</span><span><strong>${ctx.esc(ctx.tr(a.label))}</strong>${a.detail ? `<small>${ctx.esc(ctx.tr(a.detail))}</small>` : ''}</span>${a.count ? `<b>${ctx.fmt(a.count)}</b>` : ctx.icon('chevron')}</button>`).join('') || `<p class="panel-body">${ctx.tr('Keine offenen Vorgänge')}</p>`}</div>${model.actions.length > 4 ? `<div class="panel-footer"><span>${shown.length} / ${model.actions.length} ${ctx.tr('Hinweise')}</span><button class="text-button" data-dashboard-more aria-expanded="${expanded}">${ctx.tr(expanded ? 'Weniger anzeigen' : 'Alle anzeigen')}</button></div>` : ''}</section>
+      <section class="panel command-detail" aria-label="${ctx.tr('Ausgewählter Vorgang')}"><div class="command-detail-heading"><h3>${ctx.esc(ctx.tr(category?.label || 'Betrieb im Blick'))}</h3><span class="count">${entries.length}</span></div><div class="command-detail-items" tabindex="0" aria-label="${ctx.tr('Offene Vorgänge')}">${entries.slice(0, itemLimit).map(ctx.attentionCard).join('') || `<p>${ctx.tr('Neue Vorgänge erscheinen hier automatisch. Deine Regeln arbeiten im Hintergrund weiter.')}</p>`}${entries.length > itemLimit ? `<button class="button block" data-dashboard-items-more>${ctx.tr('Weitere Vorgänge laden')} · ${entries.length - itemLimit}</button>` : ''}</div></section></div>`;
+  }
+  function updateAttention(model, force = false) {
+    const entries = attentionEntries(ctx.E, ctx.state, model);
+    const signature = JSON.stringify([
+      selected,
+      expanded,
+      itemLimit,
+      model.actions,
+      entries.map((e) => [
+        e.id,
+        e.detail,
+        e.data.issue,
+        e.data.work,
+        e.data.agentId,
+        e.data.retentionUsed,
+        e.data.notice > 0,
+      ]),
+      ctx.state.lab.owned,
+      ctx.state.lab.project?.id,
+    ]);
+    ctx.$$('[data-dashboard-attention]').forEach((root) => {
+      if (!force && root.dataset.signature === signature) return;
+      if (!force && root.querySelector('select:focus,input:focus')) return;
+      const focus = document.activeElement;
+      const focusId = focus?.getAttribute('data-dashboard-select');
+      const scroll = root.querySelector('.command-detail-items')?.scrollTop || 0;
+      root.innerHTML = attentionMarkup(model);
+      root.dataset.signature = signature;
+      const list = root.querySelector('.command-detail-items');
+      if (list) list.scrollTop = scroll;
+      if (focusId)
+        root.querySelector(`[data-dashboard-select="${focusId}"]`)?.focus({ preventScroll: true });
+      else if (focus && !focus.isConnected)
+        root.querySelector('.command-action[aria-pressed="true"]')?.focus({ preventScroll: true });
+    });
   }
   function dashboardClick(target) {
     if (target.hasAttribute('data-dashboard-select')) {
       selected = target.dataset.dashboardSelect;
-      ctx.render();
-      return true;
-    }
-    if (target.hasAttribute('data-dashboard-more')) {
-      expanded = !expanded;
-      ctx.render();
-      return true;
-    }
-    if (!target.hasAttribute('data-dashboard-open')) return false;
-    const item = detail(ctx.getDashboardModel());
-    if (!item) return true;
-    if (item.filter) ctx.selectCustomerFilter?.(item.filter);
-    ctx.navigate(item.route);
+      itemLimit = 5;
+    } else if (target.hasAttribute('data-dashboard-more')) expanded = !expanded;
+    else if (target.hasAttribute('data-dashboard-items-more')) itemLimit += 5;
+    else return false;
+    updateAttention(ctx.getDashboardModel(), true);
+    ctx.updateAttentionCards();
     return true;
   }
-  return { attentionMarkup, dashboardClick };
+  return { attentionMarkup, updateAttention, dashboardClick };
 }

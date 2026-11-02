@@ -689,6 +689,13 @@ body.root-room-open {
   font: 10px var(--font);
   cursor: pointer;
 }
+.room-console-header > .notification-bell {
+  margin-left: auto;
+}
+.room-console-header .notification-count {
+  color: #162016;
+  letter-spacing: 0;
+}
 .room-console-nav {
   display: block;
   flex-shrink: 0;
@@ -815,6 +822,7 @@ body.root-room-open {
   }
   .room-console-header {
     padding: 12px;
+    flex-wrap: wrap;
   }
   .room-console-header strong {
     font-size: 16px;

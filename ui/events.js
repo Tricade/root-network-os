@@ -11,6 +11,8 @@ export function createEventsUI(ctx, platform = globalThis) {
       }
       if (target.disabled || ctx.desktopClosing?.()) return;
       if (target.dataset.dashboardTour !== undefined) return ctx.Room.enter();
+      if (ctx.notificationClick?.(target)) return;
+      if (ctx.attentionClick?.(target)) return;
       if (ctx.dashboardClick?.(target)) return;
       if (ctx.workforceClick?.(target)) return;
       if (ctx.facilityClick?.(target)) return;
@@ -135,6 +137,8 @@ export function createEventsUI(ctx, platform = globalThis) {
     });
     platform.document.addEventListener('change', (event) => {
       if (ctx.desktopClosing?.()) return;
+      if (ctx.notificationChange?.(event.target)) return;
+      if (ctx.attentionChange?.(event.target)) return;
       if (ctx.businessChange?.(event.target)) return;
       if (ctx.workforceChange?.(event.target)) return;
       if (ctx.facilityChange?.(event.target)) return;
