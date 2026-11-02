@@ -20,17 +20,18 @@ export function createNotificationsUI(ctx, platform = globalThis) {
       toast(
         fresh.length === 1
           ? 'Erfolg freigeschaltet: ' + fresh[0].name
-          : fresh.length + ' Erfolge freigeschaltet. Belohnungen warten in der Forschung.',
+          : fresh.length + ' Erfolge freigeschaltet. Belohnungen warten unter Erfolge.',
         false,
-        'research',
+        'achievements',
       );
   }
 
-  function toast(message, error = false, target = '') {
+  function toast(message, error = false, target = '', record = true) {
     if (notices.some((notice) => notice.message === message && notice.target === target)) return;
     // A completion and an achievement may arrive together after offline progress.
     // Keep both visible, with independently bounded lifetimes and a three-item cap.
     if (notices.length === 3) platform.clearTimeout(notices.shift().timer);
+    if (record) ctx.recordNotification?.(message, error, target);
     const notice = { message, error, target, timer: null };
     notices.push(notice);
     renderNotices();

@@ -8,11 +8,12 @@ import { spawnSync } from 'node:child_process';
 const project = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const args = process.argv.slice(2);
 const usage = `ROOT asset generator
-Usage: node tools/asset-generator/generate.mjs <base|facility|interiors> [--out DIRECTORY] [--python EXECUTABLE]
+Usage: node tools/asset-generator/generate.mjs <base|facility|interiors|operations> [--out DIRECTORY] [--python EXECUTABLE]
 
 base       Supplied rack/server/architecture and texture generators; historical source.
 facility   Maintained UPS, distribution, airlock, stairs and lift models.
 interiors  Original ROOT chair, sofa, coffee station, plant and procedural maps.
+operations Original pump skid, sensors, maintenance rover/dock/cart and construction kit.
 
 Default output: .asset-build/<target>/ (must be empty or absent).
 Python targets use the pinned dependencies in requirements.txt.
@@ -45,8 +46,8 @@ async function main() {
     return;
   }
   const target = args.shift();
-  if (!['base', 'facility', 'interiors'].includes(target))
-    throw new Error('Choose base, facility or interiors. Use --help for details.');
+  if (!['base', 'facility', 'interiors', 'operations'].includes(target))
+    throw new Error('Choose base, facility, interiors or operations. Use --help for details.');
   let out = path.join(project, '.asset-build', target),
     python = process.platform === 'win32' ? 'python' : 'python3';
   while (args.length) {
@@ -94,6 +95,20 @@ async function main() {
     const check = `import sys, numpy${pillow ? ', PIL' : ''}; assert sys.version_info[:2] == (3,12), 'Python 3.12 required'; assert numpy.__version__ == '2.5.4', 'numpy==2.5.4 required'${pillow ? "; assert PIL.__version__ == '13.0.0', 'Pillow==13.0.0 required'" : ''}; print('Python',sys.version.split()[0],'NumPy',numpy.__version__${pillow ? ",'Pillow',PIL.__version__" : ''})`;
     process.stdout.write(run(python, ['-c', check]));
   }
+  if (target === 'operations') {
+    run(
+      python,
+      [
+        path.join(project, 'tools/asset-generator/build_operations_assets.py'),
+        '--output-root',
+        out,
+      ],
+      {
+        stdio: 'inherit',
+        env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
+      },
+    );
+  }
   await fs.mkdir(out, { recursive: true });
   await fs.mkdir(path.join(out, 'docs'), { recursive: true });
   if (target === 'base') {
@@ -132,7 +147,7 @@ async function main() {
         stdio: 'inherit',
         env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
       });
-    } else {
+    } else if (target === 'interiors') {
       run(
         process.execPath,
         [path.join(project, 'tools/asset-generator/build_interiors.mjs'), '--output-root', out],
@@ -148,7 +163,7 @@ async function main() {
   await fs.copyFile(path.join(project, 'LICENSE'), path.join(out, 'CODE-LICENSE.txt'));
   await fs.writeFile(
     path.join(out, 'ASSET-LICENSE.txt'),
-    `ROOT original generated facility/interior geometry and root-weave/root-leaf maps:
+    `ROOT original generated facility/interior/operations geometry and root-weave/root-leaf maps:
 Dedicated to the public domain under CC0 1.0 Universal by ROOT contributors.
 https://creativecommons.org/publicdomain/zero/1.0/legalcode
 

@@ -56,6 +56,7 @@ export function createRacks(services) {
   const allServers = (m) => m.racks.flatMap((r) => r.servers);
 
   const ctx = {
+    serverName: (server) => globalThis.ROOTI18N?.serverName(server) || server.name,
     tr,
     get E() {
       return E;

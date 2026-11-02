@@ -1,9 +1,26 @@
+import { createStartupUI } from './ui/startup.js';
+import { createAttentionCards } from './ui/attention-cards.js';
+import { createNotificationCenter } from './ui/notification-center.js';
+import { createCustomerGrowthUI } from './ui/customer-growth.js';
+import { createPreventiveMaintenanceUI } from './ui/preventive-maintenance.js';
+import { NAVIGATION_ITEMS } from './ui/navigation.js';
+import { createNavigationState } from './ui/navigation-state.js';
+import { createAchievementsUI } from './ui/achievements.js';
 import { createRacks } from './rack-ui.js';
 import { createUIFoundation } from './ui/foundation.js';
 import { createChromeUI } from './ui/chrome.js';
 import { createOverviewUI } from './ui/overview.js';
+import { createDashboardUI } from './ui/dashboard.js';
+import { createAgentDevelopmentUI } from './ui/agent-development.js';
 import { createWorkforceUI } from './ui/workforce.js';
+import { createPersonnelUI } from './ui/personnel.js';
 import { createWorkloadsUI } from './ui/workloads.js';
+import { createResearchUI } from './ui/research.js';
+import { createBusinessUI } from './ui/business.js';
+import { createRoomOperationsUI } from './ui/room-operations.js';
+import { selectWorkspaceRoom } from './ui/room-context.js';
+import { createOperationsUI } from './ui/operations.js';
+import { createOfflineUI } from './ui/offline.js';
 import { createProtectionUI } from './ui/protection.js';
 import { createDialogsUI } from './ui/dialogs.js';
 import { createTelemetryUI } from './ui/telemetry.js';
@@ -37,6 +54,7 @@ import { createRoom } from './room.js';
     roleClass,
   } = createUIFoundation(I18N);
   const STORAGE = 'root.network.save.v1';
+  const navigationState = createNavigationState();
   let state,
     view = 'overview',
     modal = null,
@@ -79,7 +97,7 @@ import { createRoom } from './room.js';
     },
     openProtection: () => navigate('resilience'),
     openView: (id, roomId) => {
-      if (roomId) R.selectRoom(roomId);
+      selectWorkspaceRoom(ctx, roomId);
       navigate(id);
     },
     onExit: () => {
@@ -102,7 +120,9 @@ import { createRoom } from './room.js';
     const a = agentOperations();
     return (
       a.agents
-        .map((x) => x.id + ':' + (x.assignment?.kind || '') + ':' + (x.cooldown > 0))
+        .map(
+          (x) => x.id + ':' + (x.assignment?.kind || '') + ':' + (x.cooldown > 0) + ':' + x.absent,
+        )
         .join('|') +
       '|' +
       a.effects.map((x) => x.kind).join(',')
@@ -113,8 +133,6 @@ import { createRoom } from './room.js';
     `<button class="button primary" data-modal="servers">${icon('plus')}Server hinzufügen</button>`;
 
   const serverStatusNames = { ...R.statusNames, failed: 'Ausgefallen' };
-
-  navs.push(['facility', 'layers', 'Gebäude & Technik']);
 
   // The controller owns shared UI state. Getters keep async callbacks and mounted
   // feature modules on the same current save rather than capturing an old object.
@@ -342,30 +360,35 @@ import { createRoom } from './room.js';
       view = value;
     },
   };
+  Object.assign(ctx, createAttentionCards(ctx));
   Object.assign(ctx, createChromeUI(ctx));
   Object.assign(ctx, createOverviewUI(ctx));
+  Object.assign(ctx, createDashboardUI(ctx));
+  Object.assign(ctx, createAgentDevelopmentUI(ctx));
+  Object.assign(ctx, createPersonnelUI(ctx));
   Object.assign(ctx, createWorkforceUI(ctx));
   Object.assign(ctx, createWorkloadsUI(ctx));
+  Object.assign(ctx, createResearchUI(ctx));
+  Object.assign(ctx, createCustomerGrowthUI(ctx));
+  Object.assign(ctx, createPreventiveMaintenanceUI(ctx));
+  Object.assign(ctx, createBusinessUI(ctx));
+  Object.assign(ctx, createRoomOperationsUI(ctx));
+  Object.assign(ctx, createOperationsUI(ctx));
+  Object.assign(ctx, createOfflineUI(ctx));
   Object.assign(ctx, createProtectionUI(ctx));
   Object.assign(ctx, createDialogsUI(ctx));
+  Object.assign(ctx, createStartupUI(ctx));
   Object.assign(ctx, createTelemetryUI(ctx));
   Object.assign(ctx, createPersistenceUI(ctx));
   Object.assign(ctx, createNotificationsUI(ctx));
+  Object.assign(ctx, createNotificationCenter(ctx));
   Object.assign(ctx, createFacilityUI(ctx));
   Object.assign(ctx, createEventsUI(ctx));
   Object.assign(ctx, createDesktopUI(ctx));
-  const viewFunctions = {
-    overview: ctx.overviewView,
-    network: ctx.networkView,
-    agents: ctx.agentsView,
-    jobs: ctx.jobsView,
-    research: ctx.researchView,
-    automation: ctx.automationView,
-    resilience: ctx.resilienceView,
-    inbox: ctx.inboxView,
-    log: ctx.logView,
-    facility: ctx.facilityView,
-  };
+  Object.assign(ctx, createAchievementsUI(ctx));
+  const viewFunctions = Object.fromEntries(
+    NAVIGATION_ITEMS.map(([id, , , renderer]) => [id, ctx[renderer]]),
+  );
 
   function render() {
     if (!state) return;
@@ -385,19 +408,20 @@ import { createRoom } from './room.js';
     }
     const roomMode = Room.isInRoom(),
       container = roomMode ? Room.consoleBody() : $('#main');
+    const scrollPosition = roomMode ? container.scrollTop : window.scrollY;
+    const openDetails = new Set(
+      [...container.querySelectorAll('[data-persist-details][open]')].map(
+        (el) => el.dataset.persistDetails,
+      ),
+    );
     const protection = E.getResilience(state);
     const alert =
-      protection.incident && view !== 'resilience'
+      protection.incident && !['overview', 'resilience'].includes(view)
         ? `<aside class="protection-banner" role="status"><span class="signal-icon">${icon('shield')}</span><div><strong>${esc(protection.incident.title)}</strong><span>Schutzmodus aktiv. Weitere Schäden sind gestoppt; eine Entscheidung wartet auf dich.</span></div><button class="button small" data-nav="resilience">Vorfall öffnen${icon('arrow')}</button></aside>`
-        : protection.failed > 0 && view !== 'resilience'
+        : protection.failed > 0 && !['overview', 'resilience'].includes(view)
           ? `<aside class="protection-banner warning" role="status"><span class="signal-icon">${icon('server')}</span><div><strong>${protection.failed} Server ausgefallen</strong><span>Kapazität und Einnahmen sind reduziert. Prüfe die verfügbaren Reparaturen.</span></div><button class="button small" data-nav="resilience">Betrieb & Schutz${icon('arrow')}</button></aside>`
           : '';
-    const rewards = pendingAchievements();
-    const rewardAlert =
-      rewards.length && view !== 'research'
-        ? `<aside class="reward-banner" role="status">${icon('trophy')}<div><strong>${rewards.length === 1 ? 'Ein Erfolg wartet auf dich' : rewards.length + ' Erfolge warten auf dich'}</strong><span>${rewards.map((a) => '<span>' + esc(a.name) + '</span>').join(' · ')} · ${ctx.stat('achievementReward')} <span>CR abholbereit</span></span></div><button class="button small" data-nav="research">Belohnung abholen${icon('arrow')}</button></aside>`
-        : '';
-    container.innerHTML = `${saveError ? `<div class="save-warning" role="status">${esc(saveError)}${saveConflict ? '<button class="button small" data-command="reload">Aktuellen Stand laden</button>' : ''}</div>` : ''}${alert}${rewardAlert}<div class="view-content">${roomMode && view === 'overview' ? ctx.consoleOverviewView() : viewFunctions[view]()}</div><footer class="bottom-caption"><span><i class="live-dot"></i>${ctx.stat('systemStatus')} · ${ctx.stat('runtime')}</span><span>DEIN NETZWERK. DEINE REGELN.</span></footer>`;
+    container.innerHTML = `${saveError ? `<div class="save-warning" role="status">${esc(saveError)}${saveConflict ? '<button class="button small" data-command="reload">Aktuellen Stand laden</button>' : ''}</div>` : ''}${alert}<div class="view-content">${roomMode && view === 'overview' ? ctx.consoleOverviewView() : viewFunctions[view]()}</div><footer class="bottom-caption"><span><i class="live-dot"></i>${ctx.stat('systemStatus')} · ${ctx.stat('runtime')}</span><span>DEIN NETZWERK. DEINE REGELN.</span></footer>`;
     $$('.nav-item[data-nav]').forEach((el) => {
       el.classList.toggle('active', el.dataset.nav === view);
       if (el.dataset.nav === view) el.setAttribute('aria-current', 'page');
@@ -408,19 +432,32 @@ import { createRoom } from './room.js';
     if (roomMode) Room.setConsoleTitle(navs.find((n) => n[0] === view)[2], view);
     else if (view === 'overview') Room.mount();
     else Room.hide();
+    container.querySelectorAll('[data-persist-details]').forEach((el) => {
+      el.open = openDetails.has(el.dataset.persistDetails);
+    });
+    ctx.mountResearch?.(container);
     signature = ctx.stateSignature();
     renderPending = false;
     ctx.updateLive();
+    if (roomMode) container.scrollTop = scrollPosition;
+    else window.scrollTo(0, scrollPosition);
   }
 
   function navigate(next) {
     if (!viewFunctions[next]) return;
+    const mode = Room.isInRoom() ? 'console' : 'web';
+    navigationState.remember(
+      view,
+      mode,
+      mode === 'console' ? Room.consoleBody()?.scrollTop : window.scrollY,
+    );
     if (Room.isInRoom()) {
       view = next;
       ctx.closeModal();
       document.activeElement?.blur();
       Room.openConsole(navs.find((n) => n[0] === view)[2]);
       render();
+      Room.consoleBody().scrollTop = navigationState.restore(next, mode);
       return;
     }
     Room.hide();
@@ -429,7 +466,7 @@ import { createRoom } from './room.js';
     ctx.closeModal();
     document.activeElement?.blur();
     render();
-    window.scrollTo(0, 0);
+    window.scrollTo(0, navigationState.restore(next, mode));
   }
   function hideMobile() {
     $('.sidebar')?.classList.remove('open');
@@ -442,7 +479,12 @@ import { createRoom } from './room.js';
       ctx.toast('Diese Sitzung pausiert. Bitte Seite neu laden.', true);
       return;
     }
-    ctx.simulate();
+    const simulation = ctx.simulate();
+    if (simulation?.then || ctx.catchUpBusy() || ctx.catchUpFailed()) {
+      ctx.toast('Bitte warte, bis die Abwesenheit nachberechnet wurde.', true);
+      return;
+    }
+    const previousLogId = state.log[0]?.id;
     const result = E.act(state, action, payload);
     if (!result.ok) {
       ctx.toast(result.message, true);
@@ -452,7 +494,7 @@ import { createRoom } from './room.js';
     render();
     if (modal) {
       if (modal.type.startsWith('hardware-')) ctx.closeModal();
-      else if (action === 'buyServer' || action === 'recruitAgent')
+      else if (action === 'buyServer' || action === 'recruitAgent' || action === 'pinCandidate')
         ctx.openModal(modal.type, modal.extra);
       else if (
         [
@@ -461,12 +503,17 @@ import { createRoom } from './room.js';
           'repairServer',
           'resolveIncident',
           'dispatchAgent',
+          'upgradeAgent',
+          'hireCandidate',
+          'dismissAgent',
         ].includes(action)
       )
         ctx.closeModal();
     }
     ctx.save();
-    ctx.toast(result.message);
+    // The detailed engine log is the durable notification; the short success toast
+    // remains transient when both describe the same action.
+    ctx.toast(result.message, false, '', state.log[0]?.id === previousLogId);
     ctx.announceAchievements();
   }
 
@@ -500,7 +547,7 @@ import { createRoom } from './room.js';
       state
         ? [
             state.networkName,
-            ...state.servers.map((s) => s.name),
+            ...state.servers.filter((s) => !I18N.isGeneratedServerName(s)).map((s) => s.name),
             ...state.agents.map((a) => a.name),
             ...state.facility.racks.map((r) => r.name),
           ]

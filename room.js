@@ -130,6 +130,7 @@ export function createRoom({
     lastSessionWrite: 0,
     lastSessionValue: '',
     tr: (text) => window.ROOTI18N?.translate(String(text)) || String(text),
+    serverName: (server) => window.ROOTI18N?.serverName(server) || server.name,
     readingSnapshot: false,
     snapshot: null,
     facilityLayout: () =>
@@ -201,6 +202,7 @@ export function createRoom({
 
   return {
     markup: ctx.markup,
+    enter: ctx.startExploration,
     mount: ctx.mount,
     update: ctx.update,
     hide: ctx.hide,

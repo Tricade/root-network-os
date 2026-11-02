@@ -73,7 +73,7 @@ export function facilityReadout(
           level,
           [text('Wärmstes Rack', 'Hottest rack'), `${number(hottest, 1)} °C`],
           [text('Verteilt', 'Allocated'), kw(system.allocatedCoolingW)],
-          [text('Aktive Racks', 'Active racks'), number(central.activeRackCount)],
+          [text('Angeschlossene Racks', 'Connected racks'), number(system.activeRackCount)],
         ],
       };
     if (system.id === 'ups')
@@ -93,12 +93,12 @@ export function facilityReadout(
       ...base,
       title: text('Stromverteilung', 'Power distribution'),
       reading: kw(system.distributionCapacityW),
-      caption: text('Zusätzliche Gesamtreserve', 'Additional total capacity'),
+      caption: text('Zentrale Gesamtleistung', 'Total plant capacity'),
       rows: [
         level,
         [text('Reserve / Rack', 'Capacity / rack'), kw(system.additionalPowerWPerRack)],
         [text('Leistungsaufnahme', 'Power draw'), kw(metrics.powerW)],
-        [text('Aktive Racks', 'Active racks'), number(central.activeRackCount)],
+        [text('Angeschlossene Racks', 'Connected racks'), number(system.activeRackCount)],
       ],
     };
   }
@@ -152,12 +152,20 @@ export function drawInstrument(canvas, data, language = 'de', compact = false) {
     ctx.fillText(line, x, y, maxWidth);
   };
   if (compact) {
-    fit(data.title, 20, 34, 24, '#a9c0bc', w - 40, '600');
-    fit(data.reading, 20, 88, 47, '#eef5e9', w - 40, '600');
+    fit(
+      en ? 'PLANT TOTAL' : 'ANLAGE GESAMT',
+      20,
+      h * 0.21,
+      Math.round(h * 0.13),
+      '#a9c0bc',
+      w - 40,
+      '600',
+    );
+    fit(data.reading, 20, h * 0.59, Math.round(h * 0.28), '#eef5e9', w - 40, '600');
     const detail = data.operation
       ? `${Math.round(data.operation.progress * 100)} % · ${data.operation.remaining} s`
       : data.caption;
-    fit(detail, 20, h - 20, 22, data.operation ? '#e5bc78' : '#90aaa6');
+    fit(detail, 20, h * 0.86, Math.round(h * 0.105), data.operation ? '#e5bc78' : '#90aaa6');
     if (data.operation) {
       ctx.fillStyle = '#e5bc78';
       ctx.fillRect(20, h - 8, (w - 40) * data.operation.progress, 3);

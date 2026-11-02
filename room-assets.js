@@ -2,6 +2,7 @@ import * as THREE from './vendor/three.module.js';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
 import { mergeGeometries } from './vendor/BufferGeometryUtils.js';
 import { metricBox } from './room-surfaces.js';
+import { buildSupplyFixtures } from './room/supply-fixtures.js';
 
 // ROOT asset pack 1.0.0. All positions below are meters, +Y up, +Z front.
 const U = 0.04445;
@@ -37,6 +38,13 @@ const FILES = {
   chair: 'interiors/chair',
   coffee: 'interiors/coffee',
   plant: 'interiors/plant',
+  pumpSkid: 'operations/pump_heat_exchanger_skid',
+  enclosedPump: 'operations/enclosed_pump_skid',
+  airHandler: 'operations/room_air_handler',
+  centralChiller: 'operations/central_chiller_module',
+  siteBarrier: 'operations/site_barrier_segment',
+  siteBoard: 'operations/site_information_board',
+  materialPallet: 'operations/construction_material_pallet',
 };
 const controlled = (node) =>
   /^(led_|label_|monitor_screen|rack_nameplate|rack_door_|fire_door_leaf|bunker_door_|lift_door_|ups_door_|distribution_door_|ups_telemetry_display|pdu_telemetry_display|crac_cooling_unit_cabinet_LOD0_5$)/.test(
@@ -823,8 +831,6 @@ export function buildAssetHall({ bank, scene, materials }) {
   tiles('floor', vents, closedFloor);
   for (const x of [-1.04, 1.04])
     block([0.035, 0.002, 4.8], [x, 0.003, -0.6], materials.green, serverFixtures);
-  for (const x of [-3.8, 3.8])
-    for (let z = -4.8; z <= 4.8; z += 1.2) block([0.015, 2.9, 0.025], [x, 1.5, z], materials.trim);
   for (const z of [-3.6, 0, 3.6]) {
     const lamp = bank.make('light');
     lamp.position.set(0, 2.72, z);
@@ -849,10 +855,16 @@ export function buildAssetHall({ bank, scene, materials }) {
       roomLighting.add(light);
     }
   const coolingFans = [];
+  const localCooling = new THREE.Group();
+  localCooling.name = 'local-cooling-units';
+  serverFixtures.add(localCooling);
+  const connections = buildSupplyFixtures(materials, bank);
+  serverFixtures.add(connections.group);
+  connections.set();
   for (const x of [-3.25, 3.25]) {
     const cooling = bank.make('cooling');
     cooling.position.set(x, 0, -4.45);
-    serverFixtures.add(cooling);
+    localCooling.add(cooling);
     cooling.traverse((node) => {
       if (/^cooling_fan_\d+$/.test(node.name)) coolingFans.push(node);
     });
@@ -860,10 +872,16 @@ export function buildAssetHall({ bank, scene, materials }) {
   return {
     group,
     get coolingFans() {
-      return serverFixtures.visible ? coolingFans : [];
+      if (!serverFixtures.visible) return [];
+      return [
+        ...(localCooling.visible ? coolingFans : []),
+        ...(connections.cooling.visible ? connections.fans : []),
+      ];
     },
-    setServerRoom(value) {
+    setServerRoom(value, supply = { cooling: 'local', power: 'local' }, rackCount = 0) {
       serverFixtures.visible = value;
+      localCooling.visible = supply.cooling !== 'central';
+      connections.set(supply, rackCount);
       closedFloor.visible = !value;
       roomLighting.visible = !value;
     },

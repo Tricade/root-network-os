@@ -1,5 +1,5 @@
 [![Checks](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml)
-[![Preview 1.5.1](https://img.shields.io/badge/Preview-1.5.1-8ab4f8)](package.json)
+[![Preview 1.6.0](https://img.shields.io/badge/Preview-1.6.0-8ab4f8)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![AI transparency](https://img.shields.io/badge/AI-transparency_notice-6f42c1)](AI-DISCLOSURE.md)
 [![Support on Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/tricade)
@@ -32,7 +32,7 @@ Enjoying ROOT? **Give the repository a ⭐ [star on GitHub](https://github.com/T
 </p>
 
 <p align="center">
-  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Local browser runtime · web and first person · English and German · 1.5.1 preview · AI-assisted development" width="1200"></a>
+  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Local browser runtime · web and first person · English and German · 1.6.0 preview · AI-assisted development" width="1200"></a>
 </p>
 
 ## From one rack to a cyberbunker
@@ -51,22 +51,42 @@ Manage everything through the **web console**, or walk the facility in **first p
 
 ## The web console
 
+The interface is grouped into **Control room, Business, Data center, Team & development, and Operations**. The dashboard summarizes delivered customer services, finances and pending work; room profiles and central connections belong to Buildings & utilities. The physical monitors use the same route names and live readings.
+
 Physical hardware is also fully manageable from the ordinary interface: server specifications, GPU usage, switch ports, wiring, power profiles and upgrade consequences are exposed directly.
 
-[![The web hardware view: a selected AI server, simulated GPU/VRAM usage, rack equipment and power draw](screenshots/readme/hardware.jpg)](screenshots/readme/hardware-full.jpg)
+The compact attention list shows one actionable decision, enquiry, repair or reward at a time beside its category. Browse pending items without a nested scroll area; wider screens keep the category list compact and place decision choices side by side. The notification bell brings pending work and activity history together; marking a message read does not resolve the underlying task. Research nodes open a compact detail dialog over the map. Completed technologies show their active effect instead of an obsolete purchase form.
+
+[![Dashboard with compact attention categories and actionable customer enquiries](screenshots/readme/dashboard-attention.png)](screenshots/readme/dashboard-attention.png)
 
 <table>
   <tr>
-    <td width="50%"><a href="screenshots/readme/overview.jpg"><img src="screenshots/readme/overview-thumb.jpg" alt="Web dashboard with income, capacity, research, reliability and live room preview" width="480"></a><br><strong>Network overview</strong><br>Income, capacity, research, reliability, decisions and live infrastructure.</td>
-    <td width="50%"><a href="screenshots/readme/agents.jpg"><img src="screenshots/readme/agents.jpg" alt="Agent roster with roles, focus selectors, upgrades and assignment status" width="480"></a><br><strong>Agents and assignments</strong><br>Choose a focus, develop specialists and decide who can leave normal operations.</td>
+    <td width="50%"><a href="screenshots/readme/dashboard-attention.png"><img src="screenshots/readme/dashboard-attention.png" alt="Dashboard: Customer delivery, recurring margin, staffing and actions needing attention." width="480"></a><br><strong>Dashboard</strong><br>Customer delivery, recurring margin, staffing and actions needing attention.</td>
+    <td width="50%"><a href="screenshots/readme/customers.jpg"><img src="screenshots/readme/customers.jpg" alt="Customers & contracts: Incoming enquiries, staffed provisioning, support, contract terms and departures." width="480"></a><br><strong>Customers & contracts</strong><br>Incoming enquiries, staffed provisioning, support, contract terms and departures.</td>
   </tr>
   <tr>
-    <td><a href="screenshots/readme/jobs.jpg"><img src="screenshots/readme/jobs.jpg" alt="Contract board with CPU and GPU workloads, rewards and capacity requirements" width="480"></a><br><strong>Client workloads</strong><br>Compare reward, research, load and GPU requirements before accepting work.</td>
-    <td><a href="screenshots/readme/resilience-full.jpg"><img src="screenshots/readme/resilience.jpg" alt="Operations and resilience interface with repairs, parts, reserve and backups" width="480"></a><br><strong>Operations and resilience</strong><br>Manage defects, repairs, parts, protected money and operations backups.</td>
+    <td width="50%"><a href="screenshots/readme/agents.jpg"><img src="screenshots/readme/agents.jpg" alt="Robot agents: Compare independently rolled strengths, drawbacks, running costs and assignments." width="480"></a><br><strong>Robot agents</strong><br>Compare independently rolled strengths, drawbacks, running costs and assignments.</td>
+    <td width="50%"><a href="screenshots/readme/agent-upgrade.jpg"><img src="screenshots/readme/agent-upgrade.jpg" alt="Upgrade comparisons: See the actual network benefit and extra running cost before paying." width="480"></a><br><strong>Upgrade comparisons</strong><br>See the actual network benefit and extra running cost before paying.</td>
   </tr>
   <tr>
-    <td><a href="screenshots/readme/research.jpg"><img src="screenshots/readme/research.jpg" alt="Research interface with repeatable upgrades and achievements" width="480"></a><br><strong>Research and milestones</strong><br>Improve the whole network and claim achievement rewards.</td>
-    <td><a href="screenshots/readme/construction-full.jpg"><img src="screenshots/readme/construction.jpg" alt="Facility plan with owned rooms, vacant plots and active basement construction" width="480"></a><br><strong>Building and utilities</strong><br>Buy space, follow construction and plan cooling, UPS and power distribution.</td>
+    <td width="50%"><a href="screenshots/readme/research-tree.jpg"><img src="screenshots/readme/research-tree.jpg" alt="Research branches: Follow prerequisites and choose which paid lab project gets the next time slot." width="480"></a><br><strong>Research branches</strong><br>Follow prerequisites and choose which paid lab project gets the next time slot.</td>
+    <td width="50%"><a href="screenshots/readme/achievements.png"><img src="screenshots/readme/achievements.png" alt="Achievements: A dedicated page for milestones, progress and claimable rewards." width="480"></a><br><strong>Achievements</strong><br>A dedicated page for milestones, progress and claimable rewards.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/jobs.jpg"><img src="screenshots/readme/jobs.jpg" alt="Project jobs: Compare resource demands and rewards alongside ongoing customer commitments." width="480"></a><br><strong>Project jobs</strong><br>Compare resource demands and rewards alongside ongoing customer commitments.</td>
+    <td width="50%"><a href="screenshots/readme/resilience.jpg"><img src="screenshots/readme/resilience.jpg" alt="Incidents & backups: Manage defects, repairs, parts, reserves and operations backups." width="480"></a><br><strong>Incidents & backups</strong><br>Manage defects, repairs, parts, reserves and operations backups.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/construction.png"><img src="screenshots/readme/construction.png" alt="Buildings & utilities: Buy space and configure room profiles, crews, reserves and central connections." width="480"></a><br><strong>Buildings & utilities</strong><br>Buy space and configure room profiles, crews, reserves and central connections.</td>
+    <td width="50%"><a href="screenshots/readme/room-console.jpg"><img src="screenshots/readme/room-console.jpg" alt="The same controls in 3D: Grouped navigation and live business readings inside the room console." width="480"></a><br><strong>The same controls in 3D</strong><br>Grouped navigation and live business readings inside the room console.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/notifications.png"><img src="screenshots/readme/notifications.png" alt="Notification center with category filtering and a directly claimable achievement" width="480"></a><br><strong>One notification center</strong><br>Filter pending work, act on individual items and review the history.</td>
+    <td width="50%"><a href="screenshots/readme/research-details.png"><img src="screenshots/readme/research-details.png" alt="Completed research shown in a compact dialog with its active effect" width="480"></a><br><strong>Research details in place</strong><br>Inspect effects and prerequisites without losing your position on the map.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/operation-plans.png"><img src="screenshots/readme/operation-plans.png" alt="Four planning sections keep budgets, expansion, maintenance and agent projects organized" width="480"></a><br><strong>Focused operation plans</strong><br>Switch sections without losing unfinished entries.</td>
+    <td width="50%"><a href="screenshots/readme/welcome.png"><img src="screenshots/readme/welcome.png" alt="First-run introduction with three concrete steps for the new control room" width="480"></a><br><strong>A clear first start</strong><br>Introduction first; version notes after an update.</td>
   </tr>
 </table>
 
@@ -84,21 +104,48 @@ _Real application captures using a separate synthetic demonstration save. Click 
 - **Simulated AI infrastructure:** the base ROOT A480 occupies 4U and supplies four simulated accelerators with 320 GB VRAM. Inference and training contracts require GPU capacity; ordinary CPU capacity cannot substitute for it.
 - **Consequential controls:** balanced, performance and eco profiles trade throughput against power and heat. Reboots and repatching take time; rack upgrades temporarily interrupt the attached hardware. Cooling changes temperature gradually instead of resetting it.
 
+### Customers, room specialization and connected utilities
+
+- **Resource-backed customers:** hosting, archives, databases and AI inference reserve CPU, RAM, storage, network, GPUs and VRAM. Only delivered service earns income; unused hardware still costs money.
+- **A real customer lifecycle:** incoming enquiries, one-, three- or seven-day contracts, staffed provisioning, support, renewal, commercial departures and SLA cancellation notices. Quotes reserve real resources; revenue starts after setup. Optional customer automation has its own budget.
+- **Commitments and reserves:** premium obligations, room profiles, paid crews and agent team leads give expansion real operating consequences. Customer sales and room engineering have separate pages.
+- **Paid room conversion:** connect existing rooms to central cooling, distribution or UPS, or retain local backup capacity. Only the converting room stops. Original pipework and cable trays reflect the connection in 3D.
+- **Fifteen project families and 46 titles:** different memory, network, storage and accelerator needs keep contract choices varied. Longer agent projects trade ordinary contributions for fixed research, reputation or optimization rewards.
+- **Responsive offline calculation:** up to twelve hours run in a background worker with progress feedback; the same policies and simulation rules apply online and offline.
+
+[Customer contract lifecycle →](docs/customer-contracts.md) · [Service economy and failure boundaries →](docs/service-economy.md) · [Measured balance and scaling →](docs/balance-verification.md)
+
+### Planned operations and overview
+
+- **Growing customers:** existing clients request expansion. Commit to a 1, 4 or 12 hour delivery window and budget; agents must provision the service in time.
+- **Focused planning sections:** budgets & procurement, expansion plans, maintenance and agent projects have separate tabs. Unsaved form values survive section changes.
+- **Capital plans:** up to twelve ordered construction and plant steps with price ceilings, earliest starts and a protected reserve.
+- **Preventive rack maintenance:** technicians, parts, service windows and customer delivery constrain execution. Automatic maintenance is off by default.
+- **Committed priorities:** choose the service class to receive capacity first before a shortage; one-hour commitment, without creating resources.
+- **Finding work and equipment:** dashboard attention and upcoming work, customer filters, facility search, favorites and compact agent rosters.
+- **Original illustrated cards:** twenty original generated raster images for projects, research, achievements, all six decision topics and distinct built/vacant room cards. [Rules, limits and physical representation →](docs/operations-planning.md)
+
 ### Agents, contracts and research
 
-- **Three agent roles:** operators support contracts and revenue, analysts produce research, and technicians support maintenance and reliability. Each agent has a level, trait and configurable focus.
+- **Three agent roles:** operators accelerate project work, analysts produce research, and technicians support maintenance and reliability. Each agent has a level, trait and configurable focus.
+- **Robot recruitment agency:** six applicants every 30 minutes, one permanent shortlist slot, and 64 original robot portraits. Appearance and abilities are rolled independently and persist across reloads.
+- **Strengths with trade-offs:** compare a unit's process, research, maintenance and leadership traits against its running costs and drawbacks before activation. Existing staff retain their abilities when loading an older save.
+- **Automatic self-maintenance:** individual units can temporarily go offline. Their normal contributions and paid assignments pause; other systems continue, rewards are preserved, and units return automatically. [Recruitment and balance rules →](docs/personnel.md)
 - **Special assignments:** network diagnostics reduce risk, load optimization improves throughput, and research assignments deliver research points. The assigned agent contributes nothing to normal operations until completion, then has a cooldown. Matching roles complete their specialist work more efficiently.
 - **Competing contracts:** monitoring, migration, audits, optimization, recovery, research and AI work share finite capacity. Rewards, reputation and research arrive when a contract finishes. Automatic acceptance can favor a balanced mix, income or research.
-- **Five repeatable research tracks:** routing, cooling, contract analysis, workflow efficiency and knowledge synthesis improve the whole fleet. Achievements provide separately claimable credit rewards.
+- **Timed research atlas:** 96 technologies in eight connected branches, a searchable zoomable map and five ongoing research tracks. Sixteen terminal specializations form eight trade-off pairs; switching costs points and 24 hours of lab time again. Additional bonuses have diminishing returns. One paid lab project reserves 10% of project throughput; cancellation gives no refund. Existing research levels survive migration. [Laboratory rules →](docs/research.md)
+- **Visible upgrade consequences:** agent development compares actual before/after throughput, research, risk, wear, capabilities and running costs, including capped benefits.
+- **25 achievements:** category/status filters, live progress and one-time rewards, including 1,000 jobs, 70 technologies, three basements and 10,000 CR of recurring net income per minute. Lifetime earnings, current balance and income rate are distinct. [Milestone rules →](docs/achievements.md)
+- **First-run orientation:** a short welcome dialog introduces the dashboard. After an application version change, release notes appear once; both dialogs can be reopened from the guide.
 - **Decisions and sectors:** optional events offer different benefits and wait without a timer; up to three can remain pending. Sector expansion requires credits and operational milestones; it unlocks further progression without creating free rooms.
 
 ### Failures, repairs and backups
 
 - **Wear and defects:** condition, heat and operating risk can take servers offline and reduce contract output.
 - **Repair choices:** quick repair, overhaul and slow emergency recovery differ in money, parts, downtime, resulting condition and lost work. A power cycle or a new port does not repair broken hardware. Manual recovery provides a slow route without credits or spare parts, at the cost of lost work and a reduced final condition.
-- **Major incidents:** power failures, cooling failures and data corruption require explicit recovery decisions. Protection contains further damage while you are away; affected contract work and agent assignments pause until recovery.
+- **Major incidents:** power failures, cooling failures and data corruption require explicit recovery decisions. Protection contains further damage while you are away; the connected failure domain is isolated while independent hardware, customers and agents continue. Local, rack, room and central failures have different consequences.
 - **Operations backups:** preserve research and ongoing contract work for corruption recovery. A rollback can lose progress made since the backup. These are distinct from exporting the complete save file.
-- **Budgeted automation:** automatic minor repairs require spare parts. Both automatic repairs and operations backups respect an hourly spending limit and a protected cash reserve. Automation handles routine work; recovery choices still matter. [See the automation console →](screenshots/readme/automation.jpg)
+- **Budgeted automation:** automatic minor repairs require spare parts. Repairs, backups, procurement and scheduled work have separate hourly budgets and a protected cash reserve. Parts arrive by standard or express delivery; explicit plans run sequentially within price ceilings and savings targets. Automation handles routine work; recovery choices still matter. [See the automation console →](screenshots/readme/automation.jpg)
 
 ### Paid underground expansion
 
@@ -126,8 +173,13 @@ The bunker has connecting corridors, adjacent-floor stairs, server rooms, plant 
 
 ![The walkable control room with live wall instruments and original workstations](screenshots/control-room.jpg)
 
+| Upgraded central cooling                                                                     | Connected server-room air handler                                                            |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| ![Enclosed cooling plant with connected pipework](screenshots/readme/operations-cooling.jpg) | ![Fan-coil air handler supplied by central cooling](screenshots/readme/room-air-handler.jpg) |
+
 | Control                            | Action                                                      |
 | :--------------------------------- | :---------------------------------------------------------- |
+| Shift + WASD                       | Sprint                                                      |
 | WASD                               | Move                                                        |
 | Mouse drag / left and right arrows | Look around                                                 |
 | E on a closed rack                 | Open its door                                               |
@@ -186,7 +238,7 @@ Open **[127.0.0.1:18473](http://127.0.0.1:18473/)**. On Windows, double-click **
 <details>
 <summary><strong>Preview status, progression limits and verification</strong></summary>
 
-ROOT is an evolving **1.5.1 preview**. Balance, localization, accessibility and 3D presentation remain open to contributions. Progression extends beyond six racks; current validation ceilings are 10,000 racks, 10,000 servers and 1,000,000 sectors, with five central-utility levels. Only the selected room is rendered. Maximum-size save validation does not establish acceptable real-time performance at that size.
+ROOT is an evolving **1.6.0 preview**. Balance, localization, accessibility and 3D presentation remain open to contributions. Progression extends beyond six racks; current validation ceilings are 10,000 racks, 10,000 servers and 1,000,000 sectors, with 100 central-utility levels. Only the selected room is rendered. Maximum-size save validation does not establish acceptable real-time performance at that size.
 
 See the [integration verification](docs/verification-construction.md), [runtime notes](docs/runtime-1.4.md) and [asset checks](docs/asset-audit.md) for tested behavior and limits. Desktop package tests complement the earlier 1.4 integration evidence; see the [desktop verification scope and limits](docs/desktop.md).
 

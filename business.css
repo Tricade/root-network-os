@@ -1,0 +1,311 @@
+/* Business sections share the same inset as their headers. Grid gaps keep
+ * neighbouring panels separate without accumulating paragraph margins. */
+.business-layout {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.business-layout .panel-header {
+  padding: 17px 20px;
+}
+.business-panel-body {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.business-panel-body > p,
+.business-panel-body > .field-label,
+.business-panel-body .business-controls,
+.business-layout > .helper-card {
+  margin: 0;
+}
+.business-panel-body > [data-room-change]:empty {
+  display: none;
+}
+.business-summary .stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  border-bottom: 0;
+}
+.business-summary .panel-header {
+  flex-wrap: wrap;
+}
+.business-summary .stats-strip > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.business-summary [data-business-stat='net'].negative {
+  color: var(--red);
+}
+.business-layout .helper-card h3 {
+  margin: 0 0 10px;
+}
+.business-layout .helper-card > .button {
+  margin-top: 16px;
+}
+.business-layout .button,
+[data-ops-form] .button {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.business-panel-body > .field-label .select {
+  width: 100%;
+  min-width: 0;
+}
+.card-grid.business-service-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.service-card {
+  min-width: 0;
+}
+.service-card > .tag {
+  align-self: start;
+}
+.service-card .business-controls {
+  margin: 0 0 18px;
+}
+.service-card .business-controls .field-label {
+  flex-basis: 100px;
+  min-width: min(100%, 100px);
+}
+.service-card .card-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.service-card .card-actions .button {
+  width: auto;
+  justify-self: start;
+}
+
+.business-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: end;
+  margin: 18px 0;
+}
+.business-controls .field-label {
+  display: grid;
+  gap: 8px;
+  flex: 1 1 180px;
+  min-width: min(100%, 180px);
+  margin: 0;
+}
+.business-controls input,
+.business-controls select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+[data-ops-form] {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.delivery-card {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: #101810;
+}
+.delivery-card header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+.delivery-card p {
+  color: var(--muted);
+  margin: 12px 0;
+}
+.delivery-card p strong {
+  color: var(--text);
+  font-family: var(--mono);
+}
+.delivery-card progress {
+  display: block;
+  width: 100%;
+  height: 6px;
+  accent-color: var(--accent);
+  border: 0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.delivery-card progress::-webkit-progress-bar {
+  background: #263126;
+}
+.delivery-card progress::-webkit-progress-value {
+  background: var(--accent);
+}
+.business-resources {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+.business-resources div {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel2);
+  overflow-wrap: anywhere;
+}
+.business-resources span,
+.business-resources small {
+  color: var(--muted);
+}
+.business-resources strong {
+  font-family: var(--mono);
+}
+.business-panel-body > .field-label {
+  display: grid;
+  gap: 8px;
+  max-width: 560px;
+}
+.catchup-panel {
+  position: fixed;
+  z-index: 10000;
+  inset: auto 1.5rem 1.5rem;
+  max-width: 34rem;
+  margin-left: auto;
+  padding: 1.2rem 1.5rem;
+  border: 1px solid #66784a;
+  border-radius: 12px;
+  background: #172019;
+  color: #d4e8b7;
+  box-shadow: 0 6px 30px #0008;
+}
+.catchup-panel progress {
+  width: 100%;
+  accent-color: #b9dd82;
+}
+
+/* Size to the available console width, not just the browser viewport. */
+.policy-grid.operations-grid {
+  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+}
+
+.offline-stat.negative {
+  background: #302320;
+  border-color: #644036;
+}
+.offline-stat.negative strong {
+  color: var(--red);
+}
+
+.operations-grid .panel-body,
+.operations-policy-footer {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.operations-grid .panel-body > p,
+.operations-grid .business-controls {
+  margin: 0;
+}
+.operations-policy-footer > .field-label {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+.operations-policy-footer .input {
+  width: 100%;
+  min-width: 0;
+}
+.operations-policy-footer > .operations-check {
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
+}
+.operations-check input {
+  margin: 0;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+.operations-grid .panel-body > .button,
+.operations-policy-footer > .button {
+  justify-self: start;
+}
+/* A conditional form group gets its own row. Hidden groups must stay hidden. */
+[data-ops-form='plan'] [data-plan-for]:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  flex-basis: 100%;
+  min-width: 0;
+}
+@media (max-width: 600px) {
+  .business-resources {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 360px) {
+  .business-resources {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .business-summary .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .card-grid.business-service-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.operations-sections {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 24px;
+}
+.operations-sections .button {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+  justify-content: start;
+  padding: 16px;
+  white-space: normal;
+}
+.operations-sections .button[aria-pressed='true'] {
+  background: #2c3823;
+  border-color: var(--accent);
+}
+.operations-sections small {
+  color: var(--muted);
+  font-weight: 400;
+}
+.operations-section.is-inactive {
+  display: none;
+}
+.operations-section > .section-spacer:first-child {
+  margin-top: 0;
+}
+@media (max-width: 1100px) {
+  .operations-sections {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 540px) {
+  .operations-sections {
+    gap: 8px;
+  }
+  .operations-sections .button {
+    padding: 12px;
+  }
+}

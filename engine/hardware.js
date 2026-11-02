@@ -9,7 +9,6 @@
     const { catalog, HARDWARE, FIRST_DEVICE_UNIT, LAST_DEVICE_UNIT, clamp, finite } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
     const activeRackIds = (...args) => context.activeRackIds(...args);
-    const centralLevels = (...args) => context.centralLevels(...args);
 
     function serverDemandMbps(server, loadFraction = 0.15) {
       const base =
@@ -34,25 +33,19 @@
         0,
       );
       const workload = aggregateCapacity > 0 ? clamp(aggregateLoad / aggregateCapacity, 0, 1) : 0;
-      const central = centralLevels(s),
-        activeRacks = activeRackIds(s),
-        activeCount = activeRacks.size;
-      const centralCoolingBudget = central.cooling * 3500;
-      const centralCoolingPerRack = activeCount ? centralCoolingBudget / activeCount : 0;
-      const centralPowerDrawW = central.cooling * 500;
-      const centralPowerPerRack = activeCount ? centralPowerDrawW / activeCount : 0;
-      const centralDistributionBudgetW = central.distribution * 6000;
-      const centralDistributionPerRack = activeCount ? centralDistributionBudgetW / activeCount : 0;
+      const allocation = context.supplyAllocation(s, activeRackIds(s));
       for (const rack of s.facility.racks) {
-        const active = activeRacks.has(rack.id);
+        const supply = allocation.get(rack.id);
         rackRows.set(rack.id, {
           rack,
           servers: [],
-          powerW: 42 + (active ? centralPowerPerRack : 0),
-          coolingW: rack.coolingLevel * 2000 + (active ? centralCoolingPerRack : 0),
-          centralCoolingW: active ? centralCoolingPerRack : 0,
-          centralPowerW: active ? centralPowerPerRack : 0,
-          centralPowerCapacityW: active ? centralDistributionPerRack : 0,
+          supply,
+          powerW: 42 + supply.drawW,
+          coolingW: (supply.cooling === 'central' ? 0 : rack.coolingLevel * 2000) + supply.coolingW,
+          centralCoolingW: supply.coolingW,
+          centralPowerW: supply.drawW,
+          centralPowerCapacityW: supply.powerW,
+          upsCapacityW: supply.upsW,
           temperature: 22,
           demand: 0,
           uplink: rack.switchLevel === 1 ? 2500 : rack.switchLevel === 2 ? 25000 : 100000,
@@ -68,7 +61,9 @@
           server.bootRemaining <= 0 &&
           server.status === 'online' &&
           server.condition > 0 &&
-          !s.resilience.incident &&
+          !row.supply.converting &&
+          !context.incidentAffects(s, server, row.rack) &&
+          !context.preventiveRackOffline(s, server.rackId) &&
           !(s.facility.operation && s.facility.operation.rackId === server.rackId);
         const demand =
           available && !row.rack.disabledPorts.includes(server.port)
@@ -92,7 +87,10 @@
       for (const row of rackRows.values()) {
         row.basePowerCapacityW = row.rack.powerLevel * 2000;
         row.centralPowerCapacityW = row.centralPowerCapacityW || 0;
-        row.powerCapacityW = row.basePowerCapacityW + row.centralPowerCapacityW;
+        row.powerCapacityW =
+          row.supply.power === 'central'
+            ? Math.min(row.basePowerCapacityW, row.centralPowerCapacityW)
+            : row.basePowerCapacityW + row.centralPowerCapacityW;
         const powerRatio = row.powerCapacityW > 0 ? row.powerW / row.powerCapacityW : 1;
         const thermalRatio = row.coolingW > 0 ? row.powerW / row.coolingW : 1;
         row.targetTemperature = clamp(
@@ -156,8 +154,10 @@
         server.powered &&
         server.bootRemaining <= 0 &&
         !rack.disabledPorts.includes(server.port) &&
+        !context.preventiveRackOffline(s, rack.id) &&
         !(s.facility.operation && s.facility.operation.rackId === rack.id) &&
-        !s.resilience.incident,
+        !context.incidentAffects(s, server, rack) &&
+        !context.roomState(s, rack.roomId)?.conversion,
       );
     }
 
@@ -166,6 +166,8 @@
     }
 
     function fitServer(s, rack, type, requestedUnit, requestedPort, exceptId = null) {
+      if (context.roomState(s, rack.roomId)?.conversion)
+        return { ok: false, reason: 'Dieser Bereich wird umgebaut.' };
       const size = HARDWARE[type].units;
       const occupied = new Set();
       const usedPorts = new Set();

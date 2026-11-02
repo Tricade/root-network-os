@@ -41,30 +41,19 @@ test('all three wall monitors are reachable ray targets and open existing consol
   const station = createStations({ THREE, scene, E, getState: () => state, assetBank: bank });
   t.after(() => station.dispose());
   scene.updateMatrixWorld(true);
-  const views = new Set([
-    'overview',
-    'network',
-    'agents',
-    'jobs',
-    'research',
-    'automation',
-    'resilience',
-    'inbox',
-    'log',
-    'facility',
-  ]);
+  const { NAVIGATION_ITEMS } = await import('../ui/navigation.js');
+  const views = new Set(NAVIGATION_ITEMS.map(([id]) => id));
   for (const target of station.pickTargets) {
     assert.ok(views.has(target.userData.view));
-    assert.notEqual(
-      target.userData.view,
-      'network',
-      'overview wall/desk displays route to the overview; hardware has its separate console destination',
+    assert.equal(
+      target.userData.label,
+      NAVIGATION_ITEMS.find(([id]) => id === target.userData.view)[2],
     );
   }
   const origin = new THREE.Vector3(0, 1.62, -2.4);
   for (const [x, view] of [
     [-2.67, 'facility'],
-    [0, 'overview'],
+    [0, 'network'],
     [2.67, 'resilience'],
   ]) {
     const direction = new THREE.Vector3(x, 2.12, -5.051).sub(origin).normalize();

@@ -1,22 +1,13 @@
 import '../brand.js';
+import '../release.js';
+const RELEASE = globalThis.ROOTRelease;
 const BRAND = globalThis.ROOTBrand;
 
 /** dialogs UI: reads current state through the controller context. */
 export function createDialogsUI(ctx) {
   function shop(type) {
     if (type === 'servers') return ctx.R.shop();
-    const server = type === 'servers',
-      items = server ? ctx.E.catalog.servers : ctx.E.catalog.roles;
-    return `<p class="modal-intro">${server ? 'Jeder Knoten liefert Grundversorgung und Rechenkapazität. Wähle die passende Architektur für dein Netzwerk.' : 'Agenten arbeiten autonom an deinen Aufträgen. Jede Rolle bringt einen eigenen Vorteil ins Netzwerk.'}</p><div class="shop-grid">${Object.entries(
-      items,
-    )
-      .map(
-        ([id, item]) =>
-          `<div class="shop-card"><span class="server-icon">${ctx.icon(server ? (id === 'compute' ? 'cpu' : id === 'storage' ? 'storage' : 'server') : 'agents')}</span><h3>${ctx.esc(item.name)}</h3><p>${ctx.esc(item.description)}</p><div class="shop-spec">${server ? `${item.capacity} CU Basiskapazität<br>${ctx.dec(item.power)} kW Grundverbrauch` : 'Stufe 1 · Autonom aktiv<br>Schwerpunkt frei wählbar'}</div>${ctx.actionButton(server ? 'buyServer' : 'recruitAgent', `${ctx.icon('plus')}${ctx.fmt(ctx.E.cost(ctx.state, server ? 'server' : 'agent', id))} CR`, server ? { type: id } : { role: id }, 'primary', server ? 'server' : 'agent', id)}</div>`,
-      )
-      .join(
-        '',
-      )}</div><div class="modal-bottom"><span>${server ? ctx.state.servers.length : ctx.state.agents.length} / ${server ? ctx.E.getMetrics(ctx.state).serverLimit : ctx.E.getMetrics(ctx.state).agentLimit} Plätze belegt</span><span>Budget: <strong class="positive">${ctx.stat('credits')} CR</strong></span></div>`;
+    return ctx.marketModal();
   }
 
   function sectorModal() {
@@ -31,7 +22,7 @@ export function createDialogsUI(ctx) {
       [
         'globe',
         'Begehe deinen Serverraum',
-        'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Escape führt zurück. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
+        'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Shift lässt dich sprinten, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Escape führt zurück. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
       ],
       [
         'server',
@@ -46,12 +37,17 @@ export function createDialogsUI(ctx) {
       [
         'agents',
         '3. Gib Agenten einen Schwerpunkt',
-        'Agenten teilen ihre Leistung auf deine laufenden Aufträge auf. Rolle, Stufe und Schwerpunkt verändern Durchsatz, Forschung und Pflege.',
+        'Agenten unterstützen Projekte, Forschung, Wartung und Teamleitung. Rolle, Stufe und Schwerpunkt bestimmen den Beitrag. Prüfe vor einem Upgrade die tatsächliche Wirkung und laufenden Kosten.',
       ],
       [
         'jobs',
         '4. Wähle passende Aufträge',
-        'Aufträge bringen Credits, Forschung und Ansehen. Die Vergütung kommt beim Abschluss. Grundversorgung und Forschung laufen zusätzlich stetig weiter.',
+        'Aktive Dienste finanzieren den laufenden Betrieb. Projekte bringen bei Abschluss Credits, Forschung und Ansehen. Nicht belegte Hardware und Agenten verursachen weiterhin Kosten.',
+      ],
+      [
+        'jobs',
+        'Kundenbetrieb planen',
+        'Kundenanfragen kommen automatisch. Zusagen reservieren Ressourcen und kosten Einrichtung. Ein Agent muss den Dienst erst bereitstellen. Vertragslaufzeiten beginnen danach; Versorgung, Betreuung und geschäftliche Gründe beeinflussen Verlängerung oder Kündigung.',
       ],
       [
         'automation',
@@ -61,7 +57,7 @@ export function createDialogsUI(ctx) {
       [
         'research',
         '6. Investiere in Entwicklung',
-        'Forschung verbessert die ganze Flotte. Meilensteine geben zusätzliche Credits. Neue Sektoren öffnen anspruchsvollere Aufträge und anfangs mehr Plätze.',
+        'Ein bezahltes Laborprojekt läuft jeweils über Zeit und bindet zehn Prozent des Projektdurchsatzes. Forschungszweige haben Voraussetzungen. Die Wirkung beginnt bei Abschluss; Abbruch erstattet keine Punkte. Bisherige Forschungsstufen bleiben erhalten. Erfolge haben eine eigene Seite.',
       ],
       [
         'shield',
@@ -89,12 +85,12 @@ export function createDialogsUI(ctx) {
         'Ereignisse warten ohne Zeitlimit. Bis zu 12 Stunden Fortschritt werden nachgeholt. ROOT speichert regelmäßig lokal; Export sichert einen Stand zusätzlich.',
       ],
     ];
-    return `<p class="modal-intro">ROOT ist deine eigene Netzwerk-Leitstelle. Es gibt keinen Zeitdruck: Gute Entscheidungen, ein durchdachter Ausbau und passende Regeln bringen dich weiter.</p><div class="help-grid">${help.map(([i, t, d]) => `<div class="help-item">${ctx.icon(i)}<h3>${t}</h3><p>${d}</p></div>`).join('')}</div><p class="keyboard-hint">TASTATUR · 1–9: Bereiche wechseln · ?: Hilfe · Escape: Schließen</p>`;
+    return `<p class="modal-intro">ROOT ist deine eigene Netzwerk-Leitstelle. Es gibt keinen Zeitdruck: Gute Entscheidungen, ein durchdachter Ausbau und passende Regeln bringen dich weiter.</p><div class="card-actions"><button class="button" data-modal="welcome">${ctx.tr('Einführung ansehen')}</button><button class="button" data-modal="changelog">${ctx.tr('Änderungen dieser Version')}</button></div><div class="help-grid">${help.map(([i, t, d]) => `<div class="help-item">${ctx.icon(i)}<h3>${t}</h3><p>${d}</p></div>`).join('')}</div><p class="keyboard-hint">TASTATUR · 1–9: Bereiche wechseln · ?: Hilfe · Escape: Schließen</p>`;
   }
 
   function settingsModal() {
     const desktop = ctx.desktopSettings?.() || '';
-    return `<div class="settings-row"><h3>Sprache / Language</h3><p>Weboberfläche und Raumkonsole</p><label class="field-label" for="root-language">Sprache / Language</label><select class="select" id="root-language" data-change="language"><option value="de" ${ctx.I18N.getLanguage() === 'de' ? 'selected' : ''}>Deutsch</option><option value="en" ${ctx.I18N.getLanguage() === 'en' ? 'selected' : ''}>English</option></select></div>${desktop}<div class="settings-row"><h3>Dein Netzwerk</h3><p>Ein eigener Name für deine Leitstelle.</p><form id="rename-form" class="input-row"><input class="input" id="network-name" aria-label="Netzwerkname" maxlength="36" minlength="2" required value="${ctx.esc(ctx.state.networkName)}"><button class="button" type="submit">Speichern</button></form></div><div class="settings-row"><h3>Netzwerkstand & Sicherung</h3><p>${desktop ? ctx.desktopSaveNote() : 'Automatisches Speichern alle 15 Sekunden und nach jeder Entscheidung. Die lokale Datei liegt im ROOT-Ordner unter data/save.json. Ein Export enthält deinen vollständigen Fortschritt. Das Betriebsbackup unter „Betrieb & Schutz“ schützt dagegen gezielt vor Datenkorruption im Netzwerk.'}</p><div class="settings-actions"><button class="button" data-command="export">${ctx.icon('download')}Sicherung exportieren</button><button class="button ghost" data-command="import">${ctx.icon('upload')}Sicherung importieren</button><button class="button ghost" data-command="save">${ctx.icon('check')}Jetzt speichern</button></div></div><div class="settings-row"><h3>Zugang zum Cyberbunker</h3><p>Eine kurze Kamerafahrt führt von außen durch die Sicherheitsschleusen. Danach öffnet sich die Netzwerkübersicht. Den Rundgang startest du mit „Raum betreten“. Die Einfahrt läuft beim ersten Start pro Browser-Tab. Nach F5 bleibt dein letzter Standort erhalten. Reduzierte Animationen werden berücksichtigt.</p><label class="field-label"><input type="checkbox" data-change="arrival" ${ctx.storageGet('root.arrival.enabled') !== '0' ? 'checked' : ''}> Einfahrt beim Start anzeigen</label><button class="button ghost" data-command="replay-arrival">Einfahrt ansehen</button></div><div class="settings-row"><h3>Neues Netzwerk</h3>${ctx.storageGet('root.conflict.save') ? '<button class="button ghost" data-command="export-conflict">Abweichende Browserkopie exportieren</button>' : ''}<p>Beginne mit einer neuen Ausgangslage. Dein bisheriger Stand wird vorher automatisch als Datei exportiert.</p><button class="button danger" data-modal="reset">${ctx.icon('refresh')}Neu anfangen</button></div><div class="settings-row"><h3>${ctx.esc(BRAND.title)} · Version 1.5.1</h3><p>${desktop ? ctx.desktopAppNote() : 'Deine lokale Netzwerk-Leitstelle. Alle Server und Agenten sind Teil der Simulation. Fortschritt während der Abwesenheit: maximal 12 Stunden. Beende zum Schließen einfach den Browser-Tab.'}</p></div>`;
+    return `<div class="settings-row"><h3>Sprache / Language</h3><p>Weboberfläche und Raumkonsole</p><label class="field-label" for="root-language">Sprache / Language</label><select class="select" id="root-language" data-change="language"><option value="de" ${ctx.I18N.getLanguage() === 'de' ? 'selected' : ''}>Deutsch</option><option value="en" ${ctx.I18N.getLanguage() === 'en' ? 'selected' : ''}>English</option></select></div>${desktop}<div class="settings-row"><h3>Dein Netzwerk</h3><p>Ein eigener Name für deine Leitstelle.</p><form id="rename-form" class="input-row"><input class="input" id="network-name" aria-label="Netzwerkname" maxlength="36" minlength="2" required value="${ctx.esc(ctx.state.networkName)}"><button class="button" type="submit">Speichern</button></form></div><div class="settings-row"><h3>Netzwerkstand & Sicherung</h3><p>${desktop ? ctx.desktopSaveNote() : 'Automatisches Speichern alle 15 Sekunden und nach jeder Entscheidung. Die lokale Datei liegt im ROOT-Ordner unter data/save.json. Ein Export enthält deinen vollständigen Fortschritt. Das Betriebsbackup unter „Betrieb & Schutz“ schützt dagegen gezielt vor Datenkorruption im Netzwerk.'}</p><div class="settings-actions"><button class="button" data-command="export">${ctx.icon('download')}Sicherung exportieren</button><button class="button ghost" data-command="import">${ctx.icon('upload')}Sicherung importieren</button><button class="button ghost" data-command="save">${ctx.icon('check')}Jetzt speichern</button></div></div><div class="settings-row"><h3>Zugang zum Cyberbunker</h3><p>Eine kurze Kamerafahrt führt von außen durch die Sicherheitsschleusen. Danach öffnet sich die Netzwerkübersicht. Den Rundgang startest du mit „Raum betreten“. Die Einfahrt läuft beim ersten Start pro Browser-Tab. Nach F5 bleibt dein letzter Standort erhalten. Reduzierte Animationen werden berücksichtigt.</p><label class="field-label"><input type="checkbox" data-change="arrival" ${ctx.storageGet('root.arrival.enabled') !== '0' ? 'checked' : ''}> Einfahrt beim Start anzeigen</label><button class="button ghost" data-command="replay-arrival">Einfahrt ansehen</button></div><div class="settings-row"><h3>Neues Netzwerk</h3>${ctx.storageGet('root.conflict.save') ? '<button class="button ghost" data-command="export-conflict">Abweichende Browserkopie exportieren</button>' : ''}<p>Beginne mit einer neuen Ausgangslage. Dein bisheriger Stand wird vorher automatisch als Datei exportiert.</p><button class="button danger" data-modal="reset">${ctx.icon('refresh')}Neu anfangen</button></div><div class="settings-row"><h3>${ctx.esc(BRAND.title)} · Version ${RELEASE.version}</h3><p>${desktop ? ctx.desktopAppNote() : 'Deine lokale Netzwerk-Leitstelle. Alle Server und Agenten sind Teil der Simulation. Fortschritt während der Abwesenheit: maximal 12 Stunden. Beende zum Schließen einfach den Browser-Tab.'}</p></div>`;
   }
 
   function openModal(type, extra) {
@@ -102,22 +98,42 @@ export function createDialogsUI(ctx) {
     ctx.modal = { type, extra };
     const titles = {
       servers: 'Dein Netzwerk erweitern',
-      agents: 'Dein Team erweitern',
+      agents: 'Arbeitsamt',
+      notifications: 'Benachrichtigungen',
       sector: 'Nächsten Sektor erschließen',
-      help: 'Willkommen bei ROOT',
+      help: 'Handbuch',
+      welcome: 'Willkommen bei ROOT',
+      changelog: 'Neu in dieser Version',
       settings: 'Einstellungen',
-      offline: 'Dein Netzwerk war fleißig',
+      offline: 'Abwesenheitsbericht',
       reset: 'Ein neues Netzwerk beginnen',
       import: 'Sicherung wiederherstellen',
       repair: 'Reparatur planen',
       'incident-confirm': 'Folgen deiner Entscheidung',
       'agent-task': 'Agent gezielt einsetzen',
+      'agent-upgrade': 'Agent-Upgrade prüfen',
+      'personnel-confirm': 'Personalentscheidung prüfen',
       'hardware-shop': 'Hardware einbauen',
       'hardware-move': 'Umsetzen / Umpatchen',
       'hardware-confirm': 'Infrastruktur ändern',
+      'business-confirm': 'Betriebsauftrag prüfen',
+      'research-confirm': extra?.cancel ? 'Forschungsentscheidung prüfen' : 'Forschungsdetails',
+      'operations-confirm': 'Betriebsauftrag prüfen',
+      'growth-confirm': 'Kundenerweiterung prüfen',
+      'preventive-confirm': 'Rackwartung prüfen',
     };
     let content = '';
-    if (type === 'servers' || type === 'agents') content = shop(type);
+    if (type === 'welcome') content = ctx.welcomeModal();
+    else if (type === 'changelog') content = ctx.changelogModal();
+    else if (type === 'notifications') content = ctx.notificationModal();
+    else if (type === 'agent-upgrade') content = ctx.agentUpgradeModal(extra);
+    else if (type === 'research-confirm') content = ctx.researchConfirm(extra);
+    else if (type === 'business-confirm') content = ctx.businessConfirm(extra);
+    else if (type === 'operations-confirm') content = ctx.operationsConfirm(extra);
+    else if (type === 'growth-confirm') content = ctx.growthConfirm(extra);
+    else if (type === 'preventive-confirm') content = ctx.preventiveConfirm(extra);
+    else if (type === 'personnel-confirm') content = ctx.personnelConfirm(extra);
+    else if (type === 'servers' || type === 'agents') content = shop(type);
     else if (type.startsWith('hardware-')) content = ctx.R.modal(type, extra);
     else if (type === 'sector') content = sectorModal();
     else if (type === 'repair') content = ctx.repairModal(extra);
@@ -127,13 +143,13 @@ export function createDialogsUI(ctx) {
     else if (type === 'settings') content = settingsModal();
     else if (type === 'offline') {
       const r = extra;
-      content = `<span class="tag green">${ctx.icon('automation')}AUTONOMER BETRIEB</span><div class="offline-title">Willkommen zurück.</div><p class="modal-intro">Während deiner Abwesenheit hat ROOT ${ctx.duration(r.seconds)} weitergearbeitet.${r.capped ? ' Berücksichtigt wurden maximal 12 Stunden.' : ''}</p><div class="offline-grid"><div class="offline-stat"><strong>+${ctx.compact(r.credits)}</strong><span>Credits erwirtschaftet</span></div><div class="offline-stat"><strong>+${ctx.compact(r.research)}</strong><span>Forschungspunkte</span></div><div class="offline-stat"><strong>${ctx.fmt(r.jobsCompleted)}</strong><span>Aufträge abgeschlossen</span></div></div>${ctx.E.getResilience(ctx.state).incident ? `<div class="modal-alert">${ctx.esc(ctx.E.getResilience(ctx.state).incident.title)}: Das Netz wartet im Schutzmodus. Weitere Schäden sind gestoppt.</div><button class="button primary block" data-nav="resilience">Vorfall ansehen${ctx.icon('arrow')}</button>` : ''}<button class="button ${ctx.E.getResilience(ctx.state).incident ? 'ghost' : 'primary'} block" data-command="close">Zur Leitstelle${ctx.icon('arrow')}</button>`;
+      content = `<span class="tag green">${ctx.icon('automation')}AUTONOMER BETRIEB</span><div class="offline-title">Willkommen zurück.</div><p class="modal-intro">Während deiner Abwesenheit hat ROOT ${ctx.duration(r.seconds)} weitergearbeitet.${r.capped ? ' Berücksichtigt wurden maximal 12 Stunden.' : ''}</p><div class="offline-grid"><div class="offline-stat${r.credits < 0 ? ' negative' : ''}"><strong>${r.credits > 0 ? '+' : ''}${ctx.compact(r.credits)}</strong><span>Änderung des Guthabens</span></div><div class="offline-stat"><strong>${r.research > 0 ? '+' : ''}${ctx.compact(r.research)}</strong><span>Forschungspunkte</span></div><div class="offline-stat"><strong>${ctx.fmt(r.jobsCompleted)}</strong><span>Aufträge abgeschlossen</span></div></div><p class="policy-explainer">Der Saldo enthält Einnahmen, Betriebskosten und automatische Ausgaben während deiner Abwesenheit.</p>${ctx.E.getResilience(ctx.state).incident ? `<div class="modal-alert">${ctx.esc(ctx.E.getResilience(ctx.state).incident.title)}: Betroffene Geräte und Versorgung stehen im Vorfallbericht.</div><button class="button primary block" data-nav="resilience">Vorfall ansehen${ctx.icon('arrow')}</button>` : ''}<button class="button ${ctx.E.getResilience(ctx.state).incident ? 'ghost' : 'primary'} block" data-command="close">Zur Leitstelle${ctx.icon('arrow')}</button>`;
     } else if (type === 'reset')
       content = `<p class="modal-intro">Du startest mit 800 Credits, einem Server und zwei Agenten. Vorher wird dein bisheriger Netzwerkstand als JSON-Datei exportiert. Über „Importieren“ kannst du jederzeit zu ihm zurückkehren.</p><button class="button danger block" data-command="reset-confirm">${ctx.icon('refresh')}Stand exportieren & neu beginnen</button>`;
     else if (type === 'import')
       content = `<p class="modal-intro">Der Netzwerkstand wurde geprüft. Wiederherstellen ersetzt den aktuellen Fortschritt. Dieser wird zuvor als Datei exportiert.</p><div class="breakdown"><div class="status-row"><span>Netzwerk</span><strong>${ctx.esc(ctx.importing.networkName)}</strong></div><div class="status-row"><span>Sektor / Server / Agenten</span><strong>${ctx.importing.sector} / ${ctx.importing.servers.length} / ${ctx.importing.agents.length}</strong></div><div class="status-row"><span>Credits</span><strong>${ctx.fmt(ctx.importing.credits)} CR</strong></div></div><button class="button primary block" data-command="import-confirm">${ctx.icon('upload')}Sicherung wiederherstellen</button>`;
     ctx.$('#modal-root').innerHTML =
-      `<div class="modal-backdrop" data-backdrop="true"><section class="modal ${['servers', 'agents', 'repair', 'agent-task', 'hardware-shop', 'hardware-move'].includes(type) ? 'wide' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1"><div class="modal-header"><h2 id="modal-title">${titles[type] || 'ROOT'}</h2><button class="icon-button" data-command="close" aria-label="Dialog schließen">${ctx.icon('cross')}</button></div><div class="modal-body">${content}</div></section></div>`;
+      `<div class="modal-backdrop" data-backdrop="true"><section class="modal ${['servers', 'agents', 'repair', 'agent-task', 'hardware-shop', 'hardware-move'].includes(type) ? 'wide' : ''} ${type === 'research-confirm' && !extra?.cancel ? 'research-dialog' : type === 'notifications' ? 'notification-dialog' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1"><div class="modal-header"><h2 id="modal-title">${titles[type] || 'ROOT'}</h2><button class="icon-button" data-command="close" aria-label="Dialog schließen">${ctx.icon('cross')}</button></div><div class="modal-body">${content}</div></section></div>`;
     window.ROOTI18N?.localize?.(ctx.$('#modal-root'));
     ctx.updateDesktopControls?.();
     ctx.$('#app').inert = true;
@@ -144,11 +160,15 @@ export function createDialogsUI(ctx) {
 
   function closeModal() {
     if (!ctx.modal) return;
+    const returnNode = ctx.modal.type === 'research-confirm' && ctx.modal.extra?.returnNode;
     ctx.modal = null;
     ctx.$('#modal-root').innerHTML = '';
     ctx.$('#app').inert = false;
     document.body.style.overflow = '';
-    if (ctx.lastFocus?.isConnected) ctx.lastFocus.focus();
+    if (ctx.showNextStartup?.()) return;
+    // The map can rerender while a lab project completes behind the dialog.
+    const restored = returnNode && ctx.restoreResearchFocus?.(returnNode);
+    if (!restored && ctx.lastFocus?.isConnected) ctx.lastFocus.focus();
     if (ctx.view === 'overview' && !ctx.Room.isInRoom()) ctx.Room.startArrival();
   }
   return { shop, sectorModal, helpModal, settingsModal, openModal, closeModal };

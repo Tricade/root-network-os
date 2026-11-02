@@ -76,7 +76,7 @@ export function createControlLounge({ THREE, parent, bank, geometries, materials
     block([0.055, 2.08, 0.074], [3.966, 1.36, z], walnut, 0.012);
   block([0.026, 0.018, 3.28], [3.925, 2.43, 2.15], warm);
   // Low skirting conceals power/data runs instead of running trays over displays.
-  for (const side of [-1, 1]) block([0.08, 0.14, 9.6], [side * 3.985, 0.07, 0], steel);
+  for (const side of [-1, 1]) block([0.08, 0.14, 10.68], [side * 3.985, 0.07, 0], steel);
   const rug = material({ color: 0x263536, roughness: 1 });
   block([2.85, 0.014, 3.42], [2.4, 0.012, 2.05], rug, 0.006);
   furniture('sofa', 3.28, 2.05, -Math.PI / 2, 0.019);

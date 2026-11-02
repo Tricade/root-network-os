@@ -1,0 +1,328 @@
+/* Shared portrait and profile surfaces for dashboard and in-room consoles. */
+.agent-avatar.personnel-portrait {
+  padding: 0;
+  background-size: 400% 400%;
+  background-repeat: no-repeat;
+  background-color: #222b2d;
+  box-shadow: inset 0 0 0 1px #ffffff0a;
+}
+.agent-card .personnel-portrait {
+  width: 84px;
+  height: 84px;
+  border-radius: 14px;
+}
+.agent-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.agent-card .agent-controls {
+  margin-top: auto;
+}
+.agent-card .candidate-wage {
+  margin-bottom: 6px;
+}
+.agent-card .agent-assignment {
+  margin-bottom: 18px;
+}
+.personnel-perks {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+}
+.personnel-perk {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.personnel-perk > .icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.personnel-perk.strength {
+  color: var(--accent);
+  background: #a8d37d09;
+}
+.personnel-perk.weakness {
+  color: #cfb18a;
+  background: #cca56907;
+}
+.personnel-perk strong {
+  font-size: 11px;
+  line-height: 1.5;
+}
+.personnel-perk p,
+.personnel-legacy p {
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+.personnel-perk > div {
+  min-width: 0;
+}
+.personnel-legacy {
+  padding: 12px;
+  margin: 16px 0;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+}
+.personnel-legacy > span {
+  color: var(--muted);
+  font: 10px var(--mono);
+}
+.candidate-wage {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+}
+.candidate-wage span {
+  color: var(--muted);
+}
+.candidate-wage strong {
+  font: 11px var(--mono);
+  white-space: nowrap;
+}
+.personnel-dismiss {
+  font-size: 10px;
+  margin-top: 16px;
+  color: var(--muted);
+}
+.market-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 20px;
+}
+.market-heading .modal-intro {
+  margin-top: 12px;
+}
+.market-clock {
+  padding: 12px 16px;
+  background: #b7d98d09;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.market-clock span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 8px;
+}
+.market-clock strong {
+  font: 16px var(--mono);
+  color: var(--accent);
+}
+.market-rules {
+  display: flex;
+  gap: 10px 20px;
+  flex-wrap: wrap;
+  padding: 12px 0 20px;
+  font: 10px var(--mono);
+  color: var(--muted);
+}
+.personnel-market-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.candidate-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  min-width: 0;
+}
+.candidate-card.pinned {
+  border-color: #91ad6e;
+  box-shadow: 0 0 0 1px #91ad6e25;
+}
+.candidate-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.candidate-header > div:not(.agent-avatar) {
+  flex: 1;
+  min-width: 0;
+}
+.candidate-header .personnel-portrait {
+  width: 74px;
+  height: 74px;
+  border-radius: 12px;
+}
+.candidate-header h3 {
+  margin: 0 0 7px;
+  font-size: 17px;
+}
+.candidate-header .role-desc,
+.profile-review p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.candidate-pin {
+  align-self: flex-start;
+  flex-shrink: 0;
+}
+.candidate-pin[aria-pressed='true'] {
+  color: var(--accent);
+  background: #b7d98d13;
+}
+.candidate-card .candidate-wage {
+  margin-top: auto;
+}
+.candidate-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 12px;
+}
+.candidate-footer span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+.candidate-footer strong {
+  font: 14px var(--mono);
+}
+.candidate-footer .button {
+  gap: 8px;
+}
+.personnel-reason {
+  color: #cfb18a;
+  font-size: 10px;
+  line-height: 1.7;
+  margin: 10px 0 0;
+  min-height: 17px;
+}
+.profile-review {
+  margin-bottom: 18px;
+}
+.profile-review .personnel-portrait {
+  width: 108px;
+  height: 108px;
+}
+.workload-art {
+  position: relative;
+  height: 116px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #131c1e;
+  margin-bottom: 18px;
+  border: 1px solid #35433e;
+  transition: border-color 150ms ease;
+}
+.workload-art > img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+.offer-card:hover .workload-art,
+.research-card:hover .workload-art {
+  border-color: #76917a;
+}
+.offer-card .workload-art {
+  margin-bottom: 14px;
+}
+.research-card {
+  min-width: 0;
+}
+@media (max-width: 650px) {
+  .personnel-market-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .market-heading {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .market-clock {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .market-clock span {
+    margin-bottom: 0;
+  }
+  .candidate-card {
+    padding: 16px;
+  }
+  .candidate-header .personnel-portrait {
+    width: 64px;
+    height: 64px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workload-art {
+    transition: none;
+  }
+}
+
+.development-comparison {
+  margin: 18px 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+}
+.development-comparison h3 {
+  margin: 0 0 14px;
+}
+.development-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.development-row > span {
+  color: var(--muted);
+}
+.development-row strong {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.development-row small {
+  grid-column: 1 / -1;
+  text-align: right;
+}
+@media (max-width: 520px) {
+  .development-row {
+    grid-template-columns: 1fr;
+  }
+  .development-row strong,
+  .development-row small {
+    text-align: left;
+  }
+}
+
+/* Bitmap illustration surfaces never use blur/backdrop filters or hover transforms. */
+.raster-art {
+  overflow: hidden;
+}
+.raster-art > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+.workload-art {
+  height: 160px;
+}

@@ -19,19 +19,31 @@ export function createPersistenceUI(ctx, platform = globalThis) {
 
   function simulate(now = Date.now()) {
     if (ctx.saveConflict) return null;
+    if (ctx.catchUpFailed?.()) return null;
+    if (ctx.catchUpBusy?.()) return ctx.waitForCatchup();
     const elapsed = Math.max(0, (now - ctx.lastTick) / 1000);
+    if (elapsed > 30 && ctx.catchUp) return ctx.catchUp(now, elapsed);
     ctx.lastTick = now;
     if (elapsed <= 0) return null;
     const report = ctx.E.advance(ctx.state, elapsed);
     ctx.state.savedAt = now;
     for (const message of report?.constructionCompleted || [])
       ctx.toast(message, false, 'facility');
+    for (const message of report?.researchCompleted || []) ctx.toast(message, false, 'research');
     return { ...report, capped: elapsed > 43200 };
   }
 
-  function tick() {
+  let tickBusy = false;
+  async function tick() {
     if (!ctx.initialized || platform.document.hidden || ctx.desktopClosing?.()) return;
-    const report = simulate();
+    if (tickBusy || ctx.catchUpFailed?.()) return;
+    tickBusy = true;
+    let report;
+    try {
+      report = await simulate();
+    } finally {
+      tickBusy = false;
+    }
     if (ctx.stateSignature() !== ctx.signature || ctx.renderPending) ctx.render();
     else ctx.updateLive();
     ctx.announceAchievements();
@@ -40,6 +52,7 @@ export function createPersistenceUI(ctx, platform = globalThis) {
   }
 
   async function save(exit = false) {
+    if (ctx.catchUpBusy?.()) await ctx.waitForCatchup();
     if (!ctx.state || !ctx.initialized) return { status: 'idle', persisted: false };
     if (ctx.saveConflict) return { status: 'conflict', persisted: false };
     ctx.state.savedAt = ctx.lastTick;
@@ -145,8 +158,8 @@ export function createPersistenceUI(ctx, platform = globalThis) {
     return ctx.saveDrainPromise;
   }
 
-  function exportSave() {
-    simulate();
+  async function exportSave() {
+    await simulate();
     const blob = new platform.Blob([JSON.stringify(ctx.state, null, 2)], {
         type: 'application/json',
       }),
@@ -163,8 +176,11 @@ export function createPersistenceUI(ctx, platform = globalThis) {
       ctx.toast('Diese Sitzung pausiert. Lade zuerst den aktuellen Serverstand neu.', true);
       return false;
     }
-    exportSave();
+    await exportSave();
+    if (ctx.saveConflict) return false;
     ctx.state = next;
+    ctx.resetNotifications?.();
+    ctx.resetOperationsDrafts?.();
     ctx.seenAchievements = new Set();
     ctx.state.savedAt = Date.now();
     ctx.lastTick = ctx.state.savedAt;
@@ -251,7 +267,7 @@ export function createPersistenceUI(ctx, platform = globalThis) {
     const emptyServerAfterConflict =
       remoteRead && ctx.remoteRevision === 'empty' && conflicting && Boolean(stored);
     ctx.state =
-      remoteState && (Number(localVersion) < 3 || conflicting)
+      remoteState && (Number(localVersion) < 4 || conflicting)
         ? remoteState
         : emptyServerAfterConflict
           ? ctx.E.createState(Math.floor(Math.random() * 0xffffffff))
@@ -263,9 +279,10 @@ export function createPersistenceUI(ctx, platform = globalThis) {
         'ROOT verwendet die Browserkopie. Öffne ROOT über „ROOT starten“, damit dein Fortschritt zusätzlich in der lokalen Sicherungsdatei gespeichert wird.';
     else ctx.saveError = '';
     ctx.lastTick = Math.min(Date.now(), ctx.state.savedAt);
-    const report = simulate();
+    const report = await simulate();
     ctx.initialized = true;
     ctx.hideGuide = storageGet('root.guide.hidden') === '1';
+    ctx.prepareStartup?.({ hasSave: Boolean(localState || remoteState), offline: report });
     ctx.shell();
     if (emptyServerAfterConflict)
       ctx.toast(
@@ -278,7 +295,8 @@ export function createPersistenceUI(ctx, platform = globalThis) {
         true,
       );
     save();
-    if (report && report.seconds >= 60) ctx.openModal('offline', report);
+    if (ctx.showNextStartup) ctx.showNextStartup();
+    else if (report && report.seconds >= 60) ctx.openModal('offline', report);
     ctx.announceAchievements();
     platform.setInterval(tick, 1000);
     ctx.desktopReady?.().catch(() => {});

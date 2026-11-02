@@ -11,6 +11,11 @@ export function createTelemetryUI(ctx) {
       JSON.stringify(ctx.state.facility.central),
       ctx.state.facility.centralOperation?.system,
       ctx.facilitySignature(),
+      ctx.businessSignature?.(),
+      ctx.operationsSignature?.(),
+      ctx.growthSignature?.(),
+      ctx.preventiveSignature?.(),
+      ctx.researchSignature?.(),
     ].join('|');
     if (ctx.view === 'overview')
       return [
@@ -33,6 +38,11 @@ export function createTelemetryUI(ctx) {
 
   function updateLive() {
     if (!ctx.state) return;
+    ctx.updatePersonnel?.();
+    ctx.updateRoomOperations?.();
+    ctx.updateOperations?.();
+    ctx.updateGrowth?.();
+    ctx.updatePreventive?.();
     if (ctx.view === 'facility') ctx.updateCentralTelemetry();
     const m = ctx.E.getMetrics(ctx.state),
       facility = ctx.E.getRackModel(ctx.state, m),
@@ -40,6 +50,13 @@ export function createTelemetryUI(ctx) {
       a = ctx.agentOperations(),
       achievements = ctx.pendingAchievements(),
       limited = facility.racks.some((x) => x.status !== 'online');
+    ctx.updateAchievements?.(m);
+    ctx.updateBusiness?.(m);
+    ctx.updateResearch?.(m);
+    ctx.updateDashboard?.(m, r, a);
+    ctx.updateNotificationCenter?.(m, r, a);
+    ctx.updateAttentionCards?.(m);
+    ctx.updateAgentDevelopment?.();
     const serverRows = new Map(
       facility.racks.flatMap((rack) => rack.servers.map((server) => [server.id, server])),
     );
@@ -54,7 +71,7 @@ export function createTelemetryUI(ctx) {
       credits: ctx.compact(ctx.state.credits),
       capacity: ctx.dec(m.capacity),
       research: ctx.compact(ctx.state.research),
-      incomeMinute: ctx.dec(m.incomePerSecond * 60),
+      incomeMinute: (m.incomePerSecond >= 0 ? '+' : '') + ctx.dec(m.incomePerSecond * 60),
       researchMinute: ctx.dec(m.researchPerSecond * 60),
       reliability: ctx.dec(m.reliability),
       load: ctx.dec(m.load * 100),
@@ -123,13 +140,16 @@ export function createTelemetryUI(ctx) {
                 : 'SYSTEM ONLINE',
       achievementCount: achievements.length,
       achievementReward: ctx.fmt(achievements.reduce((sum, x) => sum + x.reward, 0)),
-      activeAgentCount: ctx.state.agents.length - a.agents.filter((x) => x.assignment).length,
+      activeAgentCount:
+        ctx.state.agents.length - a.agents.filter((x) => x.assignment || x.absent).length,
     });
     ctx.$$('[data-stat]').forEach((el) => {
       const raw = String(values[el.dataset.stat] ?? ''),
         v = el.dataset.stat === 'name' ? raw : ctx.tr(raw);
       if (el.textContent !== v) el.textContent = v;
       if (el.classList.contains('nav-count')) el.hidden = v === '0';
+      if (el.dataset.stat === 'incomeMinute')
+        el.style.color = m.incomePerSecond < 0 ? 'var(--red)' : 'var(--accent)';
     });
     ctx.$$('[data-system-tag]').forEach((el) => {
       el.classList.toggle('red', r.safetyMode || !r.online);
@@ -167,26 +187,33 @@ export function createTelemetryUI(ctx) {
                   .find((x) => x.id === b.dataset.id)
                   ?.repairs.find((x) => x.key === b.dataset.method);
       b.disabled = !o?.enabled;
-      b.title = o?.reason || '';
+      b.title = ctx.tr(o?.reason || '');
       const card = b.closest('.protection-option');
       if (o && card) {
         const description = ctx.$('[data-option-description]', card),
           cost = ctx.$('[data-option-cost]', card),
           reason = ctx.$('[data-option-reason]', card);
-        if (description) description.textContent = o.description;
-        if (cost) cost.textContent = ctx.optionSummary(o);
-        if (reason) reason.textContent = o.reason;
+        if (description) description.textContent = ctx.tr(o.description);
+        if (cost) cost.textContent = ctx.tr(ctx.optionSummary(o));
+        if (reason) reason.textContent = ctx.tr(o.reason);
       }
     });
     a.agents.forEach((agent) => {
       ctx.$$(`[data-agent-status="${agent.id}"]`).forEach((el) => {
-        el.textContent = agent.assignment
-          ? agent.assignment.label +
-            ' · ' +
-            (r.safetyMode ? 'pausiert' : ctx.duration(agent.assignment.remaining))
-          : agent.cooldown > 0
-            ? 'Nächster Sondereinsatz in ' + ctx.duration(agent.cooldown)
-            : 'Für Sondereinsatz verfügbar';
+        el.textContent = agent.absent
+          ? ctx.tr('Selbstwartung · Rückkehr in') +
+            ' ' +
+            ctx.duration(agent.remaining) +
+            (agent.assignment
+              ? ' · ' + ctx.tr(agent.assignment.label) + ' · ' + ctx.tr('pausiert')
+              : '')
+          : agent.assignment
+            ? agent.assignment.label +
+              ' · ' +
+              (r.safetyMode || agent.absent ? 'pausiert' : ctx.duration(agent.assignment.remaining))
+            : agent.cooldown > 0
+              ? 'Nächster Sondereinsatz in ' + ctx.duration(agent.cooldown)
+              : 'Für Sondereinsatz verfügbar';
       });
       ctx.$$(`[data-agent-progress="${agent.id}"]`).forEach((el) => {
         if (agent.assignment)
@@ -245,11 +272,12 @@ export function createTelemetryUI(ctx) {
             ? ctx.state.agents.length >= m.agentLimit
             : false;
       b.disabled = balance < price || limit || !Number.isFinite(price);
-      b.title = limit
+      const budgetReason = limit
         ? 'Alle Plätze belegt – erschließe einen neuen Sektor.'
         : balance < price
           ? `Noch ${ctx.fmt(Math.ceil(price - balance))} ${b.dataset.costKind === 'research' ? 'FP' : 'CR'} nötig`
           : '';
+      b.title = ctx.tr(budgetReason);
     });
     ctx.$$('[data-action="upgradeServer"]').forEach((b) => {
       if (serverRows.get(b.dataset.id)?.status !== 'online') {
@@ -268,8 +296,7 @@ export function createTelemetryUI(ctx) {
       b.disabled =
         !j ||
         ctx.state.jobs.length >= m.jobLimit ||
-        m.usedCapacity + (j?.load || 0) > m.capacity * 1.08 ||
-        (j?.kind === 'ai' && (j.gpuDemand || 1) > (m.gpuCapacity || 0) - (m.gpuUsed || 0) + 1e-9);
+        Boolean(j && !ctx.E.jobsFit(ctx.state, j, m.admissionResources));
       b.title = b.disabled
         ? j?.kind === 'ai' && (j.gpuDemand || 1) > (m.gpuCapacity || 0) - (m.gpuUsed || 0) + 1e-9
           ? 'Nicht genügend freie GPU-Kapazität. Prüfe KI-Server, Uplink, Strom und Kühlung.'

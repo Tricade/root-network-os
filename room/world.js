@@ -1,3 +1,4 @@
+import { consoleNavigation } from '../ui/navigation.js';
 import '../brand.js';
 const BRAND = globalThis.ROOTBrand;
 
@@ -508,10 +509,12 @@ export function createRoomWorld(sceneContext) {
       );
     }
     // In-row precision-cooling cabinets: intake grille, status panel, and paired fan discs.
+    sceneContext.fallbackCooling = new sceneContext.THREE.Group();
+    sceneContext.scene.add(sceneContext.fallbackCooling);
     for (const x of [-6.12, 6.12]) {
       const unit = new sceneContext.THREE.Group();
       unit.position.set(x, 0, back + 3.2);
-      sceneContext.scene.add(unit);
+      sceneContext.fallbackCooling.add(unit);
       sceneContext.addBox(unit, 0.72, 2.55, 1.0, sceneContext.materials.shell, 0, 1.28, 0, {
         castShadow: false,
         radius: 0.05,
@@ -560,7 +563,7 @@ export function createRoomWorld(sceneContext) {
     sceneContext.shell.className = 'root-room';
     sceneContext.shell.setAttribute('aria-label', 'Simulierter Serverraum');
     sceneContext.shell.innerHTML =
-      '<div class="root-room-stage"><div class="root-room-empty"><span class="root-room-mark">ROOT<span>.</span></span><p>Lokale Infrastruktur · Live-Simulation</p></div><div class="root-room-top"><div class="root-room-brand"><strong>ROOT<span>.</span></strong><i></i><span data-room-place-label>SERVERRAUM</span></div><div class="root-room-live"><i class="root-room-led"></i><span data-room-system>SYSTEM ONLINE</span><span class="root-room-badge">SIMULATION</span></div></div><div class="root-room-reticle" aria-hidden="true"></div><div class="root-room-target" data-room-target></div><div class="root-room-summary" data-room-summary></div><div class="root-room-controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Bewegen</span><span data-room-mouse-help><kbd>Maus</kbd> Ziehen / ← → drehen</span><span><kbd>E</kbd> Öffnen</span><button type="button" data-room-enter>Raum betreten</button><button type="button" data-room-leave hidden>Leitstelle</button><button type="button" data-room-navigation aria-expanded="false">Geräte-Liste</button><button type="button" class="root-room-incident-action" data-room-incident hidden>Vorfall bearbeiten</button></div><div class="root-room-fallback" hidden></div></div><div class="root-room-nav" aria-label="Racks und Server"></div>';
+      '<div class="root-room-stage"><div class="root-room-empty"><span class="root-room-mark">ROOT<span>.</span></span><p>Lokale Infrastruktur · Live-Simulation</p></div><div class="root-room-top"><div class="root-room-brand"><strong>ROOT<span>.</span></strong><i></i><span data-room-place-label>SERVERRAUM</span></div><div class="root-room-live"><i class="root-room-led"></i><span data-room-system>SYSTEM ONLINE</span><span class="root-room-badge">SIMULATION</span></div></div><div class="root-room-reticle" aria-hidden="true"></div><div class="root-room-target" data-room-target></div><div class="root-room-summary" data-room-summary></div><div class="root-room-controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Bewegen</span><span><kbd>Shift</kbd> Sprinten</span><span data-room-mouse-help><kbd>Maus</kbd> Ziehen / ← → drehen</span><span><kbd>E</kbd> Öffnen</span><button type="button" data-room-enter>Raum betreten</button><button type="button" data-room-leave hidden>Leitstelle</button><button type="button" data-room-navigation aria-expanded="false">Geräte-Liste</button><button type="button" class="root-room-incident-action" data-room-incident hidden>Vorfall bearbeiten</button></div><div class="root-room-fallback" hidden></div></div><div class="root-room-nav" aria-label="Racks und Server"></div>';
     sceneContext.stage = sceneContext.shell.querySelector('.root-room-stage');
     sceneContext.nav = sceneContext.shell.querySelector('.root-room-nav');
     sceneContext.summary = sceneContext.shell.querySelector('[data-room-summary]');
@@ -586,7 +589,7 @@ export function createRoomWorld(sceneContext) {
     terminalButton.textContent = 'Konsole';
     terminalButton.addEventListener('click', () => {
       if (!sceneContext.exploring) sceneContext.startExploration();
-      sceneContext.openView?.('overview');
+      sceneContext.openView?.('overview', sceneContext.locationId);
     });
     sceneContext.shell.querySelector('.root-room-controls').appendChild(terminalButton);
     sceneContext.consolePanel = document.createElement('section');
@@ -594,22 +597,9 @@ export function createRoomWorld(sceneContext) {
     sceneContext.consolePanel.hidden = true;
     sceneContext.consolePanel.setAttribute('aria-label', 'Raumkonsole');
     sceneContext.consolePanel.innerHTML =
-      '<header class="room-console-header"><div><span>ROOT / OPERATIONS TERMINAL</span><strong data-room-console-title>Leitstelle</strong></div><button type="button" data-room-console-close>Zurück in den Raum · Esc</button></header><nav class="room-console-nav" aria-label="Bereiche der Raumkonsole">' +
-      [
-        ['overview', 'Leitstelle'],
-        ['network', 'Hardware'],
-        ['agents', 'Agenten'],
-        ['jobs', 'Aufträge'],
-        ['research', 'Forschung'],
-        ['automation', 'Automatik'],
-        ['resilience', 'Backups & Betrieb'],
-        ['inbox', 'Entscheidungen'],
-        ['log', 'Protokoll'],
-        ['facility', 'Gebäudetechnik'],
-      ]
-        .map(([id, label]) => '<button type="button" data-nav="' + id + '">' + label + '</button>')
-        .join('') +
-      '<button type="button" data-modal="settings">Einstellungen</button><button type="button" data-modal="help">Handbuch</button></nav><div class="room-console-content" tabindex="-1"></div>';
+      '<header class="room-console-header"><div><span>ROOT / OPERATIONS TERMINAL</span><strong data-room-console-title>Leitstelle</strong></div><button type="button" class="notification-bell" data-modal="notifications" data-notification-bell aria-label="Benachrichtigungen">Benachrichtigungen <span class="notification-count" data-notification-count hidden></span></button><button type="button" data-room-console-close>Zurück in den Raum · Esc</button></header><nav class="room-console-nav" aria-label="Bereiche der Raumkonsole">' +
+      consoleNavigation('overview', sceneContext.tr) +
+      '</nav><div class="room-console-content" tabindex="-1"></div>';
     sceneContext.shell.appendChild(sceneContext.consolePanel);
     sceneContext.consoleContent = sceneContext.consolePanel.querySelector('.room-console-content');
     sceneContext.consolePanel

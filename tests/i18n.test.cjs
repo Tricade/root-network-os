@@ -3,6 +3,94 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const I18N = require('../i18n.js');
 
+test('customer workflow, research dialogs and development controls have complete English labels', () => {
+  for (const [source, english] of [
+    ['Anfrage ablehnen', 'Decline enquiry'],
+    ['Forschungszweige', 'Research branches'],
+    ['Forschungsentscheidung prüfen', 'Review research decision'],
+    ['Agent-Upgrade prüfen', 'Review agent upgrade'],
+    [
+      'Kundenvertrag angenommen. Einrichtung gestartet.',
+      'Customer contract accepted. Provisioning started.',
+    ],
+    ['Noch nicht eingerichtet', 'Not provisioned yet'],
+    ['Agent entwickelt.', 'Agent upgraded.'],
+    ['Netzwerkstand gespeichert.', 'Network saved.'],
+    ['Schwerpunkt angepasst.', 'Focus updated.'],
+    ['19 Zoll · 18 HE', '19 in · 18 RU'],
+    ['3 Server · 9 / 16 HE', '3 servers · 9 / 16 RU'],
+    ['1. Plane dein Rechenzentrum', '1. Plan your data center'],
+    ['KI braucht eigene Hardware', 'AI needs dedicated hardware'],
+  ])
+    assert.equal(I18N.translate(source, 'en'), english);
+});
+
+test('English compound feedback translates only its action label and preserves the agent name', () => {
+  const text = 'Tarek ist bereits im Einsatz: Netzdiagnose.';
+  assert.equal(I18N.translate(text, 'en'), 'Tarek is already on assignment: Network diagnostics.');
+  assert.equal(I18N.translate(text, 'de'), text);
+});
+
+test('automatic server labels and live backup/maintenance feedback translate without changing saved names', () => {
+  const server = { type: 'edge', name: 'Randknoten 01' };
+  assert.equal(I18N.isGeneratedServerName(server), true);
+  assert.equal(I18N.serverName(server, 'en'), 'Edge node 01');
+  assert.equal(I18N.serverName(server, 'de'), 'Randknoten 01');
+  assert.equal(server.name, 'Randknoten 01');
+  assert.equal(I18N.serverName({ type: 'edge', name: 'Mein Knoten' }, 'en'), 'Mein Knoten');
+  assert.equal(I18N.isGeneratedServerName({ type: 'compute', name: 'Randknoten 01' }), false);
+  for (const [source, english] of [
+    ['Speicherknoten 32', 'Storage node 32'],
+    [
+      'Eine Krisen- oder Wartungsmaßnahme verhindert gerade eine neue Sicherung.',
+      'A crisis or maintenance operation is currently preventing a new backup.',
+    ],
+    [
+      'Automatische Betriebssicherung gestartet: 185 Credits.',
+      'Automatic operations backup started: 185 credits.',
+    ],
+    [
+      'Automatische Wartung gestartet: Rechenknoten 02, 185 Credits und 2 Ersatzteil.',
+      'Automatic maintenance started: Compute node 02, 185 credits and 2 spare parts.',
+    ],
+    [
+      'Wartung abgeschlossen: Rechenknoten 02 bei 100% Zustand.',
+      'Maintenance complete: Compute node 02 at 100% condition.',
+    ],
+    ['Rechenknoten 02 auf Stufe 2 ausgebaut.', 'Compute node 02 upgraded to level 2.'],
+    ['Mira erreicht Stufe 2.', 'Mira reached level 2.'],
+    [
+      'Mira hat den Forschungsauftrag abgeschlossen: +12 Forschungspunkte.',
+      'Mira completed the research assignment: +12 research points.',
+    ],
+    [
+      'Mira hat den Einsatz „Netzdiagnose“ abgeschlossen. Die Wirkung ist aktiv.',
+      'Mira completed the “Network diagnostics” assignment. Its effect is active.',
+    ],
+  ]) {
+    assert.equal(I18N.translate(source, 'en'), english);
+    assert.equal(I18N.translate(source, 'de'), source);
+  }
+});
+
+test('customer and unattended feedback translates built-in clients while preserving unknown names', () => {
+  for (const [source, expected] of [
+    ['Kunden & Betrieb', 'Customers & operations'],
+    ['Betriebspläne', 'Operation plans'],
+    ['Strom', 'Power'],
+    ['Zentralanlage ausbauen', 'Expand central plant'],
+    ['Lokaler Strom mit zentraler USV', 'Local power with central UPS'],
+    ['Umbau aktiv', 'Conversion in progress'],
+    [
+      '3 Ersatzteile bestellt. Lieferung in 300 Sekunden.',
+      '3 spare parts ordered. Delivery in 300 seconds.',
+    ],
+    ['3 Ersatzteile eingetroffen.', '3 spare parts delivered.'],
+    ['Nordlicht Mobilität', 'Nordlicht Mobility'],
+  ])
+    assert.equal(I18N.translate(source, 'en'), expected);
+});
+
 test('facility counts use correct singulars and section names without changing standalone names', () => {
   for (const [source, expected] of [
     ['1 Racks · 1 Server', '1 rack · 1 server'],
@@ -186,7 +274,13 @@ test('German remains the default and English translates known phrases while pres
       'KI-Inferenz auswerten for Institut für angewandte KI completed: 11839 credits.',
       'Evaluate AI inference for Institut für angewandte KI completed: 11839 credits.',
     ],
-    ['Hanseatische Werkstätten', 'Hanseatische Werkstätten'],
+    ['Hanseatische Werkstätten', 'Hanseatic Workshops'],
+    ['Institut für Umweltfunk', 'Environmental Radio Institute'],
+    ['Meine eigenen Werkstätten', 'Meine eigenen Werkstätten'],
+    [
+      'Sensornetz überwachen for Institut für Umweltfunk completed: 108 credits.',
+      'Monitor sensor network for Environmental Radio Institute completed: 108 credits.',
+    ],
     [
       'Operator · Hält Aufträge am Laufen und steigert die Netzwerkerlöse.',
       'Operator · Keeps jobs running and increases network revenue.',
@@ -351,5 +445,25 @@ test('language choice is stored separately under root.language and normalizes un
   } finally {
     if (original === undefined) delete globalThis.localStorage;
     else globalThis.localStorage = original;
+  }
+});
+
+test('robot agency, every perk and self-maintenance feedback are localized', () => {
+  const pairs = require('../locales/personnel-en.js')().pairs;
+  for (const [de, en] of pairs) assert.equal(I18N.translate(de, 'en'), en, de);
+  for (const [de, en] of [
+    [
+      'Mira benötigt Selbstwartung. Einsätze pausieren; Rückkehr erfolgt automatisch.',
+      'Mira needs self-maintenance. Assignments pause; return is automatic.',
+    ],
+    ['Mira ist wieder im Dienst.', 'Mira is back on duty.'],
+    ['im Normalbetrieb / 9 Plätze', 'on regular duties / 9 slots'],
+    ['3 Belohnungen verfügbar', '3 rewards available'],
+  ])
+    assert.equal(I18N.translate(de, 'en'), en);
+  const { STRENGTHS, WEAKNESSES } = require('../engine/personnel.js')({});
+  for (const value of [...Object.values(STRENGTHS), ...Object.values(WEAKNESSES)]) {
+    assert.notEqual(I18N.translate(value.name, 'en'), value.name, value.name);
+    assert.notEqual(I18N.translate(value.description, 'en'), value.description, value.description);
   }
 });

@@ -238,7 +238,7 @@
   width: min(460px, 45vw);
   margin: 0;
   background: #101a15eb;
-  backdrop-filter: blur(10px);
+  backdrop-filter: none;
 }
 .root-room.exploring .room-location-title {
   flex-basis: 100%;

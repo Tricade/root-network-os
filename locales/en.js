@@ -4,18 +4,58 @@
     typeof module === 'object' && module.exports
       ? require('./building-en.js')
       : root.RootBuildingEnglish;
-  const create = (translate) => factory(translate, building);
+  const business =
+    typeof module === 'object' && module.exports
+      ? require('./business-en.js')
+      : root.RootBusinessEnglish;
+  const personnel =
+    typeof module === 'object' && module.exports
+      ? require('./personnel-en.js')
+      : root.RootPersonnelEnglish;
+  const customers =
+    typeof module === 'object' && module.exports
+      ? require('./customers-en.js')
+      : root.RootCustomersEnglish;
+  const research =
+    typeof module === 'object' && module.exports
+      ? require('./research-en.js')
+      : root.RootResearchEnglish;
+  const workspace =
+    typeof module === 'object' && module.exports
+      ? require('./workspace-en.js')
+      : root.RootWorkspaceEnglish;
+  const planning =
+    typeof module === 'object' && module.exports
+      ? require('./planning-en.js')
+      : root.RootPlanningEnglish;
+  const achievements =
+    typeof module === 'object' && module.exports
+      ? require('./achievements-en.js')
+      : root.RootAchievementsEnglish;
+  const create = (translate) =>
+    factory(translate, {
+      building,
+      business,
+      personnel,
+      customers,
+      research,
+      workspace,
+      planning,
+      achievements,
+    });
   if (typeof module === 'object' && module.exports) module.exports = create;
   if (root) root.RootEnglishCatalog = create;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (translate, building) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (translate, catalogs) {
+  const { building, business, personnel, customers, research, workspace, planning } = catalogs;
+  const achievements = catalogs.achievements;
   const en = Object.create(null);
   const add = (pairs) => {
     for (const [de, english] of pairs) en[de] = english;
   };
   add([
     [
-      'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Escape führt zurück. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
-      'Entering the room opens first-person view. Use WASD to move and the mouse or left/right arrow keys to turn. Press E while targeting a rack to open its door. Press E while targeting the open door to close it; target the exposed hardware to manage it. Room doors can be operated from either side and close after you pass through. Press Escape to return. If pointer lock is unavailable, hold the mouse button to look around. The device list also links directly to each server. The control desk monitors and console open every management area in the room. Escape closes the dialog first, then the console; switch to the web interface to leave the tour.',
+      'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Shift lässt dich sprinten, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Escape führt zurück. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
+      'Entering the room opens first-person view. Use WASD to move, hold Shift to sprint, and use the mouse or left/right arrow keys to turn. Press E while targeting a rack to open its door. Press E while targeting the open door to close it; target the exposed hardware to manage it. Room doors can be operated from either side and close after you pass through. Press Escape to return. If pointer lock is unavailable, hold the mouse button to look around. The device list also links directly to each server. The control desk monitors and console open every management area in the room. Escape closes the dialog first, then the console; switch to the web interface to leave the tour.',
     ],
     ['Weboberfläche und Raumkonsole', 'Web interface and room console'],
     ['Zugang zum Cyberbunker', 'Cyberbunker access'],
@@ -425,11 +465,9 @@
     ['PHYSICAL INFRASTRUCTURE', 'PHYSICAL INFRASTRUCTURE'],
     ['WORKSPACE / PHYSICAL INFRASTRUCTURE', 'WORKSPACE / PHYSICAL INFRASTRUCTURE'],
     ['Begehe deinen Serverraum', 'Explore your server room'],
-    [
-      'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Escape führt zurück. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
-      'Enter room opens the first-person view. WASD moves you; use the mouse or left/right arrow keys to turn. E opens the targeted device; Escape returns. If mouse capture is unavailable, hold the mouse button to look around. The device list also links directly to each server. The control desk monitors and console open every management area in the room. Escape closes the dialog first, then the console; Web UI ends the tour.',
-    ],
     ['Plane dein Rechenzentrum', 'Plan your data center'],
+    ['1. Plane dein Rechenzentrum', '1. Plan your data center'],
+    ['KI braucht eigene Hardware', 'AI needs dedicated hardware'],
     ['Gib Agenten einen Schwerpunkt', 'Assign agents a focus'],
     ['Wähle passende Aufträge', 'Choose suitable jobs'],
     ['Lass die Routine laufen', 'Automate routine work'],
@@ -1166,6 +1204,7 @@
     ['Maus', 'Mouse'],
     ['Ziehen / ← → drehen', 'Drag / ← → turn'],
     ['Bewegen', 'Move'],
+    ['Sprinten', 'Sprint'],
     ['Öffnen', 'Open'],
     ['Umsehen', 'Look around'],
     ['Esc zurück', 'Esc to return'],
@@ -1394,7 +1433,7 @@
     ['Netzwerkstand überschreitet Sektorgrenzen.', 'Network state exceeds sector limits.'],
     ['Wiederherstellung ohne gültige Sicherung.', 'Recovery without a valid backup.'],
     [
-      'Krisen- oder Wartungsmaßnahme verhindert gerade eine neue Sicherung.',
+      'Eine Krisen- oder Wartungsmaßnahme verhindert gerade eine neue Sicherung.',
       'A crisis or maintenance operation is currently preventing a new backup.',
     ],
     [
@@ -1905,6 +1944,7 @@
     ['Dialog schließen', 'Close dialog'],
     ['Willkommen zurück.', 'Welcome back.'],
     ['Bewegen', 'Move'],
+    ['Sprinten', 'Sprint'],
     ['Ziehen / ← → drehen', 'Drag / ← → rotate'],
     ['Öffnen', 'Open'],
     ['Konsole', 'Console'],
@@ -1984,6 +2024,38 @@
   ]);
   const patterns = [
     [
+      /^(Randknoten|Edge-Knoten|Rechenknoten|Speicherknoten|KI-Beschleuniger) (\d{2,})$/,
+      (_, prefix, number) => `${translate(prefix, 'en')} ${number}`,
+    ],
+    [
+      /^Automatische Betriebssicherung gestartet: (.+?) Credits\.$/,
+      'Automatic operations backup started: $1 credits.',
+    ],
+    [
+      /^Automatische Wartung gestartet: (.+?), (.+?) Credits und (\d+) Ersatzteil(?:e)?\.$/,
+      (_, name, credits, parts) =>
+        `Automatic maintenance started: ${translate(name, 'en')}, ${credits} credits and ${parts} spare part${parts === '1' ? '' : 's'}.`,
+    ],
+    [
+      /^Wartung abgeschlossen: (.+?) bei ([\d.,]+)% Zustand\.$/,
+      (_, name, condition) =>
+        `Maintenance complete: ${translate(name, 'en')} at ${condition}% condition.`,
+    ],
+    [
+      /^(.+?) auf Stufe (\d+) ausgebaut\.$/,
+      (_, name, level) => `${translate(name, 'en')} upgraded to level ${level}.`,
+    ],
+    [/^(.+?) erreicht Stufe (\d+)\.$/, '$1 reached level $2.'],
+    [
+      /^(.+?) hat den Forschungsauftrag abgeschlossen: \+(\d+) Forschungspunkte\.$/,
+      '$1 completed the research assignment: +$2 research points.',
+    ],
+    [
+      /^(.+?) hat den Einsatz „(.+?)“ abgeschlossen\. Die Wirkung ist aktiv\.$/,
+      (_, name, label) =>
+        `${name} completed the “${translate(label, 'en')}” assignment. Its effect is active.`,
+    ],
+    [
       /^Mach dein Netzwerk bereit für Sektor (\d+)\. Jeder Ausbau eröffnet neue Möglichkeiten\.$/,
       (_, sector) =>
         `Prepare your network for Sector ${sector}. Every expansion opens new possibilities.`,
@@ -2001,12 +2073,12 @@
         `${price} credits; ${seconds} seconds of maintenance. ${translate(effect, 'en')} Additional running costs: ${upkeep.replace(',', '.')} credits/s; additional power draw: ${power} W.`,
     ],
     [
-      /^(\d+) W zusätzliche Kühlleistung; danach (\d+) W zentral\. Auf aktive Racks verteilt\.$/,
-      '$1 W more cooling capacity; $2 W total central capacity afterward. Distributed across active racks.',
+      /^(\d+) W zusätzliche Kühlleistung; danach (\d+) W zentral\. Auf (?:angeschlossene )?aktive Racks verteilt\.$/,
+      '$1 W more cooling capacity; $2 W total central capacity afterward. Distributed across connected active racks.',
     ],
     [
-      /^(\d+) W zusätzliche Gesamtreserve; danach (\d+) W zentral\. Gleichmäßig auf aktive Racks verteilt\.$/,
-      '$1 W more total reserve; $2 W total central reserve afterward. Distributed evenly across active racks.',
+      /^(\d+) W zusätzliche Gesamtreserve; danach (\d+) W zentral\. Gleichmäßig auf (?:angeschlossene )?aktive Racks verteilt\.$/,
+      '$1 W more total reserve; $2 W total central reserve afterward. Distributed evenly across connected active racks.',
     ],
     [
       /^(\d+) W zusätzliche USV-Leistung; danach (\d+) W gesamt\. Bei passender Lastabdeckung sinkt die Chance schwerer Stromausfälle um bis zu 65 %; deren Folgen werden gemindert\.$/,
@@ -2034,7 +2106,7 @@
     [
       /^(.+?) for (.+?) completed(?:: (.+))?$/,
       (whole, title, client, result) =>
-        `${translate(title, 'en')} for ${client} completed${result ? `: ${result}` : ''}`,
+        `${translate(title, 'en')} for ${translate(client, 'en')} completed${result ? `: ${result}` : ''}`,
     ],
     [/^(.+?) · (\d+(?:\.\d+)?) TB · (\d+) Einschübe$/, '$1 · $2 TB · $3 slots'],
     [/^(\d+) im Normalbetrieb \/ (\d+) Plätze$/, '$1 on regular duty / $2 slots'],
@@ -2073,7 +2145,7 @@
     [
       /^(.+?) für (.+?) abgeschlossen: (.+?) Credits\.$/,
       (whole, jobTitle, client, credits) =>
-        `${translate(jobTitle, 'en')} for ${client} completed: ${credits} credits.`,
+        `${translate(jobTitle, 'en')} for ${translate(client, 'en')} completed: ${credits} credits.`,
     ],
     [
       /^(.+?): Hardwarefehler erkannt\. Aufträge laufen auf verbleibenden Knoten weiter\.$/,
@@ -2116,9 +2188,9 @@
         `${racks} rack${racks === '1' ? '' : 's'} · ${servers} installed server${servers === '1' ? '' : 's'}.`,
     ],
     [
-      /^Begehbarer Serverraum: (\d+) Racks und (\d+) eingebaute Server\. WASD bewegen, Maus oder Pfeiltasten drehen, E Gerät öffnen, Escape zurück\.$/,
+      /^Begehbarer Serverraum: (\d+) Racks und (\d+) eingebaute Server\. WASD bewegen, Shift sprinten, Maus oder Pfeiltasten drehen, E Gerät öffnen, Escape zurück\.$/,
       (whole, racks, servers) =>
-        `Walkable server room: ${racks} rack${racks === '1' ? '' : 's'} and ${servers} installed server${servers === '1' ? '' : 's'}. WASD to move, mouse or arrow keys to turn, E to open a device, Escape to return.`,
+        `Walkable server room: ${racks} rack${racks === '1' ? '' : 's'} and ${servers} installed server${servers === '1' ? '' : 's'}. WASD to move, hold Shift to sprint, mouse or arrow keys to turn, E to open a device, Escape to return.`,
     ],
     [
       /^Während deiner Abwesenheit hat ROOT (.+?) weitergearbeitet\. Berücksichtigt wurden maximal 12 Stunden\.$/,
@@ -2482,12 +2554,12 @@
     [
       /^(.+?) · (.+?) abgeschlossen: (.+?) Credits\.$/,
       (whole, jobTitle, client, credits) =>
-        `${translate(jobTitle, 'en')} · ${client} completed: ${credits} credits.`,
+        `${translate(jobTitle, 'en')} · ${translate(client, 'en')} completed: ${credits} credits.`,
     ],
     [
       /^(.+?) für (.+?) abgeschlossen: (.+?) Credits\.$/,
       (whole, jobTitle, client, credits) =>
-        `${translate(jobTitle, 'en')} for ${client} completed: ${credits} credits.`,
+        `${translate(jobTitle, 'en')} for ${translate(client, 'en')} completed: ${credits} credits.`,
     ],
     [
       /^(.+?) in (.+?) abgeschlossen\. Versorgung und Verbindungen sind wieder verfügbar\.$/,
@@ -2558,5 +2630,30 @@
 
   const extra = building(translate);
   add(extra.pairs);
-  return { en, patterns: [...extra.patterns, ...patterns] };
+  const operations = business(translate);
+  add(operations.pairs);
+  const staff = personnel(translate);
+  add(staff.pairs);
+  const commercial = customers(translate);
+  add(commercial.pairs);
+  const control = workspace(translate);
+  add(control.pairs);
+  const laboratory = research(translate);
+  add(laboratory.pairs);
+  const planned = planning(translate);
+  add(planned.pairs);
+  add(achievements(translate).pairs);
+  return {
+    en,
+    patterns: [
+      ...planned.patterns,
+      ...control.patterns,
+      ...laboratory.patterns,
+      ...commercial.patterns,
+      ...staff.patterns,
+      ...operations.patterns,
+      ...extra.patterns,
+      ...patterns,
+    ],
+  };
 });

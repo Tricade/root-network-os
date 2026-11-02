@@ -274,14 +274,19 @@
         if (!s.resilience.backup) rows[0].unavailable = 'Es gibt noch keine Betriebssicherung.';
       }
       return rows.map((x) => {
-        const workLoss = x.backupRestore
-          ? x.workLoss
-          : s.jobs.reduce((sum, j) => sum + j.work * (x.workPct || 0), 0);
-        const researchLoss = x.backupRestore
-          ? x.researchLoss
-          : incident.kind === 'corruption'
-            ? s.research * (x.key === 'manual' ? 0.6 : x.key === 'rebuild' ? 0.2 : 0)
-            : 0;
+        const share = context.incidentShare(s);
+        const workLoss =
+          (x.backupRestore
+            ? x.workLoss
+            : s.jobs.reduce((sum, j) => sum + j.work * (x.workPct || 0), 0)) * share;
+        const researchLoss =
+          (x.backupRestore
+            ? x.researchLoss
+            : incident.kind === 'corruption'
+              ? s.research * (x.key === 'manual' ? 0.6 : x.key === 'rebuild' ? 0.2 : 0)
+              : 0) * share;
+        if (x.researchRestore) x.researchRestore *= share;
+        if (x.workRestore) x.workRestore *= share;
         const shortage =
           x.unavailable ||
           (s.resilience.parts < x.parts

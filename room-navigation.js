@@ -7,7 +7,14 @@ const names = {
 };
 export function roomLocation(layout, id, floor = 1) {
   const room = layout.rooms.find((item) => item.id === id);
-  if (room) return { id, floor: room.floor, name: `Raum ${room.number}`, rackIds: room.rackIds };
+  if (room)
+    return {
+      id,
+      floor: room.floor,
+      name: `Raum ${room.number}`,
+      rackIds: room.rackIds,
+      ...(room.supply ? { supply: room.supply } : {}),
+    };
   const owned = id === 'hall' || !layout.specialRooms || layout.specialRooms.includes(id);
   const safeId = names[id] && owned ? id : 'hall';
   return {

@@ -31,7 +31,7 @@ test('existing v3 saves normalize without changing the source or their rack assi
   const restored = normalizeState(original);
 
   assert.deepEqual(original, before, 'normalization does not mutate the saved object');
-  assert.equal(restored.version, 3);
+  assert.equal(restored.version, 8);
   assert.deepEqual(restored.facility.racks, original.facility.racks);
   assert.equal(restored.servers[0].rackId, original.servers[0].rackId);
   assert.equal(restored.sector, original.sector);

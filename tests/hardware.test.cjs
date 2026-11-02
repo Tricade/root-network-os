@@ -474,8 +474,8 @@ test('a disconnected low-condition server cannot distort reliability or gain a c
   );
   const linkedReliability = getMetrics(state).reliability;
   assert.ok(
-    linkedReliability < lowConditionReliability,
-    'reconnecting a low-condition server includes its condition in reliability',
+    linkedReliability <= lowConditionReliability,
+    'connecting another node with the same condition cannot invent a reliability bonus',
   );
 });
 

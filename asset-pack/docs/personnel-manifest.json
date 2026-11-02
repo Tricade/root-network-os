@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "origin": "Original ROOT robot portraits generated with the built-in image_gen.imagegen tool. No downloaded character art or external models.",
+  "license": "CC0-1.0",
+  "prompts": "personnel-prompts.json",
+  "portraits": 64,
+  "sheets": [
+    {
+      "file": "textures/ui/personnel-1.png",
+      "sha256": "b3636d1f0db55024e8f2da794be91c8369ec769edfa6746a1033c05011b55ad0",
+      "width": 1254,
+      "height": 1254,
+      "rows": 4,
+      "columns": 4
+    },
+    {
+      "file": "textures/ui/personnel-2.png",
+      "sha256": "b0dc5aec47ded318bf862e411dee9a062b90451184d871127e9c5e29dc2907f7",
+      "width": 1254,
+      "height": 1254,
+      "rows": 4,
+      "columns": 4
+    },
+    {
+      "file": "textures/ui/personnel-3.png",
+      "sha256": "601fd0ed270e24f50d85d31b89bdc1277e5b1c382e6046d363fd600e8fc6c107",
+      "width": 1254,
+      "height": 1254,
+      "rows": 4,
+      "columns": 4
+    },
+    {
+      "file": "textures/ui/personnel-4.png",
+      "sha256": "dfb54c1a2fc65cfe2aa9ba14dbfaf0a6b9d6b8167b554f405bf43062fa7d2852",
+      "width": 1254,
+      "height": 1254,
+      "rows": 4,
+      "columns": 4
+    }
+  ]
+}

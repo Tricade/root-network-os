@@ -6,59 +6,32 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function createDomain(context) {
-    const { catalog, FOCI, own } = context;
+    const { FOCI } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
     const addLog = (...args) => context.addLog(...args);
-    const cost = (...args) => context.cost(...args);
     const getAgentOperations = (...args) => context.getAgentOperations(...args);
-    const uid = (...args) => context.uid(...args);
 
     function applyWorkforce(s, action, payload, m) {
       const fail = (message) => ({ ok: false, message });
-      if (action === 'recruitAgent') {
-        const role = payload.role;
-        if (!own(catalog.roles, role)) return fail('Diese Agentenrolle ist unbekannt.');
-        if (s.agents.length >= m.agentLimit)
-          return fail('Der Sektor hat seine Agentengrenze erreicht.');
-        const price = cost(s, 'agent', role);
-        if (s.credits < price) return fail(`Es fehlen ${Math.ceil(price - s.credits)} Credits.`);
-        s.credits -= price;
-        const names = ['Lea', 'Jonas', 'Nuri', 'Eva', 'Sam', 'Noor', 'Lin'];
-        const id = uid(s, 'agent');
-        s.agents.push({
-          id,
-          name: names[(s.counters.agentsHired + 2) % names.length],
-          role,
-          level: 1,
-          focus: role === 'analyst' ? 'research' : role === 'engineer' ? 'maintenance' : 'income',
-          trait:
-            role === 'analyst' ? 'aufmerksam' : role === 'engineer' ? 'umsichtig' : 'pragmatisch',
-          assignment: null,
-          cooldownUntil: 0,
-        });
-        s.counters.agentsHired++;
-        addLog(s, 'success', `${catalog.roles[role].name} dem Team beigetreten.`);
-        return { ok: true, message: 'Agent eingestellt.' };
-      }
       if (action === 'setAgentFocus') {
         const x = s.agents.find((v) => v.id === payload.id);
         if (!x) return fail('Agent nicht gefunden.');
-        if (x.assignment)
+        if (
+          x.assignment ||
+          context.preventiveAgentBusy(s, x.id) ||
+          s.operations.projects.some((p) => p.agentId === x.id) ||
+          context.customerAssignment(s, x.id)
+        )
           return fail('Der Agent ist im Einsatz; der Schwerpunkt lässt sich danach wieder ändern.');
         if (!FOCI.includes(payload.focus)) return fail('Dieser Schwerpunkt ist ungültig.');
         x.focus = payload.focus;
         return { ok: true, message: 'Schwerpunkt angepasst.' };
       }
       if (action === 'upgradeAgent') {
+        const quote = context.quoteAgentUpgrade(s, payload.id);
+        if (!quote.enabled) return fail(quote.reason);
         const x = s.agents.find((v) => v.id === payload.id);
-        if (!x) return fail('Agent nicht gefunden.');
-        if (x.assignment)
-          return fail('Der Agent ist im Einsatz und kann erst danach entwickelt werden.');
-        if (x.level >= 10000)
-          return fail('Dieser Agent hat die höchste Entwicklungsstufe erreicht.');
-        const price = cost(s, 'agentUpgrade', x.id);
-        if (s.credits < price) return fail(`Es fehlen ${Math.ceil(price - s.credits)} Credits.`);
-        s.credits -= price;
+        s.credits -= quote.cost;
         x.level++;
         addLog(s, 'success', `${x.name} erreicht Stufe ${x.level}.`);
         return { ok: true, message: 'Agent entwickelt.' };

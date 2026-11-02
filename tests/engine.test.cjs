@@ -56,7 +56,7 @@ test('catalog, initial state, and exported engine API match the ROOT contract', 
     assert.ok(Number.isFinite(catalog.servers[id].baseCost) && catalog.servers[id].baseCost > 0);
   }
   const state = createState(12345);
-  assert.equal(state.version, 3);
+  assert.equal(state.version, 8);
   assert.equal(state.seed, 12345);
   assert.ok(state.servers.length >= 1);
   assert.ok(state.agents.length >= 2);
@@ -208,11 +208,15 @@ test('server modes, job priority, and agent focus expose measurable tradeoffs', 
   const eco = getMetrics(ecoState);
   assert.ok(performance.capacity > baseMetrics.capacity);
   assert.ok(performance.power > baseMetrics.power);
-  assert.ok(performance.heat > baseMetrics.heat);
+  assert.equal(
+    performance.heat,
+    baseMetrics.heat,
+    'a cold rack does not invent heat on a mode change',
+  );
   assert.ok(performance.workPerSecond > baseMetrics.workPerSecond);
   assert.ok(eco.capacity < baseMetrics.capacity);
   assert.ok(eco.power < baseMetrics.power);
-  assert.ok(eco.heat < baseMetrics.heat);
+  assert.equal(eco.heat, baseMetrics.heat);
   assert.ok(eco.workPerSecond < baseMetrics.workPerSecond);
 
   const focusState = structuredClone(base);
@@ -326,8 +330,8 @@ test('real active job load produces a finite utilization consistent with used ca
   job.work = job.totalWork;
   const loaded = getMetrics(state);
   assert.ok(
-    Math.abs(loaded.usedCapacity - job.load) < 1e-12,
-    'capacity use reflects the active job reservation',
+    loaded.usedCapacity > job.load,
+    'capacity includes customer commitments as well as the active project',
   );
   assert.ok(Math.abs(loaded.load - loaded.usedCapacity / loaded.capacity) < 1e-12);
 });
@@ -355,6 +359,7 @@ test('autorepair trades credits for better network condition on a stressed fleet
   base.credits = 100000;
   base.servers[0].type = 'compute';
   base.servers[0].level = 10;
+  base.servers[0].condition = 80;
   base.servers[0].mode = 'performance';
   base.jobs[0].load = 0.75;
   base.jobs[0].work = base.jobs[0].totalWork;
@@ -382,18 +387,21 @@ test('autorepair trades credits for better network condition on a stressed fleet
     'the maintenance cost remains measurable after simulation',
   );
   assert.ok(
-    enabled.credits >= beforeCredits,
-    'passive income keeps the network solvent during repairs',
+    enabled.credits > 0 && enabled.credits < beforeCredits,
+    'an oversized, underutilized fleet spends its reserve instead of printing free income',
   );
 });
 
 test('autocontract fills an idle network from real offers and refills completed slots', () => {
   const state = createState(505);
+  state.credits = 1e6;
+  act(state, 'buyServer', { type: 'compute' });
+  state.resilience.graceUntil = 1e9;
   state.jobs = [];
   const initialOffers = new Set(state.offers.map((offer) => offer.id));
   assert.equal(state.jobs.length, 0, 'fixture starts idle with real offers waiting');
   assert.equal(act(state, 'setPolicy', { key: 'autocontract', value: true }).ok, true);
-  const limit = getMetrics(state).jobLimit;
+  const limit = Math.min(getMetrics(state).jobLimit, state.agents.length + 1);
   assert.ok(state.jobs.length > 0, 'turning autocontract on fills idle slots immediately');
   assert.ok(
     state.jobs.every((job) => initialOffers.has(job.id)),
@@ -437,6 +445,9 @@ test('routing research keeps its advertised +12% benefit at level six', () => {
   const state = createState(506);
   state.research = 100000;
   state.upgrades.routing = 5;
+  state.lab.owned = ['network-fabric']; // completed foundation; this case measures the repeatable level
+  state.resilience.graceUntil = 1e9;
+  state.policies.autobackup = false; // compare steady work rates without an unrelated backup window
   const description = catalog.research.find((item) => item.id === 'routing').description;
   assert.match(description, /12 Prozentpunkte.*Arbeitstempo je Stufe/i);
   const baseRateState = structuredClone(state);
@@ -445,6 +456,8 @@ test('routing research keeps its advertised +12% benefit at level six', () => {
   const before = getMetrics(state).workPerSecond;
   assert.equal(cost(state, 'research', 'routing') > 0, true);
   assert.equal(act(state, 'buyResearch', { id: 'routing' }).ok, true);
+  assert.equal(state.upgrades.routing, 5, 'funding alone does not grant the next level');
+  advance(state, state.lab.project.total);
   assert.equal(state.upgrades.routing, 6);
   const after = getMetrics(state).workPerSecond;
   assert.ok(after > before, 'sixth routing level remains mechanically useful');
@@ -557,12 +570,25 @@ test('moderately advanced purchased fleets survive normalization and can keep ad
   const state = createState(509);
   state.credits = 1e6;
   state.research = 1e6;
+  state.resilience.graceUntil = 1e9;
+  // Complete actual funded projects sequentially; the S1 fleet buys physical
+  // cooling rather than depending on the S2 thermal-research prerequisite.
+  for (const id of ['network-fabric', 'automation-workflows', 'routing', 'automation']) {
+    assert.equal(act(state, 'buyResearch', { id }).ok, true);
+    advance(state, state.lab.project.total);
+  }
+  for (const component of ['power', 'cooling'])
+    for (let level = 1; level < 7; level++) {
+      assert.equal(
+        act(state, 'upgradeRack', { rackId: state.facility.racks[0].id, component }).ok,
+        true,
+      );
+      advance(state, state.facility.operation.total);
+    }
   for (const type of ['compute', 'storage', 'edge', 'compute'])
     assert.equal(act(state, 'buyServer', { type }).ok, true);
   for (const role of ['engineer', 'analyst', 'operator'])
     assert.equal(act(state, 'recruitAgent', { role }).ok, true);
-  for (const id of ['routing', 'cooling', 'automation'])
-    assert.equal(act(state, 'buyResearch', { id }).ok, true);
   assert.equal(act(state, 'setPolicy', { key: 'autocontract', value: true }).ok, true);
   const loaded = normalizeState(JSON.parse(JSON.stringify(state)));
   loaded.resilience.graceUntil = loaded.time + 43200;

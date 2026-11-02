@@ -8,7 +8,7 @@ const { randomUUID, createHash } = require('node:crypto');
 const ROOT = __dirname;
 const PORT = Number.parseInt(process.env.ROOT_PORT || '18473', 10);
 const DATA_DIR = path.resolve(process.env.ROOT_DATA_DIR || path.join(ROOT, 'data'));
-const API_VERSION = 3;
+const API_VERSION = 8;
 const RELEASE = require('./package.json').version;
 const MAX_BODY = 16 * 1024 * 1024;
 const { createStaticFiles } = require('./server/static-files.cjs');
@@ -213,7 +213,13 @@ function createServer(options = {}) {
           parsed &&
           typeof parsed === 'object' &&
           !Array.isArray(parsed) &&
-          (parsed.version === 1 || parsed.version === 2)
+          (parsed.version === 1 ||
+            parsed.version === 2 ||
+            parsed.version === 3 ||
+            parsed.version === 4 ||
+            parsed.version === 5 ||
+            parsed.version === 6 ||
+            parsed.version === 7)
         ) {
           return send(res, 409, {
             ok: false,
@@ -222,41 +228,48 @@ function createServer(options = {}) {
               'Diese Oberfläche stammt aus einer älteren Version. Lade sie neu, bevor du fortfährst.',
           });
         }
-        // API v3 remains read-compatible: normalizeState can still migrate old v3
-        // saves for GET/import. Writes require the 1.4 central-facility capability,
-        // because normalization would otherwise default omitted systems to zero and
-        // let an older cached client erase newer facility upgrades.
+        // Import/GET migrate legacy saves. Writes require schema 8 so cached
+        // clients cannot silently erase commercial contracts or staff state.
         if (
-          parsed &&
-          typeof parsed === 'object' &&
-          !Array.isArray(parsed) &&
-          parsed.version === 3
+          parsed?.version === 8 &&
+          (!parsed.customerGrowth ||
+            !parsed.preventiveMaintenance ||
+            !parsed.servicePriorities ||
+            !parsed.lab ||
+            !parsed.customers ||
+            !parsed.personnel ||
+            !parsed.facility?.central ||
+            !Object.hasOwn(parsed.facility, 'centralOperation') ||
+            !parsed.facility.building)
         ) {
-          const facility = parsed.facility;
-          if (
-            !facility ||
-            typeof facility !== 'object' ||
-            Array.isArray(facility) ||
-            !Object.hasOwn(facility, 'central') ||
-            !Object.hasOwn(facility, 'centralOperation') ||
-            !Object.hasOwn(facility, 'building')
-          ) {
-            return send(res, 409, {
-              ok: false,
-              updateRequired: true,
-              error:
-                'Diese Oberfläche stammt aus einer älteren Version. Lade sie neu, bevor du fortfährst.',
-            });
-          }
+          return send(res, 409, {
+            ok: false,
+            updateRequired: true,
+            error:
+              'Diese Oberfläche stammt aus einer älteren Version. Lade sie neu, bevor du fortfährst.',
+          });
         }
         const engine = getEngine();
         if (!engine) throw new Error('Die Datenstruktur kann ohne engine.js nicht geprüft werden.');
+        // Import/read may migrate old milestones, but stale browser writers must not erase claims.
+        if (
+          parsed?.version === API_VERSION &&
+          engine.catalog.achievements.some(
+            (a) => !a.legacy && !Object.hasOwn(parsed.achievementUnlocks || {}, a.id),
+          )
+        )
+          return send(res, 409, {
+            ok: false,
+            updateRequired: true,
+            error:
+              'Diese Oberfläche stammt aus einer älteren Version. Lade sie neu, bevor du fortfährst.',
+          });
         const normalized = engine.normalizeState(parsed);
-        if (normalized.version !== API_VERSION)
-          throw new Error('Nicht unterstützte Netzwerkstand-Version.');
         if (!normalized || typeof normalized !== 'object' || Array.isArray(normalized)) {
           throw new Error('Ungültiger Netzwerkstand.');
         }
+        if (normalized.version !== API_VERSION)
+          throw new Error('Nicht unterstützte Netzwerkstand-Version.');
         const expectedRevision = req.headers['x-root-revision'];
         const previousQueue = writeQueue;
         let release;

@@ -10,6 +10,19 @@ export function createEventsUI(ctx, platform = globalThis) {
         return;
       }
       if (target.disabled || ctx.desktopClosing?.()) return;
+      if (target.dataset.dashboardTour !== undefined) return ctx.Room.enter();
+      if (ctx.notificationClick?.(target)) return;
+      if (ctx.attentionClick?.(target)) return;
+      if (ctx.dashboardClick?.(target)) return;
+      if (ctx.workforceClick?.(target)) return;
+      if (ctx.facilityClick?.(target)) return;
+      if (ctx.agentDevelopmentClick?.(target)) return;
+      if (ctx.researchClick?.(target)) return;
+      if (ctx.personnelClick?.(target)) return;
+      if (ctx.growthClick?.(target)) return;
+      if (ctx.preventiveClick?.(target)) return;
+      if (ctx.businessClick?.(target)) return;
+      if (ctx.operationsClick?.(target)) return;
       if (ctx.handleDesktopCommand?.(target.dataset.desktopCommand)) return;
       const hardware = ctx.R.click(target);
       if (hardware) {
@@ -73,8 +86,9 @@ export function createEventsUI(ctx, platform = globalThis) {
         ctx.render();
       }
       if (command === 'export') {
-        ctx.exportSave();
-        ctx.toast('Netzwerkstand als Datei exportiert.');
+        return Promise.resolve(ctx.exportSave()).then(() =>
+          ctx.toast('Netzwerkstand als Datei exportiert.'),
+        );
       }
       if (command === 'export-conflict') {
         const body = ctx.storageGet('root.conflict.save');
@@ -116,8 +130,23 @@ export function createEventsUI(ctx, platform = globalThis) {
         return ctx.replaceState(next);
       }
     });
+    platform.document.addEventListener('input', (event) => {
+      if (ctx.desktopClosing?.()) return;
+      if (ctx.operationsInput?.(event.target)) return;
+      if (ctx.businessInput?.(event.target)) return;
+      ctx.facilityInput?.(event.target);
+    });
     platform.document.addEventListener('change', (event) => {
       if (ctx.desktopClosing?.()) return;
+      if (ctx.achievementChange?.(event.target)) return;
+      if (ctx.notificationChange?.(event.target)) return;
+      if (ctx.attentionChange?.(event.target)) return;
+      if (ctx.businessChange?.(event.target)) return;
+      if (ctx.workforceChange?.(event.target)) return;
+      if (ctx.facilityChange?.(event.target)) return;
+      if (ctx.growthChange?.(event.target)) return;
+      if (ctx.preventiveChange?.(event.target)) return;
+      if (ctx.operationsChange?.(event.target)) return;
       if (event.target.hasAttribute('data-building-floor')) {
         if (ctx.selectFacilityFloor(event.target.value)) ctx.render();
         return;
@@ -164,6 +193,13 @@ export function createEventsUI(ctx, platform = globalThis) {
       }
     });
     platform.document.addEventListener('keydown', (event) => {
+      // The native picker owns Escape/Tab until it closes; keep its parent dialog open.
+      if (
+        event.defaultPrevented ||
+        (platform.CSS?.supports('selector(select:open)') &&
+          platform.document.querySelector('select:open'))
+      )
+        return;
       if (
         !ctx.modal &&
         (ctx.Room.isExploring() ||

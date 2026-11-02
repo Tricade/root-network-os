@@ -1,13 +1,17 @@
+import { createFacilityNavigator } from './facility-navigator.js';
+import { roomArt } from './facility-art.js';
+
 /** Building ownership and utility controls. Timers update existing elements, never whole cards. */
 export function createFacilityUI(ctx) {
   let selectedFloor = 1;
   const { E, esc, fmt, dec, duration, icon, tr } = ctx;
+  const navigator = createFacilityNavigator(ctx, { selectFloor: selectFacilityFloor });
   const details = {
     cooling:
-      'Zusätzliche Kühlleistung wird auf aktive Racks verteilt. Die Anlage benötigt selbst Strom; Temperaturen sinken allmählich.',
+      'Zentrale Kühlleistung wird nur auf angeschlossene aktive Racks verteilt. Die Anlage benötigt selbst Strom; Temperaturen sinken allmählich.',
     ups: 'Die USV schützt nur die Last innerhalb ihrer Leistungskapazität. Sie senkt Wahrscheinlichkeit und Schwere von Stromausfällen.',
     distribution:
-      'Ein endliches zusätzliches Strombudget wird auf aktive Racks verteilt. Leere Racks verbrauchen keine Reserve.',
+      'Das zentrale Strombudget wird nur auf angeschlossene aktive Racks verteilt. Lokale Reserve bleibt nur bei Hybridversorgung verfügbar.',
   };
 
   function quoteButton(action, payload, quote, label = 'Bau prüfen') {
@@ -35,15 +39,15 @@ export function createFacilityUI(ctx) {
     const plots = Array.from({ length: layout.roomsPerFloor }, (_, i) => {
       const room = rooms[i];
       if (room)
-        return `<article class="building-plot owned"><span class="tag">Gebaut</span><h3>Raum ${room.number}</h3><p>${room.rackCount} / 6 Racks · ${room.serverCount} Server</p>
+        return `<article class="building-plot owned">${roomArt('server', 'ready')}<span class="tag">Gebaut</span><h3>Raum ${room.number}</h3><p>${room.rackCount} / 6 Racks · ${room.serverCount} Server</p>
         <div class="building-rack-slots" aria-hidden="true">${Array.from({ length: 6 }, (_, n) => `<i class="${n < room.rackCount ? 'filled' : ''}"></i>`).join('')}</div>
         <button class="button small" data-facility-visit="${room.id}" data-facility-floor="${room.floor}">Raum betreten${icon('arrow')}</button>
-        <button class="text-button" data-building-hardware="${room.id}">Hardware verwalten</button></article>`;
+        <button class="text-button" data-facility-node="room:${room.id}">Raum auswählen</button><button class="text-button" data-building-hardware="${room.id}">Hardware verwalten</button></article>`;
       const inBuild =
         i === rooms.length &&
         building.project?.kind === 'room' &&
         building.project.floor === selectedFloor;
-      return `<article class="building-plot ${inBuild ? 'under-construction' : 'vacant'}"><span class="tag">${inBuild ? 'Im Bau' : 'Unbebaut'}</span><h3>Bauplatz ${i + 1}</h3><p>${inBuild ? 'Der neue Serverraum wird erschlossen.' : 'Unterirdische Fläche für einen weiteren Serverraum.'}</p>${icon(inBuild ? 'timer' : 'layers')}</article>`;
+      return `<article class="building-plot ${inBuild ? 'under-construction' : 'vacant'}">${roomArt('server', inBuild ? 'building' : 'planned')}<span class="tag">${inBuild ? 'Im Bau' : 'Unbebaut'}</span><h3>Bauplatz ${i + 1}</h3><p>${inBuild ? 'Der neue Serverraum wird erschlossen.' : 'Unterirdische Fläche für einen weiteren Serverraum.'}</p></article>`;
     }).join('');
     return `<section class="panel section-spacer building-plan"><div class="panel-body">
       <div class="building-section-heading"><div><h2>Raumplan</h2><p>Räume und Untergeschosse werden separat gebaut. Ein leerer Raum bietet sechs Rackplätze.</p></div>
@@ -59,7 +63,7 @@ export function createFacilityUI(ctx) {
       <div class="building-service-grid">${building.serviceRooms
         .map(
           (room) =>
-            `<article class="building-service"><span class="tag">${room.owned ? 'Gebaut' : 'Ab Sektor ' + room.unlockSector}</span><h3>${esc(room.name)}</h3>${
+            `<article class="building-service">${roomArt(room.id, room.owned ? 'ready' : building.project?.roomType === room.id ? 'building' : 'planned')}<span class="tag">${room.owned ? 'Gebaut' : 'Ab Sektor ' + room.unlockSector}</span><h3>${esc(room.name)}</h3>${
               room.owned
                 ? `<button class="button" data-facility-visit="${room.id}">Raum betreten${icon('arrow')}</button>`
                 : quoteButton('buildServiceRoom', { roomType: room.id }, room.quote)
@@ -92,7 +96,9 @@ export function createFacilityUI(ctx) {
       ctx.head('Gebäude & Technik', 'Dein Cyberbunker wächst mit jedem bezahlten Bauauftrag.') +
       `<div class="rack-summary"><div><span>Serverräume</span><strong>${building.roomCount}</strong></div><div><span>Untergeschosse</span><strong>${building.floorCount}</strong></div><div><span>Freie Rackplätze</span><strong>${building.freeRackSlots}</strong></div><div><span>Technikkosten</span><strong data-central-stat="upkeep">${dec(central.upkeep * 60)} CR / min</strong></div></div>` +
       projectPanel(building.project) +
+      navigator.markup(layout, building, selectedFloor) +
       roomPlan(layout, building) +
+      ctx.roomOperationsView() +
       `<section class="panel section-spacer building-excavation"><div class="panel-body"><span class="eyebrow">TIEFBAU / NÄCHSTE EBENE</span><h2>Untergeschoss ${building.floorCount + 1} erschließen</h2><p>Eine neue Ebene umfasst Flur, Treppe und vier unbebaute Raumplätze. Sie enthält noch keine Serverräume oder Hardware.</p>${quoteButton('buildFloor', {}, building.buyFloor, 'Untergeschoss planen')}</div></section>` +
       serviceRooms(building) +
       centralSystems(central) +
@@ -168,5 +174,13 @@ export function createFacilityUI(ctx) {
       el.querySelector('[data-building-progress]').style.width = project.progress * 100 + '%';
     });
   }
-  return { facilityView, facilitySignature, selectFacilityFloor, updateCentralTelemetry };
+  return {
+    facilityView,
+    facilitySignature,
+    selectFacilityFloor,
+    updateCentralTelemetry,
+    facilityClick: navigator.click,
+    facilityChange: navigator.change,
+    facilityInput: navigator.input,
+  };
 }

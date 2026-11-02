@@ -1,3 +1,5 @@
+import { STATION_CONFIGS, stationRows } from './room/station-content.js';
+import { dashboardModel } from './ui/dashboard-model.js';
 import { createControlLounge } from './room-lounge.js';
 import { operationReadout } from './room-instruments.js';
 
@@ -110,16 +112,7 @@ export function createStations({ THREE, scene, E, getState, assetBank = null }) 
     return mesh;
   }
 
-  const configs = {
-    agents: { title: 'Agenten', color: '#90d6e8', eyebrow: 'PERSONAL · EINSÄTZE' },
-    jobs: { title: 'Aufträge', color: '#a8db78', eyebrow: 'QUEUE · DURCHSATZ' },
-    research: { title: 'Forschung', color: '#b9a0fa', eyebrow: 'LABOR · ERKENNTNISSE' },
-    automation: { title: 'Automatik', color: '#e7bb70', eyebrow: 'POLICY · ROUTINEN' },
-    resilience: { title: 'Betrieb & Schutz', color: '#ee927d', eyebrow: 'INTEGRITÄT · RISIKO' },
-    inbox: { title: 'Ereignisse', color: '#80c5ec', eyebrow: 'POSTEINGANG · ENTSCHEIDUNGEN' },
-    network: { title: 'Netzwerk', color: '#a6d876', eyebrow: 'ROOT · LEITSTAND' },
-    facility: { title: 'Gebäudetechnik', color: '#edbe7c', eyebrow: 'STROM · KLIMA · USV' },
-  };
+  const configs = STATION_CONFIGS;
 
   function makeScreen(parent, view, x, y, z, width, height, turn = 0, wall = false) {
     const cfg = configs[view];
@@ -151,7 +144,7 @@ export function createStations({ THREE, scene, E, getState, assetBank = null }) 
     target.rotation.copy(face.rotation);
     target.userData = {
       roomKind: 'station',
-      view: view === 'network' ? 'overview' : view,
+      view,
       label: cfg.title,
       stationId: `station-${view}`,
     };
@@ -242,8 +235,8 @@ export function createStations({ THREE, scene, E, getState, assetBank = null }) 
     station.add(lamp);
   }
 
-  buildWorkstation(-2.82, 'Leitstand 01', ['agents', 'jobs', 'research']);
-  buildWorkstation(2.82, 'Leitstand 02', ['automation', 'inbox', 'network']);
+  buildWorkstation(-2.82, 'Leitstand 01', ['overview', 'business', 'jobs']);
+  buildWorkstation(2.82, 'Leitstand 02', ['agents', 'research', 'operations']);
 
   if (assetBank) buildControlLounge();
 
@@ -311,7 +304,7 @@ export function createStations({ THREE, scene, E, getState, assetBank = null }) 
         mesh.userData = {
           ...mesh.userData,
           roomKind: 'station',
-          view: view === 'network' ? 'overview' : view,
+          view,
           label: configs[view].title,
           stationId: 'station-' + view,
         };
@@ -334,116 +327,14 @@ export function createStations({ THREE, scene, E, getState, assetBank = null }) 
     String(value ?? '')
       .replace(/\s+/g, ' ')
       .slice(0, max);
-  const roleName = { operator: 'Operator', analyst: 'Analyst', engineer: 'Techniker' };
-  const focusName = {
-    income: 'Auftragsarbeit',
-    research: 'Forschung',
-    maintenance: 'Netzwerkpflege',
-  };
-  const priorityName = { balanced: 'Ausgewogen', income: 'Vergütung', research: 'Forschung' };
-  const powerName = { balanced: 'Ausgeglichen', performance: 'Leistung', eco: 'Öko' };
-
-  function linesFor(view, state, m, resilience, ops) {
-    const rows = [];
-    const active = (state.agents || []).filter((a) => !a.assignment).length;
-    const assigned = (state.agents || []).filter((a) => a.assignment).length;
-    const jobs = state.jobs || [];
-    const events = state.events || [];
-    if (view === 'agents') {
-      rows.push(['IM DIENST', `${active} frei   /   ${assigned} im Einsatz`]);
-      for (const agent of (state.agents || []).slice(0, 3))
-        rows.push([
-          agent.name,
-          agent.assignment?.label ||
-            `${roleName[agent.role] || agent.role} · ${focusName[agent.focus] || 'Bereit'}`,
-        ]);
-      rows.push([
-        'EINSATZSTATUS',
-        ops.paused ? 'Pausiert · Schutzmodus' : `${ops.effects.length} aktive Netzwerkeffekte`,
-      ]);
-    } else if (view === 'jobs') {
-      rows.push(['QUEUE', `${jobs.length} aktiv   /   ${state.offers?.length || 0} Angebote`]);
-      rows.push(['KAPAZITÄT', `${one(m.usedCapacity)} / ${one(m.capacity)} Einheiten`]);
-      rows.push([
-        'GPU BELEGT / VERFÜGBAR',
-        `${one(m.gpuUsed)} / ${one(m.gpuCapacity)} · ${fmt(m.gpuInstalled)} installiert`,
-      ]);
-      for (const job of jobs.slice(0, 2)) {
-        const progress = job.totalWork > 0 ? (job.work / job.totalWork) * 100 : 0;
-        const gpu = job.kind === 'ai' ? ` · ${one(job.gpuDemand || 1)} GPU Bedarf` : '';
-        rows.push([job.title, `${one(progress)} % · ${fmt(job.reward)} CR${gpu}`]);
-      }
-      if (!jobs.length) rows.push(['WARTESCHLANGE', 'Keine aktiven Aufträge']);
-    } else if (view === 'research') {
-      rows.push(['FORSCHUNGSPUNKTE', `${one(state.research)} FP`]);
-      rows.push(['ZUWACHS', `${one(m.researchPerSecond * 60)} FP / Minute`]);
-      rows.push(['SEKTOR', `${state.sector} · ${fmt(m.onlineServers)} Server online`]);
-      const upgrades = {
-        routing: 'Routing',
-        cooling: 'Kühlung',
-        market: 'Vertragsanalyse',
-        automation: 'Abläufe',
-        synthesis: 'Synthese',
-      };
-      for (const [key, label] of Object.entries(upgrades))
-        rows.push([label, `Stufe ${state.upgrades?.[key] || 0}`]);
-    } else if (view === 'automation') {
-      rows.push([
-        'AUFTRAGSVERGABE',
-        state.policies?.autocontract ? 'Automatisch aktiv' : 'Manuelle Freigabe',
-      ]);
-      rows.push(['REPARATUR', state.policies?.autorepair ? 'Automatik aktiv' : 'Manuelle Wartung']);
-      rows.push(['PRIORITÄT', priorityName[state.policies?.priority] || 'Ausgewogen']);
-      rows.push(['ENERGIEPROFIL', powerName[state.policies?.power] || 'Ausgeglichen']);
-      rows.push([
-        'LAUFENDE MASSNAHME',
-        resilience.operation?.label || state.facility?.operation?.label || 'Keine Maßnahme',
-      ]);
-      rows.push([
-        'AGENTEN',
-        ops.paused ? 'Krisenpause aktiv' : `${assigned} Einsatz · ${active} verfügbar`,
-      ]);
-    } else if (view === 'resilience') {
-      rows.push([
-        'INTEGRITÄT',
-        `${fmt(resilience.integrity)} % · ${resilience.safetyMode ? 'SCHUTZMODUS' : 'STABIL'}`,
-      ]);
-      rows.push(['STÖRUNGSRISIKO', `${resilience.riskLabel} · ${one(resilience.riskPerHour)} / h`]);
-      rows.push(['SERVER', `${resilience.online} online · ${resilience.failed} ausgefallen`]);
-      rows.push(['ERSATZTEILE', `${resilience.parts} im Lager`]);
-      rows.push(['VORFALL', resilience.incident?.title || 'Kein offener Vorfall']);
-    } else if (view === 'inbox') {
-      rows.push([
-        'OFFENE EREIGNISSE',
-        `${events.length} Entscheidung${events.length === 1 ? '' : 'en'}`,
-      ]);
-      for (const event of events.slice(0, 3)) rows.push([event.title, event.description]);
-      if (!events.length) rows.push(['POSTEINGANG', 'Keine offenen Meldungen']);
-      rows.push(['BETRIEBSVORFALL', resilience.incident?.title || 'Keine Krisenmeldung']);
-    } else {
-      rows.push([
-        'NETZSTATUS',
-        resilience.safetyMode ? 'SCHUTZMODUS' : resilience.failed ? 'EINGESCHRÄNKT' : 'ONLINE',
-      ]);
-      rows.push(['SERVER / AGENTEN', `${m.onlineServers} / ${state.agents?.length || 0}`]);
-      rows.push(['LAST / KAPAZITÄT', `${pct(m.load)} · ${one(m.capacity)} Einheiten`]);
-      rows.push([
-        'LEISTUNG / RACKTEMP.',
-        `${one(m.power)} kW · max. ${one(m.maxRackTemperature)} °C`,
-      ]);
-      rows.push([
-        'GPU BELEGT / VERFÜGBAR',
-        `${one(m.gpuUsed)} / ${one(m.gpuCapacity)} · ${fmt(m.gpuInstalled)} installiert`,
-      ]);
-      rows.push(['GUTHABEN', `${fmt(state.credits)} CR   ·   ${one(state.research)} FP`]);
-      rows.push(['SEKTOR', `${state.sector} · Zuverlässigkeit ${one(m.reliability)} %`]);
-    }
-    return rows.slice(0, 6);
-  }
-
   function renderScreen(screen, state, m, resilience, ops, statusColor, facility) {
     if (screen.wall) return renderWallScreen(screen, state, m, resilience, statusColor, facility);
-    const rows = linesFor(screen.view, state, m, resilience, ops);
+    const rows = stationRows(screen.view, state, m, resilience, ops, facility.dashboard, {
+      one,
+      fmt,
+      pct,
+      duration: (seconds) => Math.ceil(seconds / 60) + ' min',
+    });
     const lang = language();
     const localizedRows = rows.map(([label, value]) => [
       translateCanvas(label, state),
@@ -514,9 +405,11 @@ export function createStations({ THREE, scene, E, getState, assetBank = null }) 
     const en = language() === 'en',
       text = (de, english) => (en ? english : de);
     const { central, layout, construction } = facility;
-    let headline, value, detail, rows;
+    const headline = translateCanvas(screen.cfg.title, state).toLocaleUpperCase(
+      en ? 'en-US' : 'de-DE',
+    );
+    let value, detail, rows;
     if (screen.view === 'facility') {
-      headline = text('GEBÄUDETECHNIK', 'FACILITY SYSTEMS');
       value = `${one(m.powerW / 1000)} kW`;
       detail = text('Gesamte elektrische Last', 'Total electrical demand');
       rows = central.systems.map((system) => ({
@@ -571,7 +464,6 @@ export function createStations({ THREE, scene, E, getState, assetBank = null }) 
           ratio: central.upsCoverage,
         });
     } else if (screen.view === 'resilience') {
-      headline = text('BETRIEB & SCHUTZ', 'OPERATIONS & RESILIENCE');
       value = `${fmt(resilience.integrity)} %`;
       detail = text('Datenintegrität', 'Data integrity');
       rows = [
@@ -617,7 +509,6 @@ export function createStations({ THREE, scene, E, getState, assetBank = null }) 
         rows[3].ratio = operation.progress;
       }
     } else {
-      headline = text('NETZWERKÜBERSICHT', 'NETWORK OVERVIEW');
       value = `${m.onlineServers} / ${state.servers.length}`;
       detail = text('Server online', 'Servers online');
       rows = [
@@ -706,6 +597,7 @@ export function createStations({ THREE, scene, E, getState, assetBank = null }) 
     const resilience = shared?.resilience || E.getResilience(state, null, m);
     const ops = shared?.operations || E.getAgentOperations(state);
     const facility = {
+      dashboard: dashboardModel(E, state, m, resilience, ops),
       central: shared?.central || E.getCentralInfrastructure(state, m),
       layout: shared?.layout || E.getFacilityLayout(state),
       construction: shared?.construction || E.getConstructionProject?.(state) || null,

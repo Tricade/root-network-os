@@ -26,7 +26,8 @@
     }
 
     function activeRackIds(s) {
-      if (s.resilience.incident) return new Set();
+      if (context.globalIncident(s)) return new Set();
+      const racks = new Map(s.facility.racks.map((r) => [r.id, r]));
       return new Set(
         s.servers
           .filter(
@@ -35,6 +36,7 @@
               server.bootRemaining <= 0 &&
               server.status === 'online' &&
               server.condition > 0 &&
+              !context.incidentAffects(s, server, racks.get(server.rackId)) &&
               !(s.facility.operation && s.facility.operation.rackId === server.rackId),
           )
           .map((server) => server.rackId),
@@ -52,10 +54,12 @@
       );
       const duration = Math.min(300, system.duration + (targetLevel - 1) * 30);
       const locked = Boolean(
-        s.resilience.incident ||
+        context.globalIncident(s) ||
+        s.resilience.incident?.scope === 'central' ||
         s.resilience.operation ||
         s.facility.operation ||
-        s.facility.centralOperation,
+        s.facility.centralOperation ||
+        s.preventiveMaintenance?.operation,
       );
       let reason =
         s.sector < system.unlockSector
@@ -70,7 +74,13 @@
       const step = system.id === 'cooling' ? 3500 : system.id === 'ups' ? 3000 : 6000;
       const capacityAfterW = Math.min(targetLevel, system.maxLevel) * step,
         capacityGainW = capacityAfterW - level * step;
-      const active = activeRackIds(s).size > 0,
+      const activeIds = activeRackIds(s);
+      const active =
+          system.id === 'cooling'
+            ? s.facility.racks.some(
+                (r) => activeIds.has(r.id) && context.roomSupply(s, r.roomId).cooling !== 'local',
+              )
+            : activeIds.size > 0,
         powerIncreaseW = system.id === 'cooling' && active && capacityGainW > 0 ? 500 : 0;
       const nextLevels = { ...levels, [system.id]: Math.min(targetLevel, system.maxLevel) };
       const beforePowerW = active ? levels.cooling * 500 : 0;
@@ -79,10 +89,10 @@
         centralOperatingCost(levels, beforePowerW, s.policies.power);
       const effect =
         system.id === 'cooling'
-          ? `${capacityGainW} W zusätzliche Kühlleistung; danach ${capacityAfterW} W zentral. Auf aktive Racks verteilt.`
+          ? `${capacityGainW} W zusätzliche Kühlleistung; danach ${capacityAfterW} W zentral. Auf angeschlossene aktive Racks verteilt.`
           : system.id === 'ups'
             ? `${capacityGainW} W zusätzliche USV-Leistung; danach ${capacityAfterW} W gesamt. Bei passender Lastabdeckung sinkt die Chance schwerer Stromausfälle um bis zu 65 %; deren Folgen werden gemindert.`
-            : `${capacityGainW} W zusätzliche Gesamtreserve; danach ${capacityAfterW} W zentral. Gleichmäßig auf aktive Racks verteilt.`;
+            : `${capacityGainW} W zusätzliche Gesamtreserve; danach ${capacityAfterW} W zentral. Gleichmäßig auf angeschlossene aktive Racks verteilt.`;
       return {
         label: `${system.name} ausbauen`,
         description: `${price} Credits; ${duration} Sekunden Wartung. ${effect} Laufende Mehrkosten: ${upkeepIncrease.toFixed(3).replace('.', ',')} CR/s; zusätzliche Leistungsaufnahme: ${powerIncreaseW} W.`,
@@ -106,10 +116,12 @@
         base * Math.pow(level, 1.52) * (1 + Math.max(0, s.sector - 1) * 0.3),
       );
       const locked = Boolean(
-        s.resilience.incident ||
+        context.rackIncident(s, rack) ||
+        context.roomState(s, rack.roomId)?.conversion ||
         s.resilience.operation ||
         s.facility.operation ||
-        s.facility.centralOperation,
+        s.facility.centralOperation ||
+        s.preventiveMaintenance?.operation,
       );
       const reason = locked
         ? 'Während einer Krise oder laufenden Infrastrukturmaßnahme nicht verfügbar.'
@@ -128,6 +140,13 @@
         duration: step,
         enabled: !reason,
         reason,
+        ...(component === 'cooling' && context.roomSupply(s, rack.roomId).cooling === 'central'
+          ? {
+              warnings: [
+                'Lokale Kühlung ist bei Zentralbetrieb stillgelegt. Dieser Ausbau wirkt erst nach Umbau auf lokale oder hybride Versorgung.',
+              ],
+            }
+          : {}),
       };
     }
 
@@ -166,7 +185,7 @@
               (sum, row) => sum + row.centralCoolingW,
               0,
             ),
-            activeRackCount,
+            activeRackCount: [...hardware.values()].filter((r) => r.centralCoolingW > 0).length,
           };
         if (system.id === 'ups')
           return {
@@ -179,8 +198,11 @@
           ...common,
           distributionCapacityW: metrics.centralDistributionCapacityW,
           additionalPowerWPerRack: metrics.centralDistributionWPerRack,
-          totalAdditionalPowerW: metrics.centralDistributionWPerRack * activeRackCount,
-          activeRackCount,
+          totalAdditionalPowerW: [...hardware.values()].reduce(
+            (n, r) => n + r.centralPowerCapacityW,
+            0,
+          ),
+          activeRackCount: [...hardware.values()].filter((r) => r.centralPowerCapacityW > 0).length,
         };
       });
       const operation = s.facility.centralOperation

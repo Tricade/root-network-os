@@ -1,3 +1,4 @@
+import { consoleNavigation } from '../ui/navigation.js';
 /** 3D exploration. The per-view context owns scene resources and mutable interaction state. */
 export function createRoomExploration(sceneContext) {
   function startExploration(pointer = true, restored = null) {
@@ -90,7 +91,8 @@ export function createRoomExploration(sceneContext) {
     if (document.pointerLockElement === sceneContext.canvas) document.exitPointerLock();
     sceneContext.shell.classList.add('console-open');
     sceneContext.consolePanel.hidden = false;
-    sceneContext.consolePanel.querySelector('[data-room-console-title]').textContent = title;
+    sceneContext.consolePanel.querySelector('[data-room-console-title]').textContent =
+      sceneContext.tr(title);
     sceneContext.consoleContent.scrollTop = 0;
     sceneContext.consoleContent.focus({ preventScroll: true });
   }
@@ -104,11 +106,12 @@ export function createRoomExploration(sceneContext) {
   }
 
   function setConsoleTitle(title, view) {
-    sceneContext.consolePanel.querySelector('[data-room-console-title]').textContent = title;
-    sceneContext.consolePanel.querySelectorAll('[data-nav]').forEach((b) => {
-      b.classList.toggle('active', b.dataset.nav === view);
-      b.setAttribute('aria-current', b.dataset.nav === view ? 'page' : 'false');
-    });
+    sceneContext.consolePanel.querySelector('[data-room-console-title]').textContent =
+      sceneContext.tr(title);
+    sceneContext.consolePanel.querySelector('.room-console-nav').innerHTML = consoleNavigation(
+      view,
+      sceneContext.tr,
+    );
   }
 
   function hide() {
@@ -186,7 +189,9 @@ export function createRoomExploration(sceneContext) {
     if (sceneContext.keys.has('ArrowRight')) sceneContext.yaw -= delta * 1.6;
     if (!forward && !strafe) return;
     const length = Math.hypot(forward, strafe) || 1,
-      speed = (sceneContext.keys.has('ShiftLeft') ? 2.6 : 1.65) * Math.min(delta, 0.05);
+      sprinting = sceneContext.keys.has('ShiftLeft') || sceneContext.keys.has('ShiftRight'),
+      // Scale both paces together so Shift remains useful at the faster walking speed.
+      speed = (sprinting ? 5.85 : 3.7125) * Math.max(0, Math.min(delta, 0.05));
     const dx =
       ((-Math.sin(sceneContext.yaw) * forward + Math.cos(sceneContext.yaw) * strafe) / length) *
       speed;
@@ -196,26 +201,34 @@ export function createRoomExploration(sceneContext) {
     const back = sceneContext.camera.userData.backLimit || -12;
     // The rack faces form the aisle walls; this keeps the camera inside their actual clearance.
     if (sceneContext.assetBank) {
-      const x = sceneContext.camera.position.x + dx,
-        z = sceneContext.camera.position.z + dz;
-      if (canStand(x, sceneContext.camera.position.z)) sceneContext.camera.position.x = x;
-      if (canStand(sceneContext.camera.position.x, z)) sceneContext.camera.position.z = z;
-      const stair = sceneContext.facilityInterior?.stairAt(
-        sceneContext.camera.position.x,
-        sceneContext.camera.position.z,
-      );
-      sceneContext.camera.position.y =
-        sceneContext.eyeHeight +
-        (stair ? sceneContext.stairHeight(stair, sceneContext.camera.position.z) : 0);
-      if (performance.now() > sceneContext.roomTransitionUntil) {
-        const door = sceneContext.facilityInterior?.crossing(
+      // Faster sprinting must still sample narrow doorways and props. At most eight
+      // bounded substeps per frame retain wall sliding without jumping through a jamb.
+      const steps = Math.max(1, Math.ceil(speed / 0.04));
+      for (let step = 0; step < steps; step++) {
+        const x = sceneContext.camera.position.x + dx / steps,
+          z = sceneContext.camera.position.z + dz / steps;
+        if (canStand(x, sceneContext.camera.position.z)) sceneContext.camera.position.x = x;
+        if (canStand(sceneContext.camera.position.x, z)) sceneContext.camera.position.z = z;
+        const stair = sceneContext.facilityInterior?.stairAt(
           sceneContext.camera.position.x,
           sceneContext.camera.position.z,
         );
-        if (door)
-          sceneContext.changeLocation(door.destination, sceneContext.selectedFloor, 'threshold');
-        else if (stair && sceneContext.camera.position.z < stair.endZ + 0.04)
-          sceneContext.changeLocation('hall', stair.floor, 'stairs');
+        sceneContext.camera.position.y =
+          sceneContext.eyeHeight +
+          (stair ? sceneContext.stairHeight(stair, sceneContext.camera.position.z) : 0);
+        if (performance.now() > sceneContext.roomTransitionUntil) {
+          const door = sceneContext.facilityInterior?.crossing(
+            sceneContext.camera.position.x,
+            sceneContext.camera.position.z,
+          );
+          if (door) {
+            sceneContext.changeLocation(door.destination, sceneContext.selectedFloor, 'threshold');
+            return;
+          } else if (stair && sceneContext.camera.position.z < stair.endZ + 0.04) {
+            sceneContext.changeLocation('hall', stair.floor, 'stairs');
+            return;
+          }
+        }
       }
     } else {
       sceneContext.camera.position.x = sceneContext.THREE.MathUtils.clamp(

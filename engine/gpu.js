@@ -54,7 +54,7 @@
     }
 
     function gpuUnavailableReason(s) {
-      if (s.resilience.incident)
+      if (context.globalIncident(s))
         return 'KI-Aufträge pausieren während der offenen Versorgungskrise.';
       const aiServers = s.servers.filter((server) => server.type === 'ai');
       if (!aiServers.length) return 'Kein ROOT A480 mit verfügbaren GPUs installiert.';

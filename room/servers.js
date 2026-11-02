@@ -171,7 +171,7 @@ export function createRoomServers(sceneContext) {
     const modelLine = isAi
       ? `${server.gpuCount} × GPU · ${server.vramGB} GB VRAM`
       : server.model + '  ·  L' + server.level;
-    const nameTexture = sceneContext.labelMaterial([server.name, modelLine], {
+    const nameTexture = sceneContext.labelMaterial([sceneContext.serverName(server), modelLine], {
       accent: isAi ? '#be91ff' : '#9bd76d',
     });
     const label = new sceneContext.THREE.Mesh(

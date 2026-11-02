@@ -8,7 +8,6 @@
   return function createDomain(context) {
     const { catalog, MAX, MAX_RESEARCH_LEVEL, clamp } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
-    const activeRackIds = (...args) => context.activeRackIds(...args);
     const centralLevels = (...args) => context.centralLevels(...args);
     const centralOperatingCost = (...args) => context.centralOperatingCost(...args);
     const cost = (...args) => context.cost(...args);
@@ -19,6 +18,7 @@
 
     function getMetrics(s) {
       const upgrades = s.upgrades || {};
+      const customers = context.customerReadModel(s);
       const hardware = hardwareSnapshot(s);
       const gpu = gpuSnapshot(s, hardware);
       const cooling = Math.pow(0.92, Math.min(MAX_RESEARCH_LEVEL, upgrades.cooling || 0));
@@ -101,9 +101,12 @@
       );
       const centralPowerW = [...hardware.values()].reduce((sum, row) => sum + row.centralPowerW, 0);
       const centralDistributionCapacityW = central.distribution * 6000;
-      const centralDistributionWPerRack = activeRackIds(s).size
+      const connectedPowerRacks = [...hardware.values()].filter(
+        (r) => r.centralPowerCapacityW > 0,
+      ).length;
+      const centralDistributionWPerRack = connectedPowerRacks
         ? [...hardware.values()].reduce((sum, row) => sum + row.centralPowerCapacityW, 0) /
-          activeRackIds(s).size
+          connectedPowerRacks
         : 0;
       const centralUpkeep = centralOperatingCost(central, centralPowerW, s.policies.power);
       const installedEconomicPower = s.servers.reduce(
@@ -113,13 +116,15 @@
       const usedCapacity = s.jobs.reduce((a, j) => a + j.load, 0);
       const load = capacity > 0 ? usedCapacity / capacity : 1;
       const hardwareFactor = hardwareWeight > 0 ? hardwareWeighted / hardwareWeight : 0;
-      const activeAgents = s.agents.filter((a) => !a.assignment);
+      const activeAgents = s.agents.filter((a) =>
+        context.agentProductive(s, a, customers.assignments),
+      );
       const engineers = activeAgents
         .filter((a) => a.role === 'engineer')
-        .reduce((v, a) => v + a.level, 0);
+        .reduce((v, a) => v + a.level * context.agentEffects(a).care, 0);
       const maintenanceFocus = activeAgents
         .filter((a) => a.focus === 'maintenance')
-        .reduce((v, a) => v + a.level, 0);
+        .reduce((v, a) => v + a.level * context.agentEffects(a).care, 0);
       heat = Math.max(
         0,
         heat * cooling * (1 - Math.min(0.32, engineers * 0.035 + maintenanceFocus * 0.018)) +
@@ -153,7 +158,7 @@
         centralUpkeep;
       const ops = activeAgents
         .filter((a) => a.role === 'operator')
-        .reduce((v, a) => v + a.level, 0);
+        .reduce((v, a) => v + a.level * context.agentEffects(a).work, 0);
       const incomeMult = context.automationMultiplier(upgrades.automation || 0);
       const incomePerSecond =
         onlineServers === 0 || (s.resilience && s.resilience.incident)
@@ -163,7 +168,7 @@
             upkeep;
       const analysts = activeAgents
         .filter((a) => a.role === 'analyst')
-        .reduce((v, a) => v + a.level, 0);
+        .reduce((v, a) => v + a.level * context.agentEffects(a).research, 0);
       const contained = Boolean(s.resilience && s.resilience.incident);
       const researchPerSecond =
         (onlineServers > 0 && !contained ? 1 : 0) *
@@ -172,16 +177,29 @@
           analysts * 0.026 +
           activeAgents
             .filter((a) => a.focus === 'research')
-            .reduce((v, a) => v + a.level * 0.012, 0)) *
+            .reduce((v, a) => v + a.level * 0.012 * context.agentEffects(a).research, 0)) *
         Math.pow(1.15, Math.min(MAX_RESEARCH_LEVEL, upgrades.synthesis || 0));
       const workBase = activeAgents.reduce(
         (v, a) =>
-          v + (a.role === 'engineer' ? 0.83 : 1) * a.level * (a.focus === 'income' ? 1.08 : 1),
+          v +
+          (a.role === 'engineer' ? 0.83 : 1) *
+            a.level *
+            (a.focus === 'income' ? 1.08 : 1) *
+            context.agentEffects(a).work,
         0,
       );
-      const modePerformance = s.servers
-        .filter((server) => server.status === 'online')
-        .reduce((v, a) => v + (a.mode === 'performance' ? 0.03 : a.mode === 'eco' ? -0.015 : 0), 0);
+      // A fleet average is bounded independently of fleet size. Switched-off or
+      // disconnected hardware cannot lend a mode bonus to the remaining nodes.
+      const productive = s.servers.filter((server) =>
+        serverLinkState(s, server, hardware.get(server.rackId)?.rack),
+      );
+      const modePerformance = productive.length
+        ? productive.reduce(
+            (sum, server) =>
+              sum + (server.mode === 'performance' ? 0.03 : server.mode === 'eco' ? -0.015 : 0),
+            0,
+          ) / productive.length
+        : 0;
       const heatFactor = clamp(1 - heat / 190, 0.52, 1);
       const loadFactor = clamp(1 - Math.max(0, load - 0.62) * 0.42, 0.55, 1);
       const operationFactor =
@@ -257,11 +275,14 @@
       );
       const upsCapacityW = central.ups * 3000;
       const upsCoverage =
-        upsCapacityW > 0 ? clamp(upsCapacityW / Math.max(1, physicalPowerW), 0, 1) : 0;
+        [...hardware.values()].reduce(
+          (sum, r) => sum + Math.min(r.powerW, r.upsCapacityW || 0),
+          0,
+        ) / Math.max(1, physicalPowerW);
       const powerRiskReductionPct = upsCoverage * 65;
       const incidentActive = Boolean(s.resilience && s.resilience.incident);
       const safetyMode = incidentActive;
-      return {
+      const metrics = {
         capacity,
         usedCapacity,
         load,
@@ -305,6 +326,7 @@
         gpuLoad: gpu.load,
         jobBlockedReasons: gpu.blocked,
       };
+      return s.business ? context.serviceMetrics(s, metrics, hardware, customers) : metrics;
     }
     return { getMetrics };
   };

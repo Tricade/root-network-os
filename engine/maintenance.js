@@ -15,7 +15,10 @@
 
     function startOperation(s, operation, automated = false) {
       s.resilience.operation = operation;
-      if (automated) s.resilience.budgetSpent += operation.cost || 0;
+      if (automated) {
+        if (operation.kind === 'backup') s.operations.backupSpent += operation.cost || 0;
+        else s.resilience.budgetSpent += operation.cost || 0;
+      }
     }
 
     function finishOperation(s) {
@@ -90,10 +93,11 @@
     }
 
     function quoteWithinAutoPolicy(s, option) {
+      const policy = context.maintenancePolicy(s);
       return (
         option.enabled &&
-        s.resilience.budgetSpent + option.cost <= s.policies.repairBudget &&
-        s.credits - option.cost >= s.policies.reserve &&
+        s.resilience.budgetSpent + option.cost <= policy.repair &&
+        s.credits - option.cost >= policy.reserve &&
         s.resilience.parts >= option.parts
       );
     }
@@ -149,10 +153,11 @@
       )
         return false;
       const option = getResilience(s).backup;
+      const policy = context.maintenancePolicy(s);
       if (
         !option.enabled ||
-        s.credits - option.cost < s.policies.reserve ||
-        s.resilience.budgetSpent + option.cost > s.policies.repairBudget
+        s.credits - option.cost < policy.reserve ||
+        s.operations.backupSpent + option.cost > policy.backup
       ) {
         s.resilience.autoBackupNextAt = s.time + 300;
         return false;

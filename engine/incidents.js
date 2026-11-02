@@ -9,7 +9,6 @@
     const { catalog, RESILIENCE_MAX } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
     const addLog = (...args) => context.addLog(...args);
-    const getMetrics = (...args) => context.getMetrics(...args);
     const rand = (...args) => context.rand(...args);
     const serverLinkState = (...args) => context.serverLinkState(...args);
     const uid = (...args) => context.uid(...args);
@@ -18,8 +17,8 @@
       return s.jobs.map((j) => ({ id: j.id, amount: j.work * fraction }));
     }
 
-    function chooseAffected(s, count = 1) {
-      const online = s.servers.filter((x) => serverLinkState(s, x));
+    function chooseAffected(s, count = 1, candidates = s.servers) {
+      const online = candidates.filter((x) => serverLinkState(s, x));
       const result = [];
       while (online.length && result.length < count)
         result.push(online.splice(Math.floor(rand(s) * online.length), 1)[0]);
@@ -44,17 +43,37 @@
     }
 
     function openMajorIncident(s) {
-      const available = s.servers.filter((x) => serverLinkState(s, x));
+      let available = s.servers.filter((x) => serverLinkState(s, x));
       const failedCount = s.servers.filter((x) => x.status === 'failed').length;
-      if (!available.length || failedCount >= RESILIENCE_MAX.incidentAffected) return false;
+      if (!available.length) return false;
       const remainingAffected = RESILIENCE_MAX.incidentAffected - failedCount;
-      const upsCoverage = getMetrics(s).upsCoverage;
-      const powerReduction = 0.65 * upsCoverage;
-      // This makes the published reduction match the actual power-incident
-      // probability after normalizing the power, cooling, and corruption weights.
-      const powerWeight = (2 * (1 - powerReduction)) / (2 + powerReduction);
-      const draw = rand(s) * (2 + powerWeight);
-      const kind = draw < powerWeight ? 'power' : draw < powerWeight + 1 ? 'cooling' : 'corruption';
+      // Independent hazards: UPS protection removes power failures rather than
+      // redistributing their probability to cooling or data corruption.
+      const draw = rand(s) * 3;
+      const kind = draw < 1 ? 'power' : draw < 2 ? 'cooling' : 'corruption';
+      const anchor = available[Math.floor(rand(s) * available.length)];
+      const anchorRack = s.facility.racks.find((r) => r.id === anchor.rackId);
+      const physical = context.hardwareSnapshot(s).get(anchorRack.id);
+      const upsCoverage = Math.min(1, (physical.upsCapacityW || 0) / Math.max(1, physical.powerW));
+      const system = kind === 'cooling' ? 'cooling' : 'power';
+      const supply = context.roomSupply(s, anchorRack.roomId);
+      const scope =
+        kind === 'corruption'
+          ? 'nodes'
+          : ['central', 'hybrid'].includes(supply[system]) && rand(s) < 0.2
+            ? 'central'
+            : supply[system] !== 'local'
+              ? 'room'
+              : 'rack';
+      // Batteries bridge upstream interruptions, not a broken downstream
+      // distribution cabinet. Do not turn prevented failures into other hazards.
+      if (kind === 'power' && scope !== 'central' && rand(s) < 0.65 * upsCoverage) return false;
+      const roomRacks = new Set(
+        s.facility.racks.filter((r) => r.roomId === anchorRack.roomId).map((r) => r.id),
+      );
+      available = available.filter((n) =>
+        scope === 'room' ? roomRacks.has(n.rackId) : n.rackId === anchor.rackId,
+      );
       let affected;
       if (kind === 'cooling') {
         affected = available
@@ -73,7 +92,8 @@
                 available.length,
                 upsCoverage >= 0.95 ? 1 : remainingAffected,
               )
-            : 1,
+            : Math.min(1, remainingAffected),
+          available,
         );
       const content = {
         power: {
@@ -97,6 +117,14 @@
             'Forschung und Auftragsstände sind gefährdet; ein gespeicherter Betriebsstand kann ungesicherte Fortschritte kosten.',
         },
       }[kind];
+      // Damage containment limits additional damaged hardware, not the chance
+      // of an incident. Keeping two broken nodes must never buy immunity.
+      const reusingDamage = !affected.length;
+      if (reusingDamage)
+        affected = s.servers.filter((server) => server.status === 'failed').slice(0, 2);
+      // Reusing damaged nodes must not move the failure outside its domain.
+      const actualRack = s.facility.racks.find((r) => r.id === affected[0]?.rackId);
+      const actualScope = reusingDamage ? 'nodes' : scope;
       for (const server of affected) {
         server.condition = Math.min(
           server.condition,
@@ -123,7 +151,18 @@
         consequence: content.consequence,
         affected: affected.map((x) => x.id),
         resolution: null,
+        ...(s.business
+          ? {
+              scope: actualScope,
+              rackId: actualRack?.id || anchorRack.id,
+              roomId: actualRack?.roomId || anchorRack.roomId,
+              ...(actualScope === 'central' ? { system } : {}),
+            }
+          : {}),
       };
+      if (s.business)
+        s.resilience.incident.consequence =
+          'Nur der betroffene Bereich ist isoliert. Verbleibende Hardware, Kunden und Agenten arbeiten weiter.';
       addLog(
         s,
         'critical',

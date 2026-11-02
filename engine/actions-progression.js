@@ -6,7 +6,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function createDomain(context) {
-    const { catalog, MAX_RESEARCH_LEVEL, clamp } = context;
+    const { catalog, clamp } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
     const addLog = (...args) => context.addLog(...args);
     const autoContract = (...args) => context.autoContract(...args);
@@ -19,11 +19,28 @@
         const j = s.offers.find((v) => v.id === payload.id);
         if (!j) return fail('Dieser Auftrag ist nicht mehr verfügbar.');
         if (s.jobs.length >= m.jobLimit) return fail('Alle Auftragsplätze sind belegt.');
-        if (s.resilience.incident)
+        if (context.globalIncident(s))
           return fail('Während einer offenen Krise bleiben neue Aufträge in der Warteschlange.');
-        if (m.usedCapacity + j.load > m.capacity * 1.08)
+        if (
+          s.business &&
+          j.kind === 'ai' &&
+          (j.gpuDemand || 1) >
+            m.admissionResources.gpu -
+              s.jobs.reduce((n, x) => n + (x.kind === 'ai' ? x.gpuDemand || 1 : 0), 0) +
+              1e-9
+        )
+          return fail(
+            m.freeResources.gpu <= 0
+              ? gpuUnavailableReason(s)
+              : 'Dafür sind nicht genügend freie GPUs verfügbar.',
+          );
+        if (
+          s.business
+            ? !context.jobsFit(s, j, m.admissionResources)
+            : m.usedCapacity + j.load > m.capacity * 1.08
+        )
           return fail('Dafür fehlt derzeit Serverkapazität.');
-        if (j.kind === 'ai' && (j.gpuDemand || 1) > m.gpuCapacity - m.gpuUsed + 1e-9)
+        if (!s.business && j.kind === 'ai' && (j.gpuDemand || 1) > m.gpuCapacity - m.gpuUsed + 1e-9)
           return fail(
             m.gpuCapacity <= 0
               ? gpuUnavailableReason(s)
@@ -41,28 +58,6 @@
         addLog(s, 'system', `Auftrag abgelehnt: ${j.title}.`);
         return { ok: true, message: 'Auftrag aus der Liste entfernt.' };
       }
-      if (action === 'buyResearch') {
-        const u = catalog.research.find((v) => v.id === payload.id);
-        if (!u) return fail('Diese Forschung ist unbekannt.');
-        if (s.resilience.incident)
-          return fail(
-            'Forschung bleibt während der offenen Daten- oder Versorgungskrise gesperrt.',
-          );
-        if ((s.upgrades[u.id] || 0) >= MAX_RESEARCH_LEVEL)
-          return fail('Diese Forschungsreihe hat ihre höchste Stufe erreicht.');
-        const price = cost(s, 'research', u.id);
-        if (s.research < price)
-          return fail(`Es fehlen ${Math.ceil(price - s.research)} Forschungspunkte.`);
-        s.research -= price;
-        if (s.resilience.backup)
-          s.resilience.backup.protectedResearch = Math.max(
-            0,
-            s.resilience.backup.protectedResearch - price,
-          );
-        s.upgrades[u.id] = (s.upgrades[u.id] || 0) + 1;
-        addLog(s, 'success', `Forschung abgeschlossen: ${u.name}, Stufe ${s.upgrades[u.id]}.`);
-        return { ok: true, message: 'Forschung abgeschlossen.' };
-      }
       if (action === 'setPolicy') {
         const { key, value } = payload;
         const valid =
@@ -79,12 +74,14 @@
                     : false;
         if (!valid) return fail('Diese Richtlinieneinstellung ist ungültig.');
         s.policies[key] = value;
+        if (key === 'repairBudget') s.operations.limits.repair = null;
+        if (key === 'reserve') s.operations.limits.reserve = null;
         addLog(s, 'system', 'Netzwerkrichtlinie aktualisiert.');
         if (key === 'autocontract' && value) autoContract(s);
         return { ok: true, message: 'Richtlinie aktualisiert.' };
       }
       if (action === 'resolveEvent') {
-        if (s.resilience.incident)
+        if (context.globalIncident(s))
           return fail('Ereignisse bleiben während des Krisenbetriebs in der Warteschlange.');
         const e = s.events.find((v) => v.id === payload.id);
         if (!e) return fail('Diese Entscheidung ist nicht mehr verfügbar.');

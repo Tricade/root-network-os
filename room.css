@@ -182,7 +182,7 @@
   border: 1px solid #74817738;
   border-radius: 8px;
   background: #0c1110cf;
-  backdrop-filter: blur(10px);
+  backdrop-filter: none;
   color: #aeb9ad;
   font-size: 9px;
   line-height: 1.4;
@@ -218,7 +218,7 @@
   border: 1px solid #8d9c8b2a;
   border-radius: 8px;
   background: #080d0dc9;
-  backdrop-filter: blur(12px);
+  backdrop-filter: none;
   color: #c2cdc0;
   font-size: 9px;
 }
@@ -567,7 +567,7 @@ body.root-room-open {
   border-radius: 10px;
   background: #0d1312f4;
   box-shadow: 0 18px 55px #000b;
-  backdrop-filter: blur(14px);
+  backdrop-filter: none;
 }
 .root-room-controls button {
   margin-left: 0;
@@ -644,13 +644,13 @@ body.root-room-open {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* A fixed inner rim keeps scrolling content clear of the rounded frame. */
+  padding-bottom: 14px;
   border: 1px solid #668076;
   border-radius: 14px;
   background: #101715f7;
-  box-shadow:
-    0 28px 100px #000c,
-    0 0 0 1px #a0dd9b12;
-  backdrop-filter: blur(22px);
+  box-shadow: none;
+  backdrop-filter: none;
   color: #dce5d6;
   font: 12px var(--font);
 }
@@ -659,6 +659,7 @@ body.root-room-open {
 }
 .room-console-header {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -688,13 +689,37 @@ body.root-room-open {
   font: 10px var(--font);
   cursor: pointer;
 }
+.room-console-header > .notification-bell {
+  margin-left: auto;
+}
+.room-console-header .notification-count {
+  color: #162016;
+  letter-spacing: 0;
+}
 .room-console-nav {
-  display: flex;
+  display: block;
+  flex-shrink: 0;
   gap: 4px;
   flex-wrap: wrap;
   padding: 10px 14px;
   border-bottom: 1px solid #354336;
   background: #141c17;
+}
+.room-console-groups,
+.room-console-sections {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.room-console-groups {
+  padding-bottom: 7px;
+  margin-bottom: 7px;
+  border-bottom: 1px solid #354336;
+}
+.room-console-tools {
+  margin-left: auto;
+  display: flex;
 }
 .room-console-nav button {
   border: 0;
@@ -759,12 +784,6 @@ body.root-room-open {
   opacity: 0;
   pointer-events: none;
 }
-.root-room.console-open .root-room-controls > span {
-  opacity: 0.45;
-}
-.root-room.console-open .root-room-stage {
-  filter: saturate(0.65);
-}
 .root-room.console-open .root-room-console {
   filter: none;
 }
@@ -803,6 +822,7 @@ body.root-room-open {
   }
   .room-console-header {
     padding: 12px;
+    flex-wrap: wrap;
   }
   .room-console-header strong {
     font-size: 16px;

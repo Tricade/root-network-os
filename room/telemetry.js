@@ -19,7 +19,7 @@ export function createRoomTelemetry(sceneContext) {
               '" data-room-server-light="' +
               sceneContext.escapeHtml(server.id) +
               '"></span><span>' +
-              sceneContext.escapeHtml(server.name) +
+              sceneContext.escapeHtml(sceneContext.serverName(server)) +
               '</span><small data-room-server-status="' +
               sceneContext.escapeHtml(server.id) +
               '">' +
@@ -179,12 +179,19 @@ export function createRoomTelemetry(sceneContext) {
       if (sceneContext.scene && signature !== sceneContext.structuralSignature)
         sceneContext.rebuildRacks(racks);
       if (sceneContext.scene) sceneContext.refreshRoomLanguage(racks);
-      sceneContext.facilityInterior?.update({ model, metrics, resilience, central, construction });
+      sceneContext.facilityInterior?.update({
+        model,
+        metrics,
+        resilience,
+        central,
+        construction,
+        preventiveMaintenance: state.preventiveMaintenance,
+      });
       if (sceneContext.canvas)
         sceneContext.canvas.setAttribute(
           'aria-label',
           sceneContext.tr(
-            `Begehbarer Serverraum: ${sceneContext.rackGroups.size} Racks und ${sceneContext.serverGroups.size} eingebaute Server. WASD bewegen, Maus oder Pfeiltasten drehen, E Gerät öffnen, Escape zurück.`,
+            `Begehbarer Serverraum: ${sceneContext.rackGroups.size} Racks und ${sceneContext.serverGroups.size} eingebaute Server. WASD bewegen, Shift sprinten, Maus oder Pfeiltasten drehen, E Gerät öffnen, Escape zurück.`,
           ),
         );
       const status = resilience.safetyMode
@@ -212,26 +219,39 @@ export function createRoomTelemetry(sceneContext) {
         0,
       );
       const activeAssignments = operations.agents
-        .filter((agent) => agent.assignment)
+        .filter((agent) => agent.assignment || agent.absent)
         .map((agent) => {
           const data = state.agents.find((person) => person.id === agent.id);
           return (
             (data ? data.name + ': ' : '') +
-            agent.assignment.label +
-            ' · ' +
-            sceneContext.duration(agent.assignment.remaining)
+            (agent.absent
+              ? sceneContext.tr('Selbstwartung · Rückkehr in') +
+                ' ' +
+                sceneContext.duration(agent.remaining)
+              : sceneContext.tr(agent.assignment.label) +
+                ' · ' +
+                (operations.paused
+                  ? sceneContext.tr('pausiert')
+                  : sceneContext.duration(agent.assignment.remaining)))
           );
         });
       const activeEffects = operations.effects.map(
         (effect) => effect.label + ' · ' + sceneContext.duration(effect.remaining),
       );
-      const activeOp = resilience.operation || model.operation || central.operation || construction;
+      const activeOp =
+        resilience.operation ||
+        model.operation ||
+        central.operation ||
+        construction ||
+        (state.preventiveMaintenance?.operation
+          ? { ...state.preventiveMaintenance.operation, label: 'Vorbeugende Rackwartung' }
+          : null);
       const backupText =
         resilience.backupAge === null
           ? 'Noch keine Betriebssicherung'
           : 'Letzte Sicherung vor ' + sceneContext.duration(resilience.backupAge);
       const operationText = activeOp
-        ? sceneContext.escapeHtml(activeOp.label) +
+        ? sceneContext.escapeHtml(sceneContext.tr(activeOp.label)) +
           ' · noch ' +
           sceneContext.duration(activeOp.remaining)
         : 'Keine Maßnahme aktiv';
@@ -379,7 +399,11 @@ export function createRoomTelemetry(sceneContext) {
     sceneContext.raycaster.setFromCamera(new sceneContext.THREE.Vector2(0, 0), sceneContext.camera);
     const hits = sceneContext.exploring
       ? sceneContext.raycaster.intersectObjects(
-          [...sceneContext.pickTargets, ...(sceneContext.stationSystem?.pickTargets || [])],
+          [
+            ...sceneContext.pickTargets,
+            ...(sceneContext.facilityInterior?.picks || []),
+            ...(sceneContext.stationSystem?.pickTargets || []),
+          ],
           false,
         )
       : [];
@@ -438,7 +462,7 @@ export function createRoomTelemetry(sceneContext) {
           (sceneContext.rackRefs.get(rack.id)?.cabinet?.doorOpen ? 'Tür schließen' : 'Tür öffnen');
       else if (rack && server)
         text =
-          server.name +
+          sceneContext.serverName(server) +
           ' · ' +
           (STATUS_TEXT[server.status] || server.status) +
           ' · E / Klick: Server verwalten';

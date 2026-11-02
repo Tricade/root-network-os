@@ -34,11 +34,18 @@ export function createRoomLocation(sceneContext, platform = globalThis) {
         layout: sceneContext.facilityLayout(),
         central: sceneContext.centralModel(),
       });
-      sceneContext.pickTargets.push(...sceneContext.facilityInterior.picks);
       sceneContext.assetHall.group.visible = sceneContext.locationId !== 'hall';
-      sceneContext.assetHall.setServerRoom(sceneContext.locationId.startsWith('room-'));
+      sceneContext.assetHall.setServerRoom(
+        sceneContext.locationId.startsWith('room-'),
+        sceneContext.currentLocation().supply,
+        racks.length,
+      );
     }
     sceneContext.stationSystem?.setVisible(sceneContext.locationId === 'control');
+    if (sceneContext.fallbackCooling)
+      sceneContext.fallbackCooling.visible =
+        sceneContext.locationId.startsWith('room-') &&
+        sceneContext.currentLocation().supply?.cooling !== 'central';
     const rear = Math.max(5.4, (rows - 1) * 4.2 + 1.5);
     sceneContext.scene.fog = new sceneContext.THREE.Fog(
       0x101516,
@@ -57,6 +64,7 @@ export function createRoomLocation(sceneContext, platform = globalThis) {
   function getStructureSignature(racks) {
     return [
       sceneContext.locationId,
+      JSON.stringify(sceneContext.currentLocation().supply),
       sceneContext.selectedFloor,
       sceneContext.roomStructureKey(sceneContext.facilityLayout()),
       sceneContext
@@ -125,7 +133,6 @@ export function createRoomLocation(sceneContext, platform = globalThis) {
         sceneContext.facilityInterior.portals.find((portal) => portal.id === saved.id).closeDelay =
           saved.delay;
       });
-      sceneContext.pickTargets.push(...sceneContext.facilityInterior.picks);
     }
     for (const ref of sceneContext.rackRefs.values())
       ref.group?.traverse((node) => node.userData.refreshLabel?.());

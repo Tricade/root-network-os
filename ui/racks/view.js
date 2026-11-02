@@ -62,7 +62,7 @@ export function createRackView(ctx) {
       };
     const r = m.racks.find((x) => x.id === ctx.moveDraft.rackId),
       q = ctx.E.quoteHardware(ctx.state(), 'moveServer', ctx.moveDraft);
-    return `<p class="modal-intro">${ctx.esc(s.name)} belegt ${s.units} zusammenhängende Höheneinheiten. Beim Umsetzen wird der Server kurz abgeschaltet und neu verbunden.</p><div class="rack-move-fields"><label class="field-label">Ziel-Rack<select class="select" data-rack-change="move-rack" aria-label="Ziel-Rack">${m.racks.map((x) => `<option value="${x.id}" ${x.id === r.id ? 'selected' : ''}>${ctx.esc(x.name)} · ${x.freeUnits} HE frei</option>`).join('')}</select></label><label class="field-label">Unterste Höheneinheit<select class="select" data-rack-change="move-unit" aria-label="Unterste Höheneinheit">${Array.from(
+    return `<p class="modal-intro">${ctx.esc(ctx.serverName(s))} belegt ${s.units} zusammenhängende Höheneinheiten. Beim Umsetzen wird der Server kurz abgeschaltet und neu verbunden.</p><div class="rack-move-fields"><label class="field-label">Ziel-Rack<select class="select" data-rack-change="move-rack" aria-label="Ziel-Rack">${m.racks.map((x) => `<option value="${x.id}" ${x.id === r.id ? 'selected' : ''}>${ctx.esc(x.name)} · ${x.freeUnits} HE frei</option>`).join('')}</select></label><label class="field-label">Unterste Höheneinheit<select class="select" data-rack-change="move-unit" aria-label="Unterste Höheneinheit">${Array.from(
       { length: 16 },
       (_, i) => i + 2,
     )

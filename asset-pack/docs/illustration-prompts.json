@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "tool": "Built-in image_gen",
+  "date": "2026-11-02",
+  "purpose": "Original raster card and research-district artwork. No external image/model assets used.",
+  "license": "CC0-1.0",
+  "images": [
+    {
+      "key": "network",
+      "file": "textures/illustrations/network.png",
+      "prompt": "Use case: stylized-concept. Asset type: polished landscape 3:2 raster key art for ROOT Network OS, an underground datacenter management simulation. Subject: close three-quarter view of a real black rack-mounted network switch with numerous neatly plugged violet and cyan optical fiber cables, small green activity LEDs, a deep underground server aisle receding behind. Premium semi-realistic painted game concept art, tangible brushed-metal surfaces, rubber cable jackets, subtle atmospheric depth, cinematic practical lighting, restrained sage green/cyan accents on charcoal, strong visually readable silhouette at small card size. Fill the whole composition with the scene, no card frame, no UI, no schematic diagram, no vector/icon aesthetic, no logos, no labels, no writing, no people. Original industrial bunker design, not a scene from another game. Horizontal image."
+    },
+    {
+      "key": "cooling",
+      "file": "textures/illustrations/cooling.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 premium raster key art for ROOT Network OS, an underground datacenter management simulation. Semi-realistic richly textured painted game concept art, plausible industrial engineering, cinematic practical lighting, charcoal concrete bunker and restrained accent colors, clear strong subjects readable on a small card. No people, no brand names, no writing, no UI, no diagrams, no vector or icon look, no copied game art. Fill entire image with scene, horizontal composition. A beautifully engineered central cooling plant: insulated steel chilled-water pipes, flanges, handwheel valves, large enclosed industrial chillers, one slow fan in a protective grille. Cold cyan highlights with natural gray metal, pipe network visibly connects equipment. Three-quarter view from human eye height."
+    },
+    {
+      "key": "power",
+      "file": "textures/illustrations/power.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 premium raster key art for ROOT Network OS, an underground datacenter management simulation. Semi-realistic richly textured painted game concept art, plausible industrial engineering, cinematic practical lighting, charcoal concrete bunker and restrained accent colors, clear strong subjects readable on a small card. No people, no brand names, no writing, no UI, no diagrams, no vector or icon look, no copied game art. Fill entire image with scene, horizontal composition. A power distribution and battery room: heavy closed electrical switchgear cabinets with copper connectors visible in one safely glazed inspection window, bundled black power cables on overhead trays, a row of sealed industrial battery modules. Warm amber practical light with subtle sage status LEDs. No lightning, no loose wires."
+    },
+    {
+      "key": "storage",
+      "file": "textures/illustrations/storage.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 premium raster key art for ROOT Network OS, an underground datacenter management simulation. Semi-realistic richly textured painted game concept art, plausible industrial engineering, cinematic practical lighting, charcoal concrete bunker and restrained accent colors, clear strong subjects readable on a small card. No people, no brand names, no writing, no UI, no diagrams, no vector or icon look, no copied game art. Fill entire image with scene, horizontal composition. A close view of a high density enterprise storage enclosure with one hot-swap disk sled partly pulled out, neatly stacked spare archival cartridges beside it, deep racks of storage servers receding into the underground vault. Cool blue teal highlights, detailed anodized steel and matte plastic, believable equipment."
+    },
+    {
+      "key": "automation",
+      "file": "textures/illustrations/automation.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 premium raster key art for ROOT Network OS, an underground datacenter management simulation. Semi-realistic richly textured painted game concept art, plausible industrial engineering, cinematic practical lighting, charcoal concrete bunker and restrained accent colors, clear strong subjects readable on a small card. No people, no brand names, no writing, no UI, no diagrams, no vector or icon look, no copied game art. Fill entire image with scene, horizontal composition. A small original non-humanoid maintenance robot on four rubber wheels in a datacenter service bay, one articulated precision tool arm repairing a rack server, camera-eye sensor and teal LEDs. Distinctive practical industrial robot, no face or human body. Warm service-lamp spotlight, detailed bolts and cables, no workshop clutter."
+    },
+    {
+      "key": "business",
+      "file": "textures/illustrations/business.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 premium raster key art for ROOT Network OS, underground datacenter management. Rich semi-realistic painted game concept art, detailed physical materials and lighting, charcoal industrial bunker, restrained sage and cyan accents, clear subject for small illustrated cards. No people, words, numbers, logos, UI overlay, schematic diagrams or vector icons. No card borders. A refined underground network operations control room, comfortable fabric operator chair, large wall monitors with abstract luminous service charts and little lights but no letters or numbers, polished desk with telephone and blank dark service tablet. Warm amber desk lamp balances soft sage green monitor glow, deep rack aisle through a glazed door behind, quiet premium working atmosphere."
+    },
+    {
+      "key": "science",
+      "file": "textures/illustrations/science.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 premium raster key art for ROOT Network OS, underground datacenter management. Rich semi-realistic painted game concept art, detailed physical materials and lighting, charcoal industrial bunker, restrained sage and cyan accents, clear subject for small illustrated cards. No people, words, numbers, logos, UI overlay, schematic diagrams or vector icons. No card borders. Macro three-quarter view of an advanced GPU server drawer and polished silicon accelerator chips, violet glints on cold plates, finely etched gold circuit-board tracks and fiber links, precision electronic research bench recedes into a concrete bunker laboratory with out of focus technical instruments. Atmospheric but physically plausible, no holographic brains."
+    },
+    {
+      "key": "reliability",
+      "file": "textures/illustrations/reliability.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 premium raster key art for ROOT Network OS, underground datacenter management. Rich semi-realistic painted game concept art, detailed physical materials and lighting, charcoal industrial bunker, restrained sage and cyan accents, clear subject for small illustrated cards. No people, words, numbers, logos, UI overlay, schematic diagrams or vector icons. No card borders. Heavy steel security door opening into a protected server vault, multiple locking bolts, sealed backup storage cases on a low shelf, small secure access reader and neatly routed emergency lighting. Silver and desaturated amber palette with green status LEDs, solid engineered reassurance rather than military weapons."
+    },
+    {
+      "key": "construction",
+      "file": "textures/illustrations/construction.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 premium raster key art for ROOT Network OS, underground datacenter management. Rich semi-realistic painted game concept art, detailed physical materials and lighting, charcoal industrial bunker, restrained sage and cyan accents, clear subject for small illustrated cards. No people, words, numbers, logos, UI overlay, schematic diagrams or vector icons. No card borders. A newly excavated deep underground datacenter extension: raw rock and poured concrete arches, one compact parked tunnel excavation machine, neat cable trays and installed utility pipes leading from a finished illuminated corridor into the new room. Worksite under construction with protective railings and stacked material, warm work lights and dusty atmosphere, believable proportions."
+    },
+    {
+      "key": "award-contract",
+      "file": "textures/illustrations/award-contract.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 high quality raster achievement illustration for ROOT Network OS underground datacenter simulation. Premium semi-realistic game art, detailed metal, enamel and fabric, dramatic warm studio spotlight with subtle sage green accents, shallow background of an industrial underground office. Single large physical collectible award centered, fills central half of frame; no people, words, digits, logos, card frame, UI, vector or flat icon aesthetic. An elegant copper and brushed silver award on a dark stone plinth. Sculptural two interlocking metal links surround a small polished silicon chip, representing the first completed customer contract. A small folded green ribbon lies next to its base. Tangible three dimensional object."
+    },
+    {
+      "key": "award-resilience",
+      "file": "textures/illustrations/award-resilience.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 high quality raster achievement illustration for ROOT Network OS underground datacenter simulation. Premium semi-realistic game art, detailed metal, enamel and fabric, dramatic warm studio spotlight with subtle sage green accents, shallow background of an industrial underground office. Single large physical collectible award centered, fills central half of frame; no people, words, digits, logos, card frame, UI, vector or flat icon aesthetic. A heavy shield-shaped platinum and dark green enamel trophy with a central luminous green glass core and two understated mechanical laurel branches, on a low black stone base. Symbol of a reliable datacenter surviving a crisis. Detailed engraved geometric circuit traces without any writing."
+    },
+    {
+      "key": "award-growth",
+      "file": "textures/illustrations/award-growth.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 high quality raster achievement illustration for ROOT Network OS underground datacenter simulation. Premium semi-realistic game art, detailed metal, enamel and fabric, dramatic warm studio spotlight with subtle sage green accents, shallow background of an industrial underground office. Single large physical collectible award centered, fills central half of frame; no people, words, digits, logos, card frame, UI, vector or flat icon aesthetic. A beautifully crafted gold and graphite tiered tower award shaped like three elegant ascending miniature server cabinets, tiny green inset LEDs, mounted on a dark circular plinth with stacked gold coins subtly beside it. Symbol of prosperous sustainable expansion; premium physical collectible."
+    },
+    {
+      "key": "event-signal",
+      "file": "textures/illustrations/event-signal.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 raster artwork at 1536x1024 for ROOT Network OS, an underground data-center management simulation. Premium semi-realistic painted game concept art, physically plausible equipment, tactile metal and concrete, cinematic practical light, restrained sage-green and warm amber accents on charcoal. Readable at small card size, main subject fills the frame. One continuous scene, no montage. No people, no letters or numbers, no UI, no logos, no watermark, no vector/icon/diagram style. Original designs, not copied game art. A portable diagnostic oscilloscope and sensor probe on a data-center workbench, an unusual luminous cyan waveform on its otherwise blank dark screen, probe leads connect to a compact sensor module; racks softly out of focus behind. Clear subject: analyzing a new sensor signal."
+    },
+    {
+      "key": "event-grant",
+      "file": "textures/illustrations/event-grant.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 raster artwork at 1536x1024 for ROOT Network OS, an underground data-center management simulation. Premium semi-realistic painted game concept art, physically plausible equipment, tactile metal and concrete, cinematic practical light, restrained sage-green and warm amber accents on charcoal. Readable at small card size, main subject fills the frame. One continuous scene, no montage. No people, no letters or numbers, no UI, no logos, no watermark, no vector/icon/diagram style. Original designs, not copied game art. A technical funding award represented physically by a sealed green approval folder and a brass seal on a control-room desk next to a beautifully engineered scale model of a small underground server facility; warm hopeful work light, blank papers with no symbols or writing. Clear subject: infrastructure funding opportunity, not piles of money."
+    },
+    {
+      "key": "event-maintenance",
+      "file": "textures/illustrations/event-maintenance.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 raster artwork at 1536x1024 for ROOT Network OS, an underground data-center management simulation. Premium semi-realistic painted game concept art, physically plausible equipment, tactile metal and concrete, cinematic practical light, restrained sage-green and warm amber accents on charcoal. Readable at small card size, main subject fills the frame. One continuous scene, no montage. No people, no letters or numbers, no UI, no logos, no watermark, no vector/icon/diagram style. Original designs, not copied game art. An original compact nonhumanoid service robot with a precision manipulator carefully servicing a partly withdrawn server sled on its rails, open organized tool case, warm maintenance lamp; believable circuit boards and connectors, protective equipment casing. Clear subject: scheduled preventive maintenance, no disaster."
+    },
+    {
+      "key": "event-client",
+      "file": "textures/illustrations/event-client.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 raster artwork at 1536x1024 for ROOT Network OS, an underground data-center management simulation. Premium semi-realistic painted game concept art, physically plausible equipment, tactile metal and concrete, cinematic practical light, restrained sage-green and warm amber accents on charcoal. Readable at small card size, main subject fills the frame. One continuous scene, no montage. No people, no letters or numbers, no UI, no logos, no watermark, no vector/icon/diagram style. Original designs, not copied game art. A customer-support workstation in an underground operations room, a physical intercom handset and a rugged tablet showing a simple glowing incoming-call symbol without letters or text, a small connected network appliance and neatly coiled test cable on the desk. Clear subject: urgent client support request."
+    },
+    {
+      "key": "event-discovery",
+      "file": "textures/illustrations/event-discovery.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 raster artwork at 1536x1024 for ROOT Network OS, an underground data-center management simulation. Premium semi-realistic painted game concept art, physically plausible equipment, tactile metal and concrete, cinematic practical light, restrained sage-green and warm amber accents on charcoal. Readable at small card size, main subject fills the frame. One continuous scene, no montage. No people, no letters or numbers, no UI, no logos, no watermark, no vector/icon/diagram style. Original designs, not copied game art. A shielded electronics inspection bench in an underground research bay, precision magnifying optics above an unusual glowing cyan component on a circuit board, violet and amber diagnostic instruments in the background, intriguing but plausible scientific discovery. Clear subject: investigating an anomaly, not a generic server rack."
+    },
+    {
+      "key": "event-procurement",
+      "file": "textures/illustrations/event-procurement.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 raster artwork at 1536x1024 for ROOT Network OS, an underground data-center management simulation. Premium semi-realistic painted game concept art, physically plausible equipment, tactile metal and concrete, cinematic practical light, restrained sage-green and warm amber accents on charcoal. Readable at small card size, main subject fills the frame. One continuous scene, no montage. No people, no letters or numbers, no UI, no logos, no watermark, no vector/icon/diagram style. Original designs, not copied game art. A newly delivered open reinforced transport case on a bunker receiving-bay bench, organized foam cutouts holding pristine enterprise memory modules, network cards and spare server fans; a wheeled delivery trolley behind, rich material detail, warm practical light. Clear subject: shared hardware procurement."
+    },
+    {
+      "key": "room-server",
+      "file": "textures/illustrations/room-server.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 raster artwork at 1536x1024 for ROOT Network OS, an underground data-center management simulation. Premium semi-realistic painted game concept art, physically plausible equipment, tactile metal and concrete, cinematic practical light, restrained sage-green and warm amber accents on charcoal. Readable at small card size, main subject fills the frame. One continuous scene, no montage. No people, no letters or numbers, no UI, no logos, no watermark, no vector/icon/diagram style. Original designs, not copied game art. Wide architectural view into a finished underground server room, black enclosed server cabinets along the side walls, a clear central walking aisle, realistic overhead cable trays, raised floor tiles and wall ventilation, neatly installed equipment, no close-up patch panel. Clear subject: a usable server room as a whole, restrained green activity lights."
+    },
+    {
+      "key": "room-vacant",
+      "file": "textures/illustrations/room-vacant.png",
+      "prompt": "Use case: stylized-concept. Original landscape 3:2 raster artwork at 1536x1024 for ROOT Network OS, an underground data-center management simulation. Premium semi-realistic painted game concept art, physically plausible equipment, tactile metal and concrete, cinematic practical light, restrained sage-green and warm amber accents on charcoal. Readable at small card size, main subject fills the frame. One continuous scene, no montage. No people, no letters or numbers, no UI, no logos, no watermark, no vector/icon/diagram style. Original designs, not copied game art. Wide architectural view of an undeveloped underground expansion plot: a rough dark rock recess with steel support arches at the entrance, a bare excavated floor, capped utility conduits and a simple temporary work lamp, a quiet empty space awaiting construction. No server racks or installed equipment, no workers. Clear subject: unbuilt bunker space, not a finished room."
+    }
+  ]
+}

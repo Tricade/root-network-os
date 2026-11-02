@@ -21,7 +21,21 @@
       if (!action || typeof action !== 'string' || !payload || typeof payload !== 'object')
         return fail('Diese Aktion ist ungültig.');
       const m = getMetrics(s);
-      for (const apply of [applyInfrastructure, applyWorkforce, applyProgression, applyRecovery]) {
+      for (const apply of [
+        context.applyPersonnel,
+        context.applyGrowth,
+        context.applyPreventiveMaintenance,
+        context.applyServicePriority,
+        context.applyOperations,
+        context.applySupply,
+        context.applyResearch,
+        context.applyCustomers,
+        context.applyServices,
+        applyInfrastructure,
+        applyWorkforce,
+        applyProgression,
+        applyRecovery,
+      ]) {
         const result = apply(s, action, payload, m);
         if (result) return result;
       }
@@ -34,6 +48,7 @@
       const temperatures = hardwareSnapshot(s);
       const result = actInternal(s, action, payload);
       if (result.ok) {
+        context.syncServiceRooms(s);
         for (const row of temperatures.values())
           if (!finite(row.rack.temperature)) row.rack.temperature = row.temperature;
         updateAchievementUnlocks(s);

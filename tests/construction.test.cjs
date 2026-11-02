@@ -210,6 +210,8 @@ test('legacy space migrates once without charging or relocating a rack; unknown 
     ...state.facility.racks[0],
     id: `rack-${i + 1}`,
   }));
+  state.version = 3;
+  delete state.business;
   delete state.facility.building;
   const source = JSON.stringify(state);
   const restored = roundtrip(state),

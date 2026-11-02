@@ -45,10 +45,11 @@
         ...(warnings.length ? { warnings } : {}),
       });
       const locked = Boolean(
-        s.resilience.incident ||
+        context.globalIncident(s) ||
         s.resilience.operation ||
         s.facility.operation ||
-        s.facility.centralOperation,
+        s.facility.centralOperation ||
+        s.preventiveMaintenance?.operation,
       );
       if (action === 'upgradeCentral') {
         const system = CENTRAL_SYSTEMS.find((item) => item.id === payload.system);
@@ -75,7 +76,7 @@
               ? 'Kein freier ausgebauter Rackplatz. Baue zuerst einen Serverraum.'
               : room.rackCount >= RACKS_PER_ROOM
                 ? 'Dieser Serverraum ist voll. Wähle einen anderen Raum oder baue zusätzliche Fläche.'
-                : locked
+                : locked || context.roomState(s, room.id)?.conversion
                   ? 'Während einer Krise oder laufenden Infrastrukturmaßnahme nicht verfügbar.'
                   : cashReason(s, price);
         return {
@@ -112,9 +113,11 @@
               ? 'Während einer Krise oder laufenden Infrastrukturmaßnahme nicht verfügbar.'
               : !rack
                 ? 'Kein passender freier Rackplatz oder Switch-Port verfügbar.'
-                : !placement.ok
-                  ? placement.reason
-                  : cashReason(s, price);
+                : context.roomState(s, rack.roomId)?.conversion || context.rackIncident(s, rack)
+                  ? 'Dieser Bereich ist vorübergehend nicht verfügbar.'
+                  : !placement.ok
+                    ? placement.reason
+                    : cashReason(s, price);
         const warnings = rack
           ? (() => {
               const row = hardwareSnapshot(s).get(rack.id);
@@ -213,7 +216,9 @@
           ? 'Server nicht gefunden.'
           : !rack
             ? 'Ziel-Rack nicht gefunden.'
-            : locked
+            : locked ||
+                context.roomState(s, s.facility.racks.find((r) => r.id === server.rackId)?.roomId)
+                  ?.conversion
               ? 'Während einer Krise oder laufenden Infrastrukturmaßnahme nicht verfügbar.'
               : server.status !== 'online' || !server.powered || server.bootRemaining > 0
                 ? 'Nur betriebsbereite Server können umgesetzt werden.'

@@ -6,7 +6,6 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function createDomain(context) {
-    const { RESILIENCE_MAX } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
     const cashReason = (...args) => context.cashReason(...args);
     const getMetrics = (...args) => context.getMetrics(...args);
@@ -57,20 +56,23 @@
         reason: backupReason,
         description: `${backupCost} Credits und 30 Sekunden mit halbiertem Auftragsdurchsatz; speichert ${s.research.toFixed(1)} Forschung und ${s.jobs.length} aktive Aufträge. Kein Datenverlust.`,
       });
-      const partsCost = Math.ceil(220 * (1 + Math.max(0, s.sector - 1) * 0.2));
-      const parts = Math.min(3, RESILIENCE_MAX.parts - r.parts),
-        partsReason =
-          r.parts >= RESILIENCE_MAX.parts
-            ? 'Das Ersatzteillager ist bereits voll.'
-            : cashReason(s, partsCost);
+      const policy = context.maintenancePolicy(s);
+      const parts = Math.min(
+        3,
+        context.partsCapacity(s) -
+          r.parts -
+          s.operations.orders.reduce((n, o) => n + o.quantity, 0),
+      );
+      const order = context.deliveryQuote(s, { quantity: parts });
       const partsPurchase = makeOption({
         key: 'bundle',
-        label: `${parts} Ersatzteil${parts === 1 ? '' : 'e'} kaufen`,
-        cost: partsCost,
+        label: 'Ersatzteile bestellen',
+        cost: order.cost,
         parts,
-        enabled: !partsReason,
-        reason: partsReason,
-        description: `${partsCost} Credits für ${Math.min(parts, RESILIENCE_MAX.parts - r.parts)} Ersatzteile; keine Ausfallzeit.`,
+        duration: order.duration,
+        enabled: order.enabled,
+        reason: order.reason,
+        description: `${order.cost} Credits für ${parts} Ersatzteile; Lieferung nach 30 Minuten.`,
       });
       const displayStatuses = new Map(
         (rackModel || getRackModel(s, m)).racks.flatMap((rack) =>
@@ -106,11 +108,14 @@
         safetyMode: m.safetyMode,
         graceRemaining: Math.max(0, r.graceUntil - now),
         parts: r.parts,
-        budget: s.policies.repairBudget,
+        budget: policy.repair,
         spent: r.budgetSpent,
-        reserve: s.policies.reserve,
+        reserve: policy.reserve,
+        backupBudget: policy.backup,
+        backupSpent: s.operations.backupSpent,
+        partsCapacity: context.partsCapacity(s),
         budgetScope:
-          'Das Stundenbudget gilt für automatische Reparaturen und automatische Betriebssicherungen; manuelle Eingriffe sind ausgenommen.',
+          'Reparaturen, Backups und Beschaffung haben getrennte Stundenbudgets. Manuelle Eingriffe sind ausgenommen.',
         backupAt: r.backup ? r.backup.createdAt : null,
         backupAge: r.backup ? Math.max(0, now - r.backup.createdAt) : null,
         backupCooldown: Math.max(0, r.backupCooldownUntil - now),

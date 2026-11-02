@@ -1,0 +1,98 @@
+/* Milestones share one layout in the web UI and the room console. */
+.achievement-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  margin: 0 0 24px;
+}
+.achievement-filters .field-label {
+  display: grid;
+  gap: 8px;
+  min-width: 200px;
+}
+.achievement-filters > span {
+  margin-left: auto;
+  padding: 12px 0;
+}
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr));
+  gap: 18px;
+}
+.achievement {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.achievement-medal.raster-art {
+  display: block;
+  width: 100%;
+  height: 140px;
+  flex: none;
+  border-bottom: 1px solid var(--line);
+}
+.achievement-medal.locked {
+  opacity: 0.75;
+}
+.achievement-medal > img {
+  object-position: center;
+}
+.achievement-copy {
+  flex: 1;
+  min-width: 0;
+  padding: 18px 20px 0;
+}
+.achievement-copy h3 {
+  font-size: 15px;
+  margin: 12px 0 8px;
+}
+.achievement-copy p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+  margin: 0;
+}
+.achievement-progress {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.achievement-progress progress {
+  width: 100%;
+  height: 6px;
+  accent-color: var(--accent);
+}
+.achievement-progress small {
+  color: var(--muted);
+}
+.achievement-progress small:empty {
+  display: none;
+}
+.achievement-action {
+  padding: 18px 20px 20px;
+}
+.achievement.available {
+  border-color: #768c4d;
+  background: #25301e;
+}
+.achievement.available .button {
+  color: #1e2a16;
+  background: #b7dc8e;
+  border-color: #b7dc8e;
+}
+.achievement.claimed {
+  opacity: 0.85;
+}
+@media (max-width: 480px) {
+  .achievement-filters .field-label {
+    min-width: 0;
+    width: 100%;
+  }
+}

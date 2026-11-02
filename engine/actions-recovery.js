@@ -6,7 +6,6 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function createDomain(context) {
-    const { RESILIENCE_MAX } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
     const addLog = (...args) => context.addLog(...args);
     const applyWorkLosses = (...args) => context.applyWorkLosses(...args);
@@ -76,14 +75,15 @@
         return { ok: true, message: 'Betriebssicherung wird erstellt.' };
       }
       if (action === 'buyParts') {
-        const option = getResilience(s).partsPurchase;
-        if (!option.enabled)
-          return fail(option.reason || 'Ersatzteile sind derzeit nicht verfügbar.');
-        const gain = Math.min(3, RESILIENCE_MAX.parts - s.resilience.parts);
-        s.credits -= option.cost;
-        s.resilience.parts += gain;
-        addLog(s, 'system', `${gain} Ersatzteil${gain === 1 ? '' : 'e'} eingelagert.`);
-        return { ok: true, message: 'Ersatzteile eingelagert.' };
+        return context.orderParts(s, {
+          quantity: Math.min(
+            3,
+            context.partsCapacity(s) -
+              s.resilience.parts -
+              s.operations.orders.reduce((n, o) => n + o.quantity, 0),
+          ),
+          method: 'standard',
+        });
       }
       if (action === 'resolveIncident') {
         const incident = s.resilience.incident;
@@ -124,6 +124,24 @@
         s.credits -= option.cost;
         s.resilience.parts -= option.parts;
         incident.resolution = option.key;
+        // A local recovery cannot roll back work earned elsewhere while its
+        // technician is busy. Apply only the quoted affected share at start.
+        if (incident.scope) {
+          if (effect.restoreSnapshot) {
+            const backup = s.resilience.backup,
+              share = context.incidentShare(s),
+              saved = new Map(backup.jobs.map((j) => [j.id, j.work]));
+            s.research = Math.max(0, s.research + (backup.protectedResearch - s.research) * share);
+            for (const job of s.jobs)
+              job.work = Math.max(0, job.work + ((saved.get(job.id) || 0) - job.work) * share);
+          } else {
+            applyWorkLosses(s, effect.workLosses);
+            if (effect.research !== undefined) s.research = effect.research;
+          }
+          effect.restoreSnapshot = false;
+          effect.workLosses = [];
+          delete effect.research;
+        }
         s.resilience.operation = {
           kind: incident.kind,
           label: option.label,

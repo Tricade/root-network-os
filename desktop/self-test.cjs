@@ -10,11 +10,14 @@ async function runSelfTest({ app, output, startDesktop }) {
   const result = { ok: false, version: app.getVersion(), runtime: { ...process.versions } };
   const write = () =>
     fs.writeFile(path.join(output, 'result.json'), JSON.stringify(result, null, 2) + '\n');
-  const deadline = setTimeout(async () => {
-    result.error = 'Desktop did not finish within 60 seconds';
-    await write();
-    app.exit(1);
-  }, 60000);
+  const deadline = setTimeout(
+    async () => {
+      result.error = 'Desktop did not finish within 60 seconds';
+      await write();
+      app.exit(1);
+    },
+    process.env.ROOT_CAPTURE_DOCS === '1' ? 120000 : 60000,
+  );
   async function fail(error) {
     clearTimeout(deadline);
     result.error = error.message;
@@ -61,15 +64,27 @@ async function runSelfTest({ app, output, startDesktop }) {
     assert.equal(initial.settingsButton, true);
     assert.equal(initial.canUpdate, ['nsis', 'deb'].includes(installation.kind));
     result.initial = initial;
+    // A fresh installation presents its guide before the optional arrival animation.
+    result.onboarding = await contents.executeJavaScript(`(() => {
+      const welcome = document.querySelector('.modal .welcome-steps');
+      if (!welcome) return { visible: false };
+      document.querySelector('.modal [data-command="close"]').click();
+      return { visible: true, dismissed: !document.querySelector('.modal') };
+    })()`);
+    assert.equal(result.onboarding.visible, true);
+    assert.equal(result.onboarding.dismissed, true);
+    result.catchup = await require('./catchup-smoke.cjs').checkCatchup(contents);
     result.arrival = await require('./arrival-smoke.cjs').checkArrival({ window, output });
     // Reload the same origin while the loopback service keeps its ephemeral port.
     assert.equal(await reload(), true);
     const reloaded = await contents.executeJavaScript(`(async () => {
       const saved = await (await fetch('/api/save')).json();
-      return { marker: localStorage.getItem('root.desktop.smoke'), network: saved.save.networkName };
+      return { marker: localStorage.getItem('root.desktop.smoke'), network: saved.save.networkName,
+        welcomeRepeated: Boolean(document.querySelector('.modal .welcome-steps')) };
     })()`);
     assert.equal(reloaded.marker, 'retained');
     assert.equal(reloaded.network, initial.network);
+    assert.equal(reloaded.welcomeRepeated, false);
     // The boot-ready bridge fires once per renderer. Wait for the real settings
     // control rather than treating did-finish-load as simulation readiness.
     await contents.executeJavaScript(`new Promise((resolve, reject) => {
@@ -171,6 +186,14 @@ async function runSelfTest({ app, output, startDesktop }) {
     assert.equal(save.servers.length, 1);
     result.saved = true;
     result.reloaded = reloaded;
+    result.workspaces = await require('./workspace-smoke.cjs').checkWorkspaces(contents);
+    result.sidebar = await require('./sidebar-smoke.cjs').checkSidebar({ window, output });
+    if (process.env.ROOT_CAPTURE_DOCS === '1')
+      result.documentation = await require('./docs-capture.cjs').captureDocumentation({
+        window,
+        output,
+        reload,
+      });
     result.updateTransport = await require('./update-smoke.cjs').checkUpdateTransport({
       directory: output,
       version: app.getVersion(),

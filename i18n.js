@@ -13,7 +13,27 @@
   // Keep values as plain text: callers can translate text nodes, attributes,
   // and canvas labels without changing markup or interpolated user data.
   const localizers = new Set();
-  const { en, patterns } = createEnglish(translate);
+  // Nested substitutions belong to this English catalog even when callers
+  // explicitly request English while the persisted interface language is German.
+  const { en, patterns } = createEnglish((text) => translate(text, 'en'));
+
+  // Saved automatic names remain canonical German data. Display them in the
+  // selected language without rewriting saves or interpreting arbitrary names.
+  function isGeneratedServerName(server) {
+    const prefixes = {
+      edge: ['Edge-Knoten', 'Randknoten'],
+      compute: ['Rechenknoten'],
+      storage: ['Speicherknoten'],
+      ai: ['KI-Beschleuniger'],
+    };
+    const match = String(server?.name || '').match(/^(.+?) (\d{2,})$/);
+    return Boolean(match && prefixes[server?.type]?.includes(match[1]));
+  }
+  function serverName(server, locale) {
+    if (!isGeneratedServerName(server)) return server?.name || '';
+    const split = server.name.lastIndexOf(' ');
+    return translate(server.name.slice(0, split), locale) + server.name.slice(split);
+  }
 
   function translate(text, locale) {
     if (typeof text !== 'string') return text;
@@ -266,6 +286,8 @@
   }
   return Object.freeze({
     translate,
+    isGeneratedServerName,
+    serverName,
     getLanguage,
     setLanguage,
     installLocalization,

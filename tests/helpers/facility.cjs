@@ -17,6 +17,13 @@ function grantSpace(state, options = {}) {
   state.facility.racks.forEach((rack, index) => {
     rack.roomId = `room-${Math.floor(index / 6) + 1}`;
   });
+  if (state.business) {
+    const make = require('../../engine/service-catalog.js')({}).roomDefaults;
+    const prior = new Map(state.business.rooms.map((room) => [room.roomId, room]));
+    state.business.rooms = state.facility.building.rooms.map(
+      (room) => prior.get(room.id) || make(room.id),
+    );
+  }
   return state;
 }
 

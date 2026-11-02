@@ -1,0 +1,313 @@
+/* Commercial activity uses the same solid, readable surfaces as the operations UI. */
+.business-room-selector {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+}
+.business-room-selector .field-label {
+  flex: 1 1 260px;
+  max-width: 420px;
+}
+.customer-contracts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 18px;
+}
+.customer-contract {
+  padding: 22px;
+  min-width: 0;
+}
+.customer-contract-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.customer-contract h3,
+.customer-lead h3 {
+  overflow-wrap: anywhere;
+  margin: 6px 0 12px;
+}
+.customer-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.customer-facts > span {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.customer-facts strong {
+  color: var(--text);
+  font: 12px var(--mono);
+}
+.customer-work {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding: 16px 0;
+}
+.customer-issue {
+  color: var(--amber);
+  line-height: 1.7;
+}
+.customer-lead .card-actions,
+.customer-contract .card-actions {
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 18px;
+}
+.customer-lead .workload-art {
+  margin: -4px -4px 18px;
+}
+.customer-policies .panel-body > p {
+  margin-top: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.room-operating-plan .business-panel-body > h3 {
+  margin: 25px 0 15px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.business-service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+}
+@media (max-width: 600px) {
+  .customer-contract {
+    padding: 17px;
+  }
+  .customer-facts {
+    grid-template-columns: 1fr;
+  }
+  .business-room-selector .field-label {
+    max-width: none;
+  }
+}
+
+.customer-requirements {
+  display: grid;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.customer-requirements strong {
+  color: var(--text);
+  font-size: 11px;
+}
+.portfolio-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.portfolio-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 1fr);
+  gap: 20px;
+}
+.portfolio-filters .field-label {
+  display: grid;
+  gap: 9px;
+}
+.portfolio-pages {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+.portfolio-standards > summary {
+  padding: 22px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.portfolio-standards .business-service-grid {
+  margin: 24px 0;
+}
+.portfolio-enquiries .business-room-selector {
+  margin-bottom: 20px;
+}
+.customer-contract-heading .customer-identity {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.customer-logo {
+  width: 48px;
+  height: 48px;
+  color: var(--accent2);
+  flex-shrink: 0;
+}
+.customer-logo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.customer-lead > .customer-logo {
+  width: 36px;
+  height: 36px;
+  float: right;
+  margin: 14px 0 0 12px;
+}
+.agent-workspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.2fr);
+  gap: 24px;
+  align-items: start;
+}
+.agent-roster-row {
+  display: flex;
+  width: 100%;
+  text-align: left;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+.agent-roster-row[aria-pressed='true'] {
+  background: #253121;
+  box-shadow: inset 3px 0 var(--accent);
+}
+.agent-roster-row > span {
+  display: grid;
+  gap: 6px;
+}
+.agent-roster-row small {
+  color: var(--muted);
+}
+.agent-roster-row .personnel-portrait {
+  width: 68px;
+  height: 68px;
+  flex-shrink: 0;
+}
+.robot-state {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 11px;
+}
+.robot-state.working {
+  color: var(--blue);
+}
+.robot-state.maintenance {
+  color: var(--amber);
+}
+.robot-state.ready {
+  color: var(--accent);
+}
+.robot-state .icon {
+  width: 13px;
+  height: 13px;
+}
+.agent-selected {
+  min-width: 0;
+}
+@media (max-width: 800px) {
+  .agent-workspace,
+  .portfolio-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.customer-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.customer-identity h3 {
+  margin: 0;
+}
+.customer-logo {
+  display: inline-flex;
+  flex: 0 0 42px;
+  width: 42px;
+  color: var(--accent, #b3d782);
+}
+.facility-room-art {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  margin-bottom: 16px;
+}
+.facility-navigator {
+  margin: 24px 0;
+}
+.facility-nav-results,
+.facility-nav-favorites ul,
+.facility-nav-devices {
+  list-style: none;
+  margin: 16px 0;
+  padding: 0;
+}
+.facility-nav-result,
+.facility-nav-devices button {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px;
+  border-bottom: 1px solid #303a30;
+}
+.facility-nav-result > button:first-child {
+  display: flex;
+  gap: 16px;
+  text-align: left;
+}
+.facility-favorite {
+  flex: 0 0 36px;
+}
+.facility-nav-selection {
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid #374432;
+  border-radius: 12px;
+}
+.facility-nav-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #a1aea3;
+}
+.facility-nav-racks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.facility-nav-devices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px;
+}
+
+.customer-logo {
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: 600 12px var(--mono);
+}
+.facility-room-art.raster-art {
+  height: 155px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.facility-room-art--planned {
+  opacity: 0.7;
+}

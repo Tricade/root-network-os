@@ -9,8 +9,15 @@
     // Late domain calls avoid circular module imports; no simulation state is stored here.
     const addLog = (...args) => context.addLog(...args);
     const cashReason = (...args) => context.cashReason(...args);
+    // Above the bounded maximum passive research forgone during this short
+    // assignment, so developing an analyst cannot make research missions worse.
+    const missionResearch = (a) =>
+      Math.ceil(
+        8 + a.level * (a.role === 'analyst' ? 18 : 9) + (a.focus === 'research' ? 6 * a.level : 0),
+      );
 
     function getAgentOperations(s) {
+      const customers = context.customerReadModel(s);
       const r = s.resilience,
         activeEffects = [];
       if (r.agentEffects.diagnoseRemaining > 0)
@@ -25,17 +32,47 @@
           label: 'Optimierungsprofil aktiv',
           remaining: r.agentEffects.optimizeRemaining,
         });
-      const paused = Boolean(r.incident);
+      const paused = context.globalIncident(s);
       const agents = s.agents.map((agent) => {
+        const project = s.operations?.projects.find((p) => p.agentId === agent.id);
         const cooldown = Math.max(0, agent.cooldownUntil - s.time);
-        const assignment = agent.assignment
-          ? {
-              kind: agent.assignment.kind,
-              label: agent.assignment.label,
-              remaining: agent.assignment.remaining,
-              total: agent.assignment.total,
-            }
-          : null;
+        const customer = customers.assignments.get(agent.id);
+        const maintenance = s.preventiveMaintenance?.operation;
+        const assignment =
+          maintenance?.agentId === agent.id
+            ? {
+                kind: 'preventive',
+                label: 'Vorbeugende Rackwartung',
+                remaining: maintenance.remaining,
+                total: maintenance.total,
+              }
+            : customer
+              ? {
+                  kind: 'customer',
+                  label:
+                    customer.work === 'setup'
+                      ? 'Kundeneinrichtung'
+                      : customer.work === 'retention'
+                        ? 'Kundenrückgewinnung'
+                        : 'Kundenbetreuung',
+                  remaining: customer.workRemaining,
+                  total: customer.workTotal,
+                }
+              : agent.assignment
+                ? {
+                    kind: agent.assignment.kind,
+                    label: agent.assignment.label,
+                    remaining: agent.assignment.remaining,
+                    total: agent.assignment.total,
+                  }
+                : project
+                  ? {
+                      kind: 'project',
+                      label: context.PROJECTS[project.kind].name,
+                      remaining: project.remaining,
+                      total: project.total,
+                    }
+                  : null;
         const definitions = [
           {
             key: 'diagnose',
@@ -57,7 +94,7 @@
             label: 'Forschungsauftrag',
             base: 100,
             duration: agent.role === 'analyst' ? 240 : 300,
-            result: `${agent.role === 'analyst' ? 8 + 4 * agent.level : 5 + 2 * agent.level} Forschungspunkte bei Abschluss.`,
+            result: `${missionResearch(agent)} Forschungspunkte bei Abschluss.`,
           },
         ];
         const options = definitions.map((def) => {
@@ -65,7 +102,12 @@
             def.base * (1 + Math.min(20, Math.max(0, s.sector - 1)) * 0.12),
           );
           let reason;
-          if (paused) reason = 'Krisenbetrieb: Einsätze beginnen erst nach der Wiederherstellung.';
+          if (!context.agentAvailable(s, agent))
+            reason = 'Dieser Agent wartet sich selbst und kehrt automatisch zurück.';
+          else if (paused)
+            reason = 'Krisenbetrieb: Einsätze beginnen erst nach der Wiederherstellung.';
+          else if (s.operations?.projects.some((p) => p.agentId === agent.id))
+            reason = 'Dieser Agent arbeitet an einem Langzeitprojekt.';
           else if (assignment)
             reason = `${agent.name} ist bereits im Einsatz: ${assignment.label}.`;
           else if (cooldown > 0) reason = `Wieder verfügbar in ${Math.ceil(cooldown)} Sekunden.`;
@@ -87,7 +129,7 @@
             reason,
           };
         });
-        return { id: agent.id, assignment, cooldown, options };
+        return { id: agent.id, assignment, cooldown, options, ...context.agentHealth(s, agent) };
       });
       return {
         effects: activeEffects,
@@ -105,7 +147,7 @@
       if (assignment.kind === 'diagnose') s.resilience.agentEffects.diagnoseRemaining = 1200;
       else if (assignment.kind === 'optimize') s.resilience.agentEffects.optimizeRemaining = 900;
       else if (assignment.kind === 'research') {
-        const reward = agent.role === 'analyst' ? 8 + 4 * agent.level : 5 + 2 * agent.level;
+        const reward = missionResearch(agent);
         s.research = Math.min(1e15, s.research + reward);
         addLog(
           s,
@@ -122,6 +164,6 @@
       agent.assignment = null;
       agent.cooldownUntil = s.time + 300;
     }
-    return { getAgentOperations, finishAgentMission };
+    return { getAgentOperations, finishAgentMission, missionResearch };
   };
 });

@@ -5,7 +5,7 @@
   if (root) (root.RootEngineModules ||= {})['definitions'] = create;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  return function createDefinitions(getMetrics) {
+  return function createDefinitions() {
     const catalog = {
       servers: {
         edge: {
@@ -71,7 +71,7 @@
       roles: {
         operator: {
           name: 'Operator',
-          description: 'Hält Aufträge am Laufen und steigert die Netzwerkerlöse.',
+          description: 'Beschleunigt Projektarbeit und kann ein Raumteam leiten.',
           baseCost: 260,
           color: '#65d6c4',
         },
@@ -93,7 +93,7 @@
           id: 'routing',
           name: 'Adaptives Routing',
           description:
-            'Mehr Durchsatz pro Agent. Wiederholbar: +12 Prozentpunkte Arbeitstempo je Stufe.',
+            'Mehr Tempo für Projektarbeit. Wiederholbar: +12 Prozentpunkte Arbeitstempo je Stufe.',
           baseCost: 8,
           currency: 'research',
           effect: 'work',
@@ -101,7 +101,8 @@
         {
           id: 'cooling',
           name: 'Flüssigkühlung',
-          description: 'Weniger Wärme und Ausfallrisiko. Wiederholbar: −8 % Wärme je Stufe.',
+          description:
+            'Senkt thermischen Stress und Ausfallrisiko mit abnehmendem Zusatznutzen. Ersetzt keine reale Kühlleistung.',
           baseCost: 10,
           currency: 'research',
           effect: 'heat',
@@ -118,7 +119,7 @@
           id: 'automation',
           name: 'Selbstheilende Abläufe',
           description:
-            'Wartung und passive Erlöse werden effizienter. Wiederholbar: +9 Prozentpunkte Netzwerkerlös je Stufe (ohne Zinseszins).',
+            'Senkt Energie- und Hardwarepflegekosten mit abnehmendem Zusatznutzen um bis zu 25 %. Personal und Zentralanlagen bleiben kostenpflichtig.',
           baseCost: 15,
           currency: 'research',
           effect: 'income',
@@ -127,49 +128,13 @@
           id: 'synthesis',
           name: 'Wissenssynthese',
           description:
-            'Analysen liefern mehr Erkenntnisse. Wiederholbar: +15 % Forschung je Stufe.',
+            'Steigert passive Forschung und Agentenprojekte mit abnehmendem Zusatznutzen um bis zu 60 %.',
           baseCost: 18,
           currency: 'research',
           effect: 'research',
         },
       ],
-      achievements: [
-        {
-          id: 'first_job',
-          name: 'Erster Auftrag',
-          description: 'Schließe den ersten Auftrag ab.',
-          reward: 120,
-          check: (s) => s.counters.jobs >= 1,
-        },
-        {
-          id: 'steady_network',
-          name: 'Stabiles Netz',
-          description: 'Erreiche 90 % Zuverlässigkeit.',
-          reward: 180,
-          check: (s) => getMetrics(s).reliability >= 90,
-        },
-        {
-          id: 'three_servers',
-          name: 'Dreifach redundant',
-          description: 'Betreibe mindestens drei Server.',
-          reward: 250,
-          check: (s) => s.servers.length >= 3,
-        },
-        {
-          id: 'sector_two',
-          name: 'Neuer Horizont',
-          description: 'Erschließe Sektor 2.',
-          reward: 350,
-          check: (s) => s.sector >= 2,
-        },
-        {
-          id: 'million',
-          name: 'Netzwerkvermögen',
-          description: 'Erwirtschaftete insgesamt 10.000 Credits.',
-          reward: 500,
-          check: (s) => s.lifetimeCredits >= 10000,
-        },
-      ],
+      achievements: [],
     };
 
     const SERVER_TYPES = Object.keys(catalog.servers);
@@ -210,6 +175,14 @@
       'recovery',
       'research',
       'ai',
+      'database',
+      'backup',
+      'loadtest',
+      'archive',
+      'containers',
+      'security',
+      'replication',
+      'rendering',
     ];
     const MAX = { servers: 10000, agents: 12, jobs: 8, offers: 6, events: 3, log: 80, history: 60 };
     const MAX_RESEARCH_LEVEL = 1000;
@@ -222,7 +195,7 @@
         unlockSector: 4,
         baseCost: 4800,
         duration: 120,
-        maxLevel: 5,
+        maxLevel: 10000,
       },
       {
         id: 'ups',
@@ -230,7 +203,7 @@
         unlockSector: 6,
         baseCost: 6200,
         duration: 150,
-        maxLevel: 5,
+        maxLevel: 10000,
       },
       {
         id: 'distribution',
@@ -238,7 +211,7 @@
         unlockSector: 8,
         baseCost: 8400,
         duration: 180,
-        maxLevel: 5,
+        maxLevel: 10000,
       },
     ];
     const CENTRAL_DEFAULTS = { cooling: 0, ups: 0, distribution: 0 };

@@ -68,7 +68,7 @@
       if (!['room', 'floor', 'service'].includes(kind) || (isService && !service))
         reason = 'Dieser Raumtyp ist unbekannt.';
       else if (b.project) reason = 'Ein Bauprojekt läuft bereits.';
-      else if (s.resilience.incident)
+      else if (context.globalIncident(s))
         reason = 'Während einer offenen Krise kann kein Bauprojekt beginnen.';
       else if (isService && serviceRoomOwned(s, roomType))
         reason = 'Dieser Raum wurde bereits gebaut.';
@@ -304,6 +304,7 @@
       });
       const rooms = building.rooms.map((room, index) => ({
         ...room,
+        supply: { ...context.roomSupply(s, room.id) },
         index,
         number: index + 1,
         rackIds: assigned.get(room.id),

@@ -160,6 +160,7 @@ button {
 }
 .brand {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 10px;
   padding: 0 14px 24px;
@@ -508,7 +509,11 @@ p {
   height: 14px;
 }
 .button.block {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
+  align-self: flex-start;
+  justify-self: start;
+  white-space: normal;
 }
 .text-button {
   background: none;
@@ -857,7 +862,7 @@ p {
   font-size: 12px;
   line-height: 1.7;
 }
-.empty-state .icon {
+.empty-state > .icon {
   margin: 0 auto 12px;
   width: 25px;
   height: 25px;
@@ -1019,6 +1024,7 @@ p {
 }
 .stats-strip {
   display: flex;
+  flex-wrap: wrap;
   gap: 24px;
   padding: 16px 20px;
   border-bottom: 1px solid var(--line);
@@ -1193,10 +1199,13 @@ tr:last-child td {
 .card-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 }
-.card-actions .button.primary {
-  flex: 1;
+.card-actions .button {
+  flex: 0 1 auto;
+  max-width: 100%;
+  white-space: normal;
 }
 .section-heading {
   display: flex;
@@ -1249,40 +1258,6 @@ tr:last-child td {
 }
 .research-card .button {
   margin-top: auto;
-}
-.achievement-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-.achievement {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--panel);
-  padding: 17px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.achievement > .icon {
-  color: var(--amber);
-  width: 23px;
-  height: 23px;
-}
-.achievement-copy {
-  flex: 1;
-}
-.achievement-copy h3 {
-  font-size: 11px;
-  margin-bottom: 5px;
-}
-.achievement-copy p {
-  font-size: 10px;
-  color: var(--muted);
-  margin: 0;
-}
-.achievement.claimed {
-  opacity: 0.58;
 }
 .policy-grid {
   display: grid;
@@ -1440,7 +1415,7 @@ tr:last-child td {
   position: fixed;
   inset: 0;
   background: #050805bb;
-  backdrop-filter: blur(7px);
+  backdrop-filter: none;
   z-index: 1000;
   display: grid;
   place-items: center;
@@ -1450,7 +1425,11 @@ tr:last-child td {
 .modal {
   width: min(680px, 100%);
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* This stays outside the scrollport, including while content is mid-scroll. */
+  padding-bottom: 14px;
   background: #191e18;
   border: 1px solid #3a4534;
   border-radius: 15px;
@@ -1461,6 +1440,7 @@ tr:last-child td {
 }
 .modal-header {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   padding: 22px 24px;
@@ -1472,6 +1452,9 @@ tr:last-child td {
 }
 .modal-body {
   padding: 24px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .modal-intro {
   color: var(--muted);
@@ -1859,11 +1842,9 @@ tr:last-child td {
   .topology-svg {
     height: 290px;
   }
-  .achievement-grid {
-    grid-template-columns: 1fr;
-  }
   .page-heading {
     align-items: flex-start;
+    flex-wrap: wrap;
   }
   h1 {
     font-size: 24px;
@@ -2155,18 +2136,6 @@ tr:last-child td {
 }
 .reward-banner .button {
   white-space: nowrap;
-}
-.achievement.available {
-  border-color: #768c4d;
-  background: #29341e;
-}
-.achievement.available > .icon {
-  color: #e4cf8f;
-}
-.achievement.available .button {
-  color: #1e2a16;
-  background: #b7dc8e;
-  border-color: #b7dc8e;
 }
 .incident-panel {
   border: 1px solid #745043;
@@ -2508,8 +2477,20 @@ tr:last-child td {
 }
 
 .sidebar {
+  overflow: hidden;
+}
+/* Keep the wordmark visible when keyboard focus scrolls a long navigation menu. */
+.sidebar-scroll {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+.sidebar-scroll > * {
+  flex-shrink: 0;
 }
 .sector-tile-label {
   display: flex;
@@ -2538,4 +2519,32 @@ tr:last-child td {
 .event-choice strong .icon {
   width: 13px;
   height: 13px;
+}
+
+.welcome-art {
+  height: 170px;
+  border-radius: 10px;
+  margin-bottom: 22px;
+}
+.welcome-steps {
+  padding-left: 22px;
+  margin: 20px 0 26px;
+}
+.welcome-steps li {
+  margin: 18px 0;
+  padding-left: 6px;
+}
+.welcome-steps p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 7px 0;
+}
+.release-notes {
+  padding-left: 22px;
+  margin: 24px 0;
+  line-height: 1.7;
+}
+.release-notes li {
+  margin: 16px 0;
+  padding-left: 5px;
 }

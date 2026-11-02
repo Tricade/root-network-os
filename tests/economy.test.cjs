@@ -3,26 +3,26 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const E = require('../engine.js');
 
-test('automation adds revenue percentage points rather than compounding previous levels', () => {
+test('automation reduces operating costs with a bounded return and never creates customer revenue', () => {
   const state = E.createState(510),
     base = E.getMetrics(state);
-  const gross = base.incomePerSecond + base.upkeep;
+  let previous = base.upkeep;
   for (const level of [0, 1, 2, 14, 20, 1000]) {
     state.upgrades.automation = level;
     const current = E.getMetrics(state);
-    assert.ok(
-      Math.abs((current.incomePerSecond + current.upkeep) / gross - (1 + level * 0.09)) < 1e-10,
-    );
+    assert.equal(current.serviceIncome, base.serviceIncome);
+    assert.ok(current.upkeep <= previous && current.upkeep >= base.upkeep * 0.75);
+    previous = current.upkeep;
   }
 });
 
-test('early reputation income is preserved and the high-reputation tail has diminishing returns', () => {
+test('reputation improves customer trust by at most 15 percent with diminishing returns', () => {
   const state = E.createState(511);
   state.reputation = 0;
   const baseline = E.getMetrics(state).incomePerSecond;
   for (const rep of [12, 100, 999, 1000]) {
     state.reputation = rep;
-    assert.ok(Math.abs(E.getMetrics(state).incomePerSecond - baseline - rep * 0.002) < 1e-10);
+    assert.ok(E.getMetrics(state).incomePerSecond > baseline);
   }
   state.reputation = 1000;
   const low = E.getMetrics(state).incomePerSecond;
@@ -36,6 +36,7 @@ test('early reputation income is preserved and the high-reputation tail has dimi
     high - baseline < 30,
     'one million reputation cannot mint thousands of passive credits/s',
   );
+  assert.ok(E.getMetrics(state).serviceIncome <= 1.02 * 1.15);
 });
 
 test('loading an existing wealthy network preserves accumulated money and research', () => {

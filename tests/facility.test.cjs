@@ -82,7 +82,7 @@ test('legacy v3 facility saves gain zeroed central systems; malformed added data
     () =>
       normalizeState({
         ...restored,
-        facility: { ...restored.facility, central: { ...restored.facility.central, ups: 6 } },
+        facility: { ...restored.facility, central: { ...restored.facility.central, ups: 10001 } },
       }),
     /zentrale|Ganzzahl/i,
   );
@@ -120,7 +120,10 @@ test('sector gates quotes and central upgrades charge once, save in progress, an
   advance(state, 1);
   assert.equal(state.facility.central.cooling, 1);
   assert.equal(state.facility.centralOperation, null);
-  advance(state, 20);
+  assert.ok(
+    act(state, 'convertRoomSupply', { roomId: 'room-1', system: 'cooling', mode: 'hybrid' }).ok,
+  );
+  advance(state, 480);
   const system = central(state, 'cooling');
   const rack = getRackModel(state).racks[0];
   assert.equal(system.totalCoolingW, 3500);
@@ -143,6 +146,10 @@ test('UPS and distribution provide bounded measurable capacity and unlock at the
   assert.equal(upsQuote.enabled, true);
   assert.equal(act(upsState, 'upgradeCentral', { system: 'ups' }).ok, true);
   advance(upsState, upsQuote.duration);
+  assert.ok(
+    act(upsState, 'convertRoomSupply', { roomId: 'room-1', system: 'power', mode: 'ups' }).ok,
+  );
+  advance(upsState, 180);
   const ups = central(upsState, 'ups');
   assert.equal(ups.upsCapacityW, 3000);
   assert.equal(ups.coverage, 1, 'capacity covers this small active installation');
@@ -187,6 +194,14 @@ test('UPS and distribution provide bounded measurable capacity and unlock at the
   assert.match(distributionQuote.description, /6000 W zusätzliche Gesamtreserve/);
   assert.equal(act(distributionState, 'upgradeCentral', { system: 'distribution' }).ok, true);
   advance(distributionState, distributionQuote.duration);
+  assert.ok(
+    act(distributionState, 'convertRoomSupply', {
+      roomId: 'room-1',
+      system: 'power',
+      mode: 'hybrid',
+    }).ok,
+  );
+  advance(distributionState, 180);
   const racks = getRackModel(distributionState).racks;
   assert.deepEqual(
     racks.map((rack) => rack.centralPowerCapacityW),

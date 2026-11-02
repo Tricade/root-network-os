@@ -1,5 +1,5 @@
 [![Checks](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml)
-[![Vorschau 1.5.1](https://img.shields.io/badge/Preview-1.5.1-8ab4f8)](package.json)
+[![Vorschau 1.6.0](https://img.shields.io/badge/Preview-1.6.0-8ab4f8)](package.json)
 [![Lizenz: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![KI-Transparenz](https://img.shields.io/badge/AI-transparency_notice-6f42c1)](AI-DISCLOSURE.md)
 [![Auf Ko-fi unterstützen](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/tricade)
@@ -32,7 +32,7 @@ Dir gefällt ROOT? **Gib dem Repository einen ⭐ [Stern auf GitHub](https://git
 </p>
 
 <p align="center">
-  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Lokal im Browser · Weboberfläche und Ego-Ansicht · Deutsch und Englisch · Vorschau 1.5.1 · Entwicklung mit KI-Unterstützung" width="1200"></a>
+  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Lokal im Browser · Weboberfläche und Ego-Ansicht · Deutsch und Englisch · Vorschau 1.6.0 · Entwicklung mit KI-Unterstützung" width="1200"></a>
 </p>
 
 ## Vom ersten Rack zum Cyberbunker
@@ -51,22 +51,42 @@ Verwalte alles über die **Weboberfläche**, oder gehe in **Ego-Perspektive** du
 
 ## Die Weboberfläche
 
+Das Menü gliedert sich in **Leitstelle, Geschäft, Rechenzentrum, Team & Entwicklung sowie Betrieb**. Das Dashboard zeigt Kundenversorgung, Wirtschaft und offene Arbeit. Raumprofile und zentrale Anschlüsse stehen unter Gebäude & Versorgung. Die physischen Monitore verwenden dieselben Bezeichnungen und aktuellen Werte.
+
 Auch die physische Infrastruktur lässt sich vollständig in der normalen Oberfläche verwalten: Gerätespezifikationen, GPU-Auslastung, Switch-Ports, Verkabelung, Stromprofile und die Folgen von Ausbauten sind direkt zugänglich.
 
-[![Hardwareansicht mit ausgewähltem KI-Server, GPU- und VRAM-Werten, Rackausstattung und Stromaufnahme](screenshots/readme/hardware.jpg)](screenshots/readme/hardware-full.jpg)
+Die kompakte Aufmerksamkeitsliste zeigt neben der gewählten Kategorie konkrete Entscheidungen, Anfragen, Reparaturen und Belohnungen mit Aktionen und aktuellen Angeboten. Der Detailbereich zeigt jeweils einen Vorgang mit Vor-/Zurück-Navigation und benötigt keine eigene Scrollleiste. Auch auf großen Bildschirmen bleiben Kategorien und normale Aktionsbuttons kompakt. Die Glocke sammelt offene Vorgänge und den Verlauf; „gelesen“ erledigt die zugrunde liegende Aufgabe nicht. Forschungsknoten öffnen ihre Details direkt über der Karte. Bereits erforschte Technologien zeigen ihre aktive Wirkung statt eines überholten Kaufbereichs.
+
+[![Dashboard mit kompakten Kategorien und direkt bearbeitbaren Kundenanfragen](screenshots/readme/dashboard-attention.png)](screenshots/readme/dashboard-attention.png)
 
 <table>
   <tr>
-    <td width="50%"><a href="screenshots/readme/overview.jpg"><img src="screenshots/readme/overview-thumb.jpg" alt="Dashboard mit Einnahmen, Kapazität, Forschung, Zuverlässigkeit und Raumvorschau" width="480"></a><br><strong>Netzwerkübersicht</strong><br>Einnahmen, Kapazität, Forschung, Zuverlässigkeit, Entscheidungen und aktuelle Infrastruktur.</td>
-    <td width="50%"><a href="screenshots/readme/agents.jpg"><img src="screenshots/readme/agents.jpg" alt="Agenten mit Rollen, Schwerpunkten, Ausbauten und Einsatzstatus" width="480"></a><br><strong>Agenten und Einsätze</strong><br>Spezialisten entwickeln, Schwerpunkte setzen und entscheiden, wer im Betrieb fehlen darf.</td>
+    <td width="50%"><a href="screenshots/readme/dashboard-attention.png"><img src="screenshots/readme/dashboard-attention.png" alt="Dashboard: Kundenversorgung, laufender Saldo, Team und offene Aufgaben auf einen Blick." width="480"></a><br><strong>Dashboard</strong><br>Kundenversorgung, laufender Saldo, Team und offene Aufgaben auf einen Blick.</td>
+    <td width="50%"><a href="screenshots/readme/customers.jpg"><img src="screenshots/readme/customers.jpg" alt="Kunden & Verträge: Anfragen, Agenteneinrichtung, Betreuung, Laufzeiten und Kündigungen." width="480"></a><br><strong>Kunden & Verträge</strong><br>Anfragen, Agenteneinrichtung, Betreuung, Laufzeiten und Kündigungen.</td>
   </tr>
   <tr>
-    <td><a href="screenshots/readme/jobs.jpg"><img src="screenshots/readme/jobs.jpg" alt="Auftragsboard mit CPU- und GPU-Arbeit, Vergütung und Kapazitätsbedarf" width="480"></a><br><strong>Kundenaufträge</strong><br>Vergütung, Forschung, Auslastung und benötigte GPUs vor der Annahme vergleichen.</td>
-    <td><a href="screenshots/readme/resilience-full.jpg"><img src="screenshots/readme/resilience.jpg" alt="Betrieb und Schutz mit Reparaturen, Ersatzteilen, Geldreserve und Betriebsbackups" width="480"></a><br><strong>Betrieb und Schutz</strong><br>Defekte, Reparaturen, Ersatzteile, geschützte Geldreserven und Betriebsbackups verwalten.</td>
+    <td width="50%"><a href="screenshots/readme/agents.jpg"><img src="screenshots/readme/agents.jpg" alt="Roboter-Agenten: Zufällige Stärken, Nachteile, Betriebskosten und Einsätze vergleichen." width="480"></a><br><strong>Roboter-Agenten</strong><br>Zufällige Stärken, Nachteile, Betriebskosten und Einsätze vergleichen.</td>
+    <td width="50%"><a href="screenshots/readme/agent-upgrade.jpg"><img src="screenshots/readme/agent-upgrade.jpg" alt="Upgrade-Vorschau: Die tatsächliche Wirkung und höhere Betriebskosten vor dem Kauf sehen." width="480"></a><br><strong>Upgrade-Vorschau</strong><br>Die tatsächliche Wirkung und höhere Betriebskosten vor dem Kauf sehen.</td>
   </tr>
   <tr>
-    <td><a href="screenshots/readme/research.jpg"><img src="screenshots/readme/research.jpg" alt="Forschung mit wiederholbaren Verbesserungen und Erfolgen" width="480"></a><br><strong>Forschung und Meilensteine</strong><br>Die gesamte Flotte verbessern und Erfolgsbelohnungen abholen.</td>
-    <td><a href="screenshots/readme/construction-full.jpg"><img src="screenshots/readme/construction.jpg" alt="Gebäudeplan mit vorhandenen Räumen, Bauplätzen und laufendem Etagenbau" width="480"></a><br><strong>Gebäude und Technik</strong><br>Flächen kaufen, Baufortschritt verfolgen und Kühlung, USV und Stromverteilung planen.</td>
+    <td width="50%"><a href="screenshots/readme/research-tree.jpg"><img src="screenshots/readme/research-tree.jpg" alt="Forschungszweige: Voraussetzungen verfolgen und entscheiden, welches bezahlte Projekt Laborzeit bekommt." width="480"></a><br><strong>Forschungszweige</strong><br>Voraussetzungen verfolgen und entscheiden, welches bezahlte Projekt Laborzeit bekommt.</td>
+    <td width="50%"><a href="screenshots/readme/achievements.png"><img src="screenshots/readme/achievements.png" alt="Erfolge: Eigene Seite für Meilensteine, Fortschritt und abholbereite Belohnungen." width="480"></a><br><strong>Erfolge</strong><br>Eigene Seite für Meilensteine, Fortschritt und abholbereite Belohnungen.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/jobs.jpg"><img src="screenshots/readme/jobs.jpg" alt="Projektaufträge: Ressourcenbedarf und Belohnung neben laufenden Kundenverträgen abwägen." width="480"></a><br><strong>Projektaufträge</strong><br>Ressourcenbedarf und Belohnung neben laufenden Kundenverträgen abwägen.</td>
+    <td width="50%"><a href="screenshots/readme/resilience.jpg"><img src="screenshots/readme/resilience.jpg" alt="Störungen & Backups: Defekte, Reparaturen, Ersatzteile, Reserven und Betriebsbackups verwalten." width="480"></a><br><strong>Störungen & Backups</strong><br>Defekte, Reparaturen, Ersatzteile, Reserven und Betriebsbackups verwalten.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/construction.png"><img src="screenshots/readme/construction.png" alt="Gebäude & Versorgung: Flächen kaufen, Raumprofile, Teams, Reserven und zentrale Anschlüsse planen." width="480"></a><br><strong>Gebäude & Versorgung</strong><br>Flächen kaufen, Raumprofile, Teams, Reserven und zentrale Anschlüsse planen.</td>
+    <td width="50%"><a href="screenshots/readme/room-console.jpg"><img src="screenshots/readme/room-console.jpg" alt="Dieselbe Verwaltung in 3D: Gruppierte Navigation und aktuelle Geschäftszahlen in der Raumkonsole." width="480"></a><br><strong>Dieselbe Verwaltung in 3D</strong><br>Gruppierte Navigation und aktuelle Geschäftszahlen in der Raumkonsole.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/notifications.png"><img src="screenshots/readme/notifications.png" alt="Benachrichtigungszentrale mit Kategorien und direkt abholbarem Erfolg" width="480"></a><br><strong>Alle Meldungen an einem Ort</strong><br>Offene Vorgänge filtern, einzelne Aufgaben bearbeiten und den Verlauf ansehen.</td>
+    <td width="50%"><a href="screenshots/readme/research-details.png"><img src="screenshots/readme/research-details.png" alt="Abgeschlossene Forschung in einem kompakten Dialog mit ihrer aktiven Wirkung" width="480"></a><br><strong>Forschungsdetails direkt an der Karte</strong><br>Wirkungen und Voraussetzungen prüfen, ohne die Position auf der Karte zu verlieren.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/operation-plans.png"><img src="screenshots/readme/operation-plans.png" alt="Vier getrennte Bereiche für Budgets, Ausbau, Wartung und Agentenprojekte" width="480"></a><br><strong>Gegliederte Betriebspläne</strong><br>Bereiche wechseln, ohne ungespeicherte Eingaben zu verlieren.</td>
+    <td width="50%"><a href="screenshots/readme/welcome.png"><img src="screenshots/readme/welcome.png" alt="Einführung beim ersten Start mit drei konkreten Schritten für die Leitstelle" width="480"></a><br><strong>Ein klarer Einstieg</strong><br>Einführung beim ersten Start, Neuerungen nach einem Update.</td>
   </tr>
 </table>
 
@@ -84,21 +104,48 @@ _Echte Aufnahmen mit einem getrennten, synthetischen Demostand und englischer Ob
 - **Simulierte KI-Infrastruktur:** Der ROOT A480 belegt in der Grundausstattung 4U und liefert vier simulierte Beschleuniger mit 320 GB VRAM. Inferenz- und Trainingsaufträge brauchen GPU-Kapazität; freie CPU-Leistung ersetzt sie nicht.
 - **Eingriffe mit Folgen:** Ausgewogen, Leistung und Öko tauschen Durchsatz gegen Strom und Wärme. Neustarts und Umpatchen dauern; Rackausbauten unterbrechen die angeschlossene Hardware vorübergehend. Kühlung verändert Temperaturen allmählich.
 
+### Kunden, Raumplanung und Zentralversorgung
+
+- **Umsatz aus erbrachten Diensten:** Hosting, Archive, Datenbanken und KI-Inferenz belegen CPU, RAM, Speicher, Netzwerk, GPUs und VRAM. Ungenutzte Hardware verursacht trotzdem Kosten.
+- **Zusagen und Reserven:** Verträge über einen, drei oder sieben Tage, Kundeneinrichtung durch Agenten, Premiumverpflichtungen, Raumprofile, bezahlte Teams und Agenten als Teamleitung machen Ausbauentscheidungen bedeutsam. Kundenvertrieb und Raumtechnik haben getrennte Bereiche.
+- **Kostenpflichtiger Raumumbau:** Bestehende Räume an zentrale Kühlung, Stromverteilung oder USV anschließen oder lokale Reserve behalten. Nur der betroffene Raum fällt beim Umbau aus. Selbst erzeugte Rohre und Kabelpritschen zeigen den Anschluss im 3D-Raum.
+- **15 Auftragsfamilien mit 46 Titeln:** Unterschiedliche Anforderungen an Arbeitsspeicher, Netzwerk, Speicher und Beschleuniger. Längere Agentenprojekte tauschen den normalen Beitrag gegen zugesagte Forschung, Ansehen oder Optimierung.
+- **Nachberechnung im Hintergrund:** Bis zu zwölf Stunden werden mit Fortschrittsanzeige berechnet. Online und offline gelten dieselben Regeln.
+
+[Regeln zu Wirtschaft, Ausfallbereichen und Betriebsplänen (Englisch) →](docs/service-economy.md)
+
+### Geplanter Betrieb und Übersicht
+
+- **Kunden wachsen mit:** Bestandskunden fragen Erweiterungen an. Sage ein Lieferfenster von 1, 4 oder 12 Stunden und ein Budget zu; Agenten müssen die Leistung rechtzeitig bereitstellen.
+- **Getrennte Planungsbereiche:** Budgets & Beschaffung, Ausbauplan, Wartung und Agentenprojekte haben eigene Reiter. Ungespeicherte Formulareingaben bleiben beim Wechsel erhalten.
+- **Ausbauplan:** bis zu zwölf geordnete Bau- und Anlagenschritte mit Preisgrenzen, frühestem Start und geschützter Geldreserve.
+- **Vorbeugende Rackwartung:** Techniker, Ersatzteile, Wartungsfenster und Kundenversorgung begrenzen die Ausführung. Die Automatik bleibt standardmäßig aus.
+- **Verbindliche Prioritäten:** vor Engpässen auswählen, welche Dienstklasse zuerst versorgt wird; eine Stunde Bindung und keine zusätzliche Kapazität.
+- **Bessere Orientierung:** offene Arbeit und nächste Termine im Dashboard, Kundenfilter, Standortsuche, Favoriten und kompakte Agentenlisten.
+- **Originale Bildmotive:** zwanzig eigene generierte Rasterillustrationen für Aufträge, Forschung, Erfolge, alle sechs Ereignisthemen sowie unterschiedliche Karten für gebaute Räume und freie Bauplätze. [Regeln, Grenzen und 3D-Darstellung →](docs/operations-planning.md)
+
 ### Agenten, Aufträge und Forschung
 
-- **Drei Rollen:** Operatoren unterstützen Aufträge und Einnahmen, Analysten liefern Forschung, Techniker helfen bei Wartung und Zuverlässigkeit. Agenten haben Stufen, Eigenschaften und einen einstellbaren Schwerpunkt.
+- **Drei Rollen:** Operatoren beschleunigen Projektarbeit, Analysten liefern Forschung, Techniker helfen bei Wartung und Zuverlässigkeit. Agenten haben Stufen, Eigenschaften und einen einstellbaren Schwerpunkt.
+- **Arbeitsamt für Roboter:** sechs Bewerbungen alle 30 Minuten, eine dauerhafte Vormerkung und 64 eigene Roboterporträts. Aussehen und Fähigkeiten werden unabhängig voneinander gewürfelt und bleiben nach dem Neuladen erhalten.
+- **Stärken mit Gegenleistung:** Prozessarbeit, Forschung, Pflege und Teamleitung gegen Betriebskosten und Nachteile abwägen, bevor du eine Einheit aktivierst. Bestandsagenten behalten beim Laden ihre Fähigkeiten.
+- **Automatische Selbstwartung:** einzelne Einheiten können zeitweise aussetzen. Ihr normaler Beitrag und bezahlte Einsätze pausieren; andere Systeme arbeiten weiter. Belohnungen bleiben erhalten und die Einheiten kommen automatisch zurück. [Personal und Balancing →](docs/personnel.md)
 - **Gezielte Einsätze:** Netzdiagnose senkt das Risiko, Lastoptimierung erhöht den Durchsatz und Forschungsaufträge liefern Punkte. Während eines Einsatzes fehlt der Agent vollständig im Normalbetrieb. Die Wirkung beginnt nach Abschluss; anschließend gilt eine Erholungszeit. Passende Rollen arbeiten bei ihren Spezialaufgaben effizienter.
 - **Konkurrierende Kundenaufträge:** Monitoring, Migration, Audits, Optimierung, Wiederherstellung, Forschung und KI-Arbeit teilen sich begrenzte Kapazitäten. Credits, Ansehen und Forschung werden bei Abschluss vergeben. Die automatische Annahme kann ausgewogen, auf Einnahmen oder auf Forschung ausgerichtet werden.
-- **Fünf wiederholbare Forschungszweige:** Routing, Kühlung, Vertragsanalyse, effiziente Abläufe und Wissenssynthese verbessern das gesamte Netzwerk. Erfolgsbelohnungen werden separat abgeholt.
+- **Forschung mit Laborzeit:** 96 Technologien in acht verbundenen Zweigen, eine zoombare Karte mit Suche und fünf fortlaufende Forschungsreihen. 16 abschließende Spezialisierungen bieten paarweise Vorteile und Nachteile; ein Wechsel kostet erneut Punkte und 24 Stunden Laborzeit. Neue Boni haben abnehmenden Zusatznutzen. Ein bezahltes Projekt belegt das Labor und bindet 10 % des Projektdurchsatzes. Abbruch erstattet keine Punkte; vorhandene Forschungsstufen bleiben erhalten. [Laborregeln →](docs/research.md)
+- **Upgrade-Folgen sichtbar:** Agentenentwicklung vergleicht tatsächlichen Durchsatz, Forschung, Risiko, Verschleiß, Fähigkeiten und Betriebskosten vor und nach dem Kauf. Erreichte Grenzen werden berücksichtigt.
+- **25 Erfolge:** Filter nach Kategorie und Status, laufender Fortschritt und einmalige Belohnungen. Schwierige Ziele umfassen 1.000 Aufträge, 70 Technologien, drei Untergeschosse und 10.000 CR laufenden Nettosaldo pro Minute. Gesamtertrag, Guthaben und Ertrag pro Minute werden klar unterschieden. [Meilensteinregeln →](docs/achievements.md)
+- **Orientierung beim ersten Start:** ein Begrüßungsdialog erklärt den Einstieg im Dashboard. Nach einem Versionswechsel erscheinen einmalig die Neuerungen; beide Dialoge bleiben im Handbuch erreichbar.
+- **Normaler Kundenbetrieb:** automatische Anfragen, Agenteneinrichtung, Verträge über einen, drei oder sieben Tage, Betreuung, Verlängerung und geschäftliche Kündigungen. Anhaltende Defizite haben Folgen; optionale Automatik beachtet ein Stundenbudget. [Vertragsregeln →](docs/customer-contracts.md)
 - **Entscheidungen und Sektoren:** Optionale Ereignisse bieten verschiedene Vorteile und warten ohne Zeitlimit; bis zu drei können gleichzeitig offen sein. Neue Sektoren verlangen Credits und Betriebsmeilensteine und eröffnen weitere Entwicklung. Räume entstehen dadurch nicht kostenlos.
 
 ### Defekte, Reparaturen und Backups
 
 - **Verschleiß und Ausfälle:** Zustand, Wärme und Betriebsrisiko können Server ausfallen lassen und den Auftragsdurchsatz senken.
 - **Reparaturentscheidungen:** Schnellreparatur, Generalüberholung und langsame Notfallwiederherstellung unterscheiden sich bei Geld, Ersatzteilen, Ausfallzeit, Endzustand und Arbeitsverlust. Ein Neustart oder ein anderer Port behebt keinen Hardwaredefekt. Die manuelle Wiederherstellung bietet einen langsamen Ausweg ohne Credits oder Ersatzteile, kostet dafür aber Arbeitsfortschritt und erreicht nur einen eingeschränkten Endzustand.
-- **Große Vorfälle:** Stromausfälle, Kühlungsausfälle und Datenkorruption verlangen eine bewusste Wiederherstellungsentscheidung. Der Schutzmodus begrenzt weitere Schäden während der Abwesenheit. Betroffene Aufträge und Agenteneinsätze pausieren bis zur Wiederherstellung.
+- **Große Vorfälle:** Stromausfälle, Kühlungsausfälle und Datenkorruption verlangen eine bewusste Wiederherstellungsentscheidung. Der Schutzmodus begrenzt weitere Schäden während der Abwesenheit. Der angeschlossene Ausfallbereich wird isoliert; unabhängige Hardware, Kunden und Agenten arbeiten weiter. Knoten, Rack, Raum und Zentralversorgung haben unterschiedliche Ausfallfolgen.
 - **Betriebsbackups:** Schützen Forschung und laufende Auftragsarbeit vor Datenkorruption. Eine Rücksicherung kann Fortschritt seit dem Sicherungszeitpunkt kosten. Sie ist etwas anderes als der Export des vollständigen Speicherstands.
-- **Begrenzte Automatik:** Automatische kleinere Reparaturen benötigen Ersatzteile. Reparaturen und Betriebsbackups beachten ein stündliches Ausgabenlimit und die geschützte Geldreserve. Die Routine läuft selbstständig; größere Wiederherstellungsentscheidungen bleiben relevant. [Automatisierungsansicht öffnen →](screenshots/readme/automation.jpg)
+- **Begrenzte Automatik:** Automatische kleinere Reparaturen benötigen Ersatzteile. Reparaturen, Backups, Beschaffung und geplante Maßnahmen haben getrennte Stundenbudgets. Standard- und Expresslieferungen brauchen Zeit. Ablaufpläne beachten Preisfreigaben, Geldreserve und Sparziel. Die Routine läuft selbstständig; größere Wiederherstellungsentscheidungen bleiben relevant. [Automatisierungsansicht öffnen →](screenshots/readme/automation.jpg)
 
 ### Kostenpflichtiger Ausbau unter der Erde
 
@@ -126,8 +173,13 @@ Verbindungsflure, Treppen zwischen angrenzenden Etagen, Server- und Technikräum
 
 ![Begehbarer Kontrollraum mit aktuellen Wandanzeigen und eigenen Arbeitsplätzen](screenshots/control-room.jpg)
 
+| Ausgebaute zentrale Kühlung                                                                           | Angeschlossene Lüftung im Serverraum                                                                  |
+| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| ![Geschlossene Kälteanlage mit angeschlossener Verrohrung](screenshots/readme/operations-cooling.jpg) | ![Lüftungseinheit mit Versorgung durch die zentrale Kühlung](screenshots/readme/room-air-handler.jpg) |
+
 | Steuerung                                  | Funktion                                                            |
 | :----------------------------------------- | :------------------------------------------------------------------ |
+| Shift + WASD                               | Sprinten                                                            |
 | WASD                                       | Bewegen                                                             |
 | Maus ziehen / Pfeiltasten links und rechts | Umsehen                                                             |
 | E am geschlossenen Rack                    | Tür öffnen                                                          |
@@ -186,7 +238,7 @@ Danach **[127.0.0.1:18473](http://127.0.0.1:18473/)** öffnen. Unter Windows kan
 <details>
 <summary><strong>Vorschaustatus, technische Grenzen und Prüfungen</strong></summary>
 
-ROOT ist eine laufend entwickelte **Vorschau 1.5.1**. Balancing, Übersetzung, Barrierefreiheit und 3D-Darstellung freuen sich über Beiträge. Der Ausbau endet nicht nach sechs Racks. Die Datenprüfung akzeptiert derzeit bis zu 10.000 Racks, 10.000 Server und 1.000.000 Sektoren sowie fünf Stufen zentraler Anlagen. Nur der ausgewählte Raum wird gerendert. Eine erfolgreiche Datenprüfung am Maximum belegt keine gute Echtzeit-Performance bei dieser Größe.
+ROOT ist eine laufend entwickelte **Vorschau 1.6.0**. Balancing, Übersetzung, Barrierefreiheit und 3D-Darstellung freuen sich über Beiträge. Der Ausbau endet nicht nach sechs Racks. Die Datenprüfung akzeptiert derzeit bis zu 10.000 Racks, 10.000 Server und 1.000.000 Sektoren sowie 100 Stufen zentraler Anlagen. Nur der ausgewählte Raum wird gerendert. Eine erfolgreiche Datenprüfung am Maximum belegt keine gute Echtzeit-Performance bei dieser Größe.
 
 [Integrationsprüfung](docs/verification-construction.md), [Laufzeit-Hinweise](docs/runtime-1.4.md) und [Asset-Prüfungen](docs/asset-audit.md) dokumentieren Nachweise und Grenzen. Die Desktop-Paketprüfungen ergänzen die früheren Nachweise der Version 1.4; siehe [Prüfumfang und Grenzen](docs/desktop.md).
 
