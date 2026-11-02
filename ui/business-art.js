@@ -16,9 +16,9 @@ const medals = {
   sector_two: 'construction',
   million: 'award-growth',
 };
-export function achievementArt(id, claimed, available) {
+export function achievementArt(id, claimed, available, art) {
   return illustration(
-    medals[id] || 'award-contract',
+    art || medals[id] || 'award-contract',
     `achievement-medal ${claimed ? 'claimed' : available ? 'available' : 'locked'}`,
   );
 }

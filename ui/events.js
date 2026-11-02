@@ -138,6 +138,7 @@ export function createEventsUI(ctx, platform = globalThis) {
     });
     platform.document.addEventListener('change', (event) => {
       if (ctx.desktopClosing?.()) return;
+      if (ctx.achievementChange?.(event.target)) return;
       if (ctx.notificationChange?.(event.target)) return;
       if (ctx.attentionChange?.(event.target)) return;
       if (ctx.businessChange?.(event.target)) return;

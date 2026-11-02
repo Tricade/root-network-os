@@ -1251,40 +1251,6 @@ tr:last-child td {
 .research-card .button {
   margin-top: auto;
 }
-.achievement-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-.achievement {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--panel);
-  padding: 17px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.achievement > .icon {
-  color: var(--amber);
-  width: 23px;
-  height: 23px;
-}
-.achievement-copy {
-  flex: 1;
-}
-.achievement-copy h3 {
-  font-size: 11px;
-  margin-bottom: 5px;
-}
-.achievement-copy p {
-  font-size: 10px;
-  color: var(--muted);
-  margin: 0;
-}
-.achievement.claimed {
-  opacity: 0.58;
-}
 .policy-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2164,18 +2130,6 @@ tr:last-child td {
 }
 .reward-banner .button {
   white-space: nowrap;
-}
-.achievement.available {
-  border-color: #768c4d;
-  background: #29341e;
-}
-.achievement.available > .icon {
-  color: #e4cf8f;
-}
-.achievement.available .button {
-  color: #1e2a16;
-  background: #b7dc8e;
-  border-color: #b7dc8e;
 }
 .incident-panel {
   border: 1px solid #745043;

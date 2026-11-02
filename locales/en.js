@@ -28,12 +28,26 @@
     typeof module === 'object' && module.exports
       ? require('./planning-en.js')
       : root.RootPlanningEnglish;
+  const achievements =
+    typeof module === 'object' && module.exports
+      ? require('./achievements-en.js')
+      : root.RootAchievementsEnglish;
   const create = (translate) =>
-    factory(translate, { building, business, personnel, customers, research, workspace, planning });
+    factory(translate, {
+      building,
+      business,
+      personnel,
+      customers,
+      research,
+      workspace,
+      planning,
+      achievements,
+    });
   if (typeof module === 'object' && module.exports) module.exports = create;
   if (root) root.RootEnglishCatalog = create;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate, catalogs) {
   const { building, business, personnel, customers, research, workspace, planning } = catalogs;
+  const achievements = catalogs.achievements;
   const en = Object.create(null);
   const add = (pairs) => {
     for (const [de, english] of pairs) en[de] = english;
@@ -2628,6 +2642,7 @@
   add(laboratory.pairs);
   const planned = planning(translate);
   add(planned.pairs);
+  add(achievements(translate).pairs);
   return {
     en,
     patterns: [

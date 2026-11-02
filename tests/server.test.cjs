@@ -28,6 +28,39 @@ function fixture() {
   return engine.createState(24680);
 }
 
+test('legacy achievement catalogs migrate on read but stale writers cannot erase new claims', async (t) => {
+  await withServer(t, async ({ base, dataDir }) => {
+    const E = require('../engine.js');
+    const old = fixture();
+    old.counters.jobs = 100;
+    for (const a of E.catalog.achievements.filter((a) => !a.legacy)) {
+      delete old.achievementUnlocks[a.id];
+      delete old.achievements[a.id];
+    }
+    const original = JSON.stringify(old);
+    await fs.writeFile(path.join(dataDir, 'save.json'), original);
+    const current = (await (await fetch(base + '/api/save')).json()).save;
+    assert.equal(current.achievementUnlocks.jobs_100, true);
+    assert.equal(current.credits, old.credits);
+    const post = (save) =>
+      fetch(base + '/api/save', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', origin: base },
+        body: JSON.stringify(save),
+      });
+    const rejected = await post(old);
+    assert.equal(rejected.status, 409);
+    assert.equal((await rejected.json()).updateRequired, true);
+    assert.equal(await fs.readFile(path.join(dataDir, 'save.json'), 'utf8'), original);
+    assert.equal(E.act(current, 'claimAchievement', { id: 'jobs_100' }).ok, true);
+    assert.equal((await post(current)).status, 200);
+    const reload = (await (await fetch(base + '/api/save')).json()).save;
+    assert.equal(reload.achievements.jobs_100, true);
+    assert.equal(E.act(reload, 'claimAchievement', { id: 'jobs_100' }).ok, false);
+    assert.equal(await fs.readFile(path.join(dataDir, 'save.backup.json'), 'utf8'), original);
+  });
+});
+
 test('schema 5, 6 and 7 load as schema 8 without losing progress; old writers cannot erase customers or paid research', async (t) => {
   const E = require('../engine.js');
   for (const version of [5, 6, 7])

@@ -50,6 +50,7 @@ export function createTelemetryUI(ctx) {
       a = ctx.agentOperations(),
       achievements = ctx.pendingAchievements(),
       limited = facility.racks.some((x) => x.status !== 'online');
+    ctx.updateAchievements?.(m);
     ctx.updateBusiness?.(m);
     ctx.updateResearch?.(m);
     ctx.updateDashboard?.(m, r, a);

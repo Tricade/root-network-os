@@ -2,6 +2,7 @@
 (function (root, factory) {
   const names = [
     'definitions',
+    'achievement-catalog',
     'dependencies',
     'job-catalog',
     'service-catalog',

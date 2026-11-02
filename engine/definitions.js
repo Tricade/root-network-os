@@ -5,7 +5,7 @@
   if (root) (root.RootEngineModules ||= {})['definitions'] = create;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  return function createDefinitions(getMetrics) {
+  return function createDefinitions() {
     const catalog = {
       servers: {
         edge: {
@@ -134,43 +134,7 @@
           effect: 'research',
         },
       ],
-      achievements: [
-        {
-          id: 'first_job',
-          name: 'Erster Auftrag',
-          description: 'Schließe den ersten Auftrag ab.',
-          reward: 120,
-          check: (s) => s.counters.jobs >= 1,
-        },
-        {
-          id: 'steady_network',
-          name: 'Stabiles Netz',
-          description: 'Erreiche 90 % Zuverlässigkeit.',
-          reward: 180,
-          check: (s) => getMetrics(s).reliability >= 90,
-        },
-        {
-          id: 'three_servers',
-          name: 'Dreifach redundant',
-          description: 'Betreibe mindestens drei Server.',
-          reward: 250,
-          check: (s) => s.servers.length >= 3,
-        },
-        {
-          id: 'sector_two',
-          name: 'Neuer Horizont',
-          description: 'Erschließe Sektor 2.',
-          reward: 350,
-          check: (s) => s.sector >= 2,
-        },
-        {
-          id: 'million',
-          name: 'Netzwerkvermögen',
-          description: 'Erwirtschaftete insgesamt 10.000 Credits.',
-          reward: 500,
-          check: (s) => s.lifetimeCredits >= 10000,
-        },
-      ],
+      achievements: [],
     };
 
     const SERVER_TYPES = Object.keys(catalog.servers);

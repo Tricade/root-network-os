@@ -227,9 +227,13 @@
         throw new Error('Ungültige Meilensteinfreigaben.');
       s.achievementUnlocks = {};
       for (const a of catalog.achievements) {
-        if (typeof unlocks[a.id] !== 'boolean')
+        // Added milestones are absent in older saves. Original keys and present values stay strict.
+        if (
+          (!Object.hasOwn(unlocks, a.id) && a.legacy) ||
+          (Object.hasOwn(unlocks, a.id) && typeof unlocks[a.id] !== 'boolean')
+        )
           throw new Error('Ungültige Meilensteinfreigabe: ' + a.id);
-        s.achievementUnlocks[a.id] = unlocks[a.id] || s.achievements[a.id];
+        s.achievementUnlocks[a.id] = unlocks[a.id] === true || s.achievements[a.id];
       }
       const c = input.counters || {};
       s.counters = {

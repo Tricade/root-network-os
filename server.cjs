@@ -251,6 +251,19 @@ function createServer(options = {}) {
         }
         const engine = getEngine();
         if (!engine) throw new Error('Die Datenstruktur kann ohne engine.js nicht geprüft werden.');
+        // Import/read may migrate old milestones, but stale browser writers must not erase claims.
+        if (
+          parsed?.version === API_VERSION &&
+          engine.catalog.achievements.some(
+            (a) => !a.legacy && !Object.hasOwn(parsed.achievementUnlocks || {}, a.id),
+          )
+        )
+          return send(res, 409, {
+            ok: false,
+            updateRequired: true,
+            error:
+              'Diese Oberfläche stammt aus einer älteren Version. Lade sie neu, bevor du fortfährst.',
+          });
         const normalized = engine.normalizeState(parsed);
         if (!normalized || typeof normalized !== 'object' || Array.isArray(normalized)) {
           throw new Error('Ungültiger Netzwerkstand.');
