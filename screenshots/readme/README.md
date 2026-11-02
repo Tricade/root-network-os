@@ -6,7 +6,9 @@ The native Electron 45.2.1 run verifies the requested route, decoded images and 
 
 The planned-operations update replaces `research-tree.jpg`, `jobs.jpg` and `achievements.jpg` with actual embedded-browser captures of the 96-technology map and generated raster illustrations. `operations-cooling.jpg` and `room-air-handler.jpg` show the upgraded central plant and a server room after its paid central-cooling conversion. These five images use a separate synthetic fixture with 18 servers, six racks and two agents; the earlier gallery images retain their original fixture. No screenshot edits substitute for runtime geometry. See the [verification scope](../../docs/verification-planning.md).
 
-To reproduce on PowerShell:
+The attention-center update adds `dashboard-attention.png`, `notifications.png` and `research-details.png` from the running embedded browser with the same isolated 18-server, six-rack, two-agent fixture. They show actionable dashboard entries, filtered notifications and an already-completed technology. This fixture has deliberately elevated credits to exercise late-game interfaces; it is not an example of normal earning rates. These are unedited runtime captures, with no player save or private account data.
+
+To reproduce the native gallery on PowerShell:
 
 ```powershell
 $env:ROOT_CAPTURE_DOCS = '1'

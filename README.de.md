@@ -55,11 +55,13 @@ Das Menü gliedert sich in **Leitstelle, Geschäft, Rechenzentrum, Team & Entwic
 
 Auch die physische Infrastruktur lässt sich vollständig in der normalen Oberfläche verwalten: Gerätespezifikationen, GPU-Auslastung, Switch-Ports, Verkabelung, Stromprofile und die Folgen von Ausbauten sind direkt zugänglich.
 
-[![Dashboard mit Kundenversorgung, laufendem Saldo, Team und aktueller Forschung](screenshots/readme/overview.jpg)](screenshots/readme/overview-full.jpg)
+Die kompakte Aufmerksamkeitsliste zeigt neben der gewählten Kategorie konkrete Entscheidungen, Anfragen, Reparaturen und Belohnungen mit Aktionen und aktuellen Angeboten. Die Glocke sammelt offene Vorgänge und den Verlauf; „gelesen“ erledigt die zugrunde liegende Aufgabe nicht. Forschungsknoten öffnen ihre Details direkt über der Karte. Bereits erforschte Technologien zeigen ihre aktive Wirkung statt eines überholten Kaufbereichs.
+
+[![Dashboard mit kompakten Kategorien und direkt bearbeitbaren Kundenanfragen](screenshots/readme/dashboard-attention.png)](screenshots/readme/dashboard-attention.png)
 
 <table>
   <tr>
-    <td width="50%"><a href="screenshots/readme/overview.jpg"><img src="screenshots/readme/overview.jpg" alt="Dashboard: Kundenversorgung, laufender Saldo, Team und offene Aufgaben auf einen Blick." width="480"></a><br><strong>Dashboard</strong><br>Kundenversorgung, laufender Saldo, Team und offene Aufgaben auf einen Blick.</td>
+    <td width="50%"><a href="screenshots/readme/dashboard-attention.png"><img src="screenshots/readme/dashboard-attention.png" alt="Dashboard: Kundenversorgung, laufender Saldo, Team und offene Aufgaben auf einen Blick." width="480"></a><br><strong>Dashboard</strong><br>Kundenversorgung, laufender Saldo, Team und offene Aufgaben auf einen Blick.</td>
     <td width="50%"><a href="screenshots/readme/customers.jpg"><img src="screenshots/readme/customers.jpg" alt="Kunden & Verträge: Anfragen, Agenteneinrichtung, Betreuung, Laufzeiten und Kündigungen." width="480"></a><br><strong>Kunden & Verträge</strong><br>Anfragen, Agenteneinrichtung, Betreuung, Laufzeiten und Kündigungen.</td>
   </tr>
   <tr>
@@ -77,6 +79,10 @@ Auch die physische Infrastruktur lässt sich vollständig in der normalen Oberfl
   <tr>
     <td width="50%"><a href="screenshots/readme/construction.jpg"><img src="screenshots/readme/construction.jpg" alt="Gebäude & Versorgung: Flächen kaufen, Raumprofile, Teams, Reserven und zentrale Anschlüsse planen." width="480"></a><br><strong>Gebäude & Versorgung</strong><br>Flächen kaufen, Raumprofile, Teams, Reserven und zentrale Anschlüsse planen.</td>
     <td width="50%"><a href="screenshots/readme/room-console.jpg"><img src="screenshots/readme/room-console.jpg" alt="Dieselbe Verwaltung in 3D: Gruppierte Navigation und aktuelle Geschäftszahlen in der Raumkonsole." width="480"></a><br><strong>Dieselbe Verwaltung in 3D</strong><br>Gruppierte Navigation und aktuelle Geschäftszahlen in der Raumkonsole.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/notifications.png"><img src="screenshots/readme/notifications.png" alt="Benachrichtigungszentrale mit Kategorien und direkt abholbarem Erfolg" width="480"></a><br><strong>Alle Meldungen an einem Ort</strong><br>Offene Vorgänge filtern, einzelne Aufgaben bearbeiten und den Verlauf ansehen.</td>
+    <td width="50%"><a href="screenshots/readme/research-details.png"><img src="screenshots/readme/research-details.png" alt="Abgeschlossene Forschung in einem kompakten Dialog mit ihrer aktiven Wirkung" width="480"></a><br><strong>Forschungsdetails direkt an der Karte</strong><br>Wirkungen und Voraussetzungen prüfen, ohne die Position auf der Karte zu verlieren.</td>
   </tr>
 </table>
 

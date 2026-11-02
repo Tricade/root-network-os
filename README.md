@@ -55,11 +55,13 @@ The interface is grouped into **Control room, Business, Data center, Team & deve
 
 Physical hardware is also fully manageable from the ordinary interface: server specifications, GPU usage, switch ports, wiring, power profiles and upgrade consequences are exposed directly.
 
-[![Dashboard with customer delivery, recurring margin, staffing and current research](screenshots/readme/overview.jpg)](screenshots/readme/overview-full.jpg)
+The compact attention list shows actual decisions, enquiries, repairs and rewards beside the selected category, with actions and current quotes. The notification bell brings pending work and activity history together; marking a message read does not resolve the underlying task. Research nodes open a compact detail dialog over the map. Completed technologies show their active effect instead of an obsolete purchase form.
+
+[![Dashboard with compact attention categories and actionable customer enquiries](screenshots/readme/dashboard-attention.png)](screenshots/readme/dashboard-attention.png)
 
 <table>
   <tr>
-    <td width="50%"><a href="screenshots/readme/overview.jpg"><img src="screenshots/readme/overview.jpg" alt="Dashboard: Customer delivery, recurring margin, staffing and actions needing attention." width="480"></a><br><strong>Dashboard</strong><br>Customer delivery, recurring margin, staffing and actions needing attention.</td>
+    <td width="50%"><a href="screenshots/readme/dashboard-attention.png"><img src="screenshots/readme/dashboard-attention.png" alt="Dashboard: Customer delivery, recurring margin, staffing and actions needing attention." width="480"></a><br><strong>Dashboard</strong><br>Customer delivery, recurring margin, staffing and actions needing attention.</td>
     <td width="50%"><a href="screenshots/readme/customers.jpg"><img src="screenshots/readme/customers.jpg" alt="Customers & contracts: Incoming enquiries, staffed provisioning, support, contract terms and departures." width="480"></a><br><strong>Customers & contracts</strong><br>Incoming enquiries, staffed provisioning, support, contract terms and departures.</td>
   </tr>
   <tr>
@@ -77,6 +79,10 @@ Physical hardware is also fully manageable from the ordinary interface: server s
   <tr>
     <td width="50%"><a href="screenshots/readme/construction.jpg"><img src="screenshots/readme/construction.jpg" alt="Buildings & utilities: Buy space and configure room profiles, crews, reserves and central connections." width="480"></a><br><strong>Buildings & utilities</strong><br>Buy space and configure room profiles, crews, reserves and central connections.</td>
     <td width="50%"><a href="screenshots/readme/room-console.jpg"><img src="screenshots/readme/room-console.jpg" alt="The same controls in 3D: Grouped navigation and live business readings inside the room console." width="480"></a><br><strong>The same controls in 3D</strong><br>Grouped navigation and live business readings inside the room console.</td>
+  </tr>
+  <tr>
+    <td width="50%"><a href="screenshots/readme/notifications.png"><img src="screenshots/readme/notifications.png" alt="Notification center with category filtering and a directly claimable achievement" width="480"></a><br><strong>One notification center</strong><br>Filter pending work, act on individual items and review the history.</td>
+    <td width="50%"><a href="screenshots/readme/research-details.png"><img src="screenshots/readme/research-details.png" alt="Completed research shown in a compact dialog with its active effect" width="480"></a><br><strong>Research details in place</strong><br>Inspect effects and prerequisites without losing your position on the map.</td>
   </tr>
 </table>
 

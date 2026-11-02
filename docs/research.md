@@ -56,3 +56,5 @@ Schema 7 introduced the paid research ledger; current schema 8 retains its struc
 `research-catalog.js` preserves the original definitions; three domain catalog modules supply the expansion, and `research-expansion.js` owns its tier rules and bounded aggregation. UI layout and camera controls live in separate modules. Add translations, reachable dependency paths, effect-bound tests and save round-trips when extending the atlas. The current eight-district layout must also be reconsidered if adding further branches.
 
 Achievements remain a separate menu page and do not occupy the laboratory.
+
+For a completed, non-repeatable technology, the detail dialog shows its active effect and completion state. Lab restrictions, purchase cost and the disabled start button are omitted. If the project completes while its dialog is open, that view updates to the completed state. Repeatable tracks continue to show the quote for their next level.

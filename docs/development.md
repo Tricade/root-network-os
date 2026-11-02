@@ -64,6 +64,12 @@ Schema 6 introduced customer cohorts; schema 7 adds the paid research ledger. Se
 
 The native Electron 45.2.1 workspace smoke checks web routes, upgrade confirmation and actual modal scroll geometry. Optional `ROOT_CAPTURE_DOCS=1` captures fictional demonstration data through the real application. Its renderer checks and native frame presentation checks supplement unit tests. The capture API and presentation subscription follow the [45.2.1 webContents documentation](https://github.com/electron/electron/blob/v45.2.1/docs/api/web-contents.md). No private profile, external asset download or additional package is required.
 
+## Attention center and native controls
+
+`ui/attention-model.js` derives individual pending tasks from the shared dashboard model. `ui/attention-cards.js` renders their actions for both Dashboard and the bell; quotes and mutations still pass through the existing engine and confirmation dialogs. `ui/notification-center.js` owns filters and presentation. Its bounded read/history state (`ui/notification-state.js`) lives in browser storage, separately from exported simulation progress, and resets when a network is imported or replaced. Reading a message never completes its underlying task. Existing activity is initially marked read; current pending work and subsequent events remain discoverable.
+
+`controls.css` styles native single-select pickers centrally, including room navigation. The pinned Electron 45.2.1 uses Chromium 156.0.8078.75; Chromium supports this [customizable select appearance from version 135](https://developer.chrome.com/blog/a-customizable-select). The [vendor guidance](https://developer.chrome.com/docs/modern-web-guidance/guides/forms/branded-select-styling) specifies `appearance: base-select` for the control and its top-layer picker. An `@supports` guard leaves standard native selects in browsers without support. Labels, option values and change events are unchanged. Dialog and room keyboard handlers defer to an open picker so Escape closes that list before its parent interface. No JavaScript replacement widget or dependency is introduced.
+
 ## Planning, research atlas and illustration ownership
 
 Schema 8 adds `customer-growth`, `service-priorities` / `priority-allocation`, `preventive-maintenance` / `preventive-save`, and `capital-plans` / `save-planning`. Each domain owns its quotes and validation. UI factories consume those quotes, and the 3D console routes to the same actions. Dashboard attention uses shared metrics; it does not advance simulation or allocate new hardware.
