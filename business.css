@@ -80,7 +80,8 @@
   border-top: 1px solid var(--line);
 }
 .service-card .card-actions .button {
-  width: 100%;
+  width: auto;
+  justify-self: start;
 }
 
 .business-controls {

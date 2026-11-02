@@ -508,7 +508,11 @@ p {
   height: 14px;
 }
 .button.block {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
+  align-self: flex-start;
+  justify-self: start;
+  white-space: normal;
 }
 .text-button {
   background: none;
@@ -1194,10 +1198,13 @@ tr:last-child td {
 .card-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 }
-.card-actions .button.primary {
-  flex: 1;
+.card-actions .button {
+  flex: 0 1 auto;
+  max-width: 100%;
+  white-space: normal;
 }
 .section-heading {
   display: flex;
@@ -1834,11 +1841,9 @@ tr:last-child td {
   .topology-svg {
     height: 290px;
   }
-  .achievement-grid {
-    grid-template-columns: 1fr;
-  }
   .page-heading {
     align-items: flex-start;
+    flex-wrap: wrap;
   }
   h1 {
     font-size: 24px;
@@ -2501,4 +2506,32 @@ tr:last-child td {
 .event-choice strong .icon {
   width: 13px;
   height: 13px;
+}
+
+.welcome-art {
+  height: 170px;
+  border-radius: 10px;
+  margin-bottom: 22px;
+}
+.welcome-steps {
+  padding-left: 22px;
+  margin: 20px 0 26px;
+}
+.welcome-steps li {
+  margin: 18px 0;
+  padding-left: 6px;
+}
+.welcome-steps p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 7px 0;
+}
+.release-notes {
+  padding-left: 22px;
+  margin: 24px 0;
+  line-height: 1.7;
+}
+.release-notes li {
+  margin: 16px 0;
+  padding-left: 5px;
 }

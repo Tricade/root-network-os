@@ -1,4 +1,6 @@
 import '../brand.js';
+import '../release.js';
+const RELEASE = globalThis.ROOTRelease;
 const BRAND = globalThis.ROOTBrand;
 
 /** dialogs UI: reads current state through the controller context. */
@@ -83,12 +85,12 @@ export function createDialogsUI(ctx) {
         'Ereignisse warten ohne Zeitlimit. Bis zu 12 Stunden Fortschritt werden nachgeholt. ROOT speichert regelmäßig lokal; Export sichert einen Stand zusätzlich.',
       ],
     ];
-    return `<p class="modal-intro">ROOT ist deine eigene Netzwerk-Leitstelle. Es gibt keinen Zeitdruck: Gute Entscheidungen, ein durchdachter Ausbau und passende Regeln bringen dich weiter.</p><div class="help-grid">${help.map(([i, t, d]) => `<div class="help-item">${ctx.icon(i)}<h3>${t}</h3><p>${d}</p></div>`).join('')}</div><p class="keyboard-hint">TASTATUR · 1–9: Bereiche wechseln · ?: Hilfe · Escape: Schließen</p>`;
+    return `<p class="modal-intro">ROOT ist deine eigene Netzwerk-Leitstelle. Es gibt keinen Zeitdruck: Gute Entscheidungen, ein durchdachter Ausbau und passende Regeln bringen dich weiter.</p><div class="card-actions"><button class="button" data-modal="welcome">${ctx.tr('Einführung ansehen')}</button><button class="button" data-modal="changelog">${ctx.tr('Änderungen dieser Version')}</button></div><div class="help-grid">${help.map(([i, t, d]) => `<div class="help-item">${ctx.icon(i)}<h3>${t}</h3><p>${d}</p></div>`).join('')}</div><p class="keyboard-hint">TASTATUR · 1–9: Bereiche wechseln · ?: Hilfe · Escape: Schließen</p>`;
   }
 
   function settingsModal() {
     const desktop = ctx.desktopSettings?.() || '';
-    return `<div class="settings-row"><h3>Sprache / Language</h3><p>Weboberfläche und Raumkonsole</p><label class="field-label" for="root-language">Sprache / Language</label><select class="select" id="root-language" data-change="language"><option value="de" ${ctx.I18N.getLanguage() === 'de' ? 'selected' : ''}>Deutsch</option><option value="en" ${ctx.I18N.getLanguage() === 'en' ? 'selected' : ''}>English</option></select></div>${desktop}<div class="settings-row"><h3>Dein Netzwerk</h3><p>Ein eigener Name für deine Leitstelle.</p><form id="rename-form" class="input-row"><input class="input" id="network-name" aria-label="Netzwerkname" maxlength="36" minlength="2" required value="${ctx.esc(ctx.state.networkName)}"><button class="button" type="submit">Speichern</button></form></div><div class="settings-row"><h3>Netzwerkstand & Sicherung</h3><p>${desktop ? ctx.desktopSaveNote() : 'Automatisches Speichern alle 15 Sekunden und nach jeder Entscheidung. Die lokale Datei liegt im ROOT-Ordner unter data/save.json. Ein Export enthält deinen vollständigen Fortschritt. Das Betriebsbackup unter „Betrieb & Schutz“ schützt dagegen gezielt vor Datenkorruption im Netzwerk.'}</p><div class="settings-actions"><button class="button" data-command="export">${ctx.icon('download')}Sicherung exportieren</button><button class="button ghost" data-command="import">${ctx.icon('upload')}Sicherung importieren</button><button class="button ghost" data-command="save">${ctx.icon('check')}Jetzt speichern</button></div></div><div class="settings-row"><h3>Zugang zum Cyberbunker</h3><p>Eine kurze Kamerafahrt führt von außen durch die Sicherheitsschleusen. Danach öffnet sich die Netzwerkübersicht. Den Rundgang startest du mit „Raum betreten“. Die Einfahrt läuft beim ersten Start pro Browser-Tab. Nach F5 bleibt dein letzter Standort erhalten. Reduzierte Animationen werden berücksichtigt.</p><label class="field-label"><input type="checkbox" data-change="arrival" ${ctx.storageGet('root.arrival.enabled') !== '0' ? 'checked' : ''}> Einfahrt beim Start anzeigen</label><button class="button ghost" data-command="replay-arrival">Einfahrt ansehen</button></div><div class="settings-row"><h3>Neues Netzwerk</h3>${ctx.storageGet('root.conflict.save') ? '<button class="button ghost" data-command="export-conflict">Abweichende Browserkopie exportieren</button>' : ''}<p>Beginne mit einer neuen Ausgangslage. Dein bisheriger Stand wird vorher automatisch als Datei exportiert.</p><button class="button danger" data-modal="reset">${ctx.icon('refresh')}Neu anfangen</button></div><div class="settings-row"><h3>${ctx.esc(BRAND.title)} · Version 1.5.1</h3><p>${desktop ? ctx.desktopAppNote() : 'Deine lokale Netzwerk-Leitstelle. Alle Server und Agenten sind Teil der Simulation. Fortschritt während der Abwesenheit: maximal 12 Stunden. Beende zum Schließen einfach den Browser-Tab.'}</p></div>`;
+    return `<div class="settings-row"><h3>Sprache / Language</h3><p>Weboberfläche und Raumkonsole</p><label class="field-label" for="root-language">Sprache / Language</label><select class="select" id="root-language" data-change="language"><option value="de" ${ctx.I18N.getLanguage() === 'de' ? 'selected' : ''}>Deutsch</option><option value="en" ${ctx.I18N.getLanguage() === 'en' ? 'selected' : ''}>English</option></select></div>${desktop}<div class="settings-row"><h3>Dein Netzwerk</h3><p>Ein eigener Name für deine Leitstelle.</p><form id="rename-form" class="input-row"><input class="input" id="network-name" aria-label="Netzwerkname" maxlength="36" minlength="2" required value="${ctx.esc(ctx.state.networkName)}"><button class="button" type="submit">Speichern</button></form></div><div class="settings-row"><h3>Netzwerkstand & Sicherung</h3><p>${desktop ? ctx.desktopSaveNote() : 'Automatisches Speichern alle 15 Sekunden und nach jeder Entscheidung. Die lokale Datei liegt im ROOT-Ordner unter data/save.json. Ein Export enthält deinen vollständigen Fortschritt. Das Betriebsbackup unter „Betrieb & Schutz“ schützt dagegen gezielt vor Datenkorruption im Netzwerk.'}</p><div class="settings-actions"><button class="button" data-command="export">${ctx.icon('download')}Sicherung exportieren</button><button class="button ghost" data-command="import">${ctx.icon('upload')}Sicherung importieren</button><button class="button ghost" data-command="save">${ctx.icon('check')}Jetzt speichern</button></div></div><div class="settings-row"><h3>Zugang zum Cyberbunker</h3><p>Eine kurze Kamerafahrt führt von außen durch die Sicherheitsschleusen. Danach öffnet sich die Netzwerkübersicht. Den Rundgang startest du mit „Raum betreten“. Die Einfahrt läuft beim ersten Start pro Browser-Tab. Nach F5 bleibt dein letzter Standort erhalten. Reduzierte Animationen werden berücksichtigt.</p><label class="field-label"><input type="checkbox" data-change="arrival" ${ctx.storageGet('root.arrival.enabled') !== '0' ? 'checked' : ''}> Einfahrt beim Start anzeigen</label><button class="button ghost" data-command="replay-arrival">Einfahrt ansehen</button></div><div class="settings-row"><h3>Neues Netzwerk</h3>${ctx.storageGet('root.conflict.save') ? '<button class="button ghost" data-command="export-conflict">Abweichende Browserkopie exportieren</button>' : ''}<p>Beginne mit einer neuen Ausgangslage. Dein bisheriger Stand wird vorher automatisch als Datei exportiert.</p><button class="button danger" data-modal="reset">${ctx.icon('refresh')}Neu anfangen</button></div><div class="settings-row"><h3>${ctx.esc(BRAND.title)} · Version ${RELEASE.version}</h3><p>${desktop ? ctx.desktopAppNote() : 'Deine lokale Netzwerk-Leitstelle. Alle Server und Agenten sind Teil der Simulation. Fortschritt während der Abwesenheit: maximal 12 Stunden. Beende zum Schließen einfach den Browser-Tab.'}</p></div>`;
   }
 
   function openModal(type, extra) {
@@ -99,7 +101,9 @@ export function createDialogsUI(ctx) {
       agents: 'Arbeitsamt',
       notifications: 'Benachrichtigungen',
       sector: 'Nächsten Sektor erschließen',
-      help: 'Willkommen bei ROOT',
+      help: 'Handbuch',
+      welcome: 'Willkommen bei ROOT',
+      changelog: 'Neu in dieser Version',
       settings: 'Einstellungen',
       offline: 'Abwesenheitsbericht',
       reset: 'Ein neues Netzwerk beginnen',
@@ -119,7 +123,9 @@ export function createDialogsUI(ctx) {
       'preventive-confirm': 'Rackwartung prüfen',
     };
     let content = '';
-    if (type === 'notifications') content = ctx.notificationModal();
+    if (type === 'welcome') content = ctx.welcomeModal();
+    else if (type === 'changelog') content = ctx.changelogModal();
+    else if (type === 'notifications') content = ctx.notificationModal();
     else if (type === 'agent-upgrade') content = ctx.agentUpgradeModal(extra);
     else if (type === 'research-confirm') content = ctx.researchConfirm(extra);
     else if (type === 'business-confirm') content = ctx.businessConfirm(extra);
@@ -159,6 +165,7 @@ export function createDialogsUI(ctx) {
     ctx.$('#modal-root').innerHTML = '';
     ctx.$('#app').inert = false;
     document.body.style.overflow = '';
+    if (ctx.showNextStartup?.()) return;
     // The map can rerender while a lab project completes behind the dialog.
     const restored = returnNode && ctx.restoreResearchFocus?.(returnNode);
     if (!restored && ctx.lastFocus?.isConnected) ctx.lastFocus.focus();

@@ -6,6 +6,9 @@ const path = require('node:path');
 function createStaticFiles(root) {
   const FILES = new Map([
     ['/achievements.css', ['achievements.css', 'text/css; charset=utf-8']],
+    ['/release.js', ['release.js', 'text/javascript; charset=utf-8']],
+    ['/ui/startup.js', ['ui/startup.js', 'text/javascript; charset=utf-8']],
+    ['/ui/event-art.js', ['ui/event-art.js', 'text/javascript; charset=utf-8']],
     [
       '/locales/achievements-en.js',
       ['locales/achievements-en.js', 'text/javascript; charset=utf-8'],
@@ -14,7 +17,6 @@ function createStaticFiles(root) {
       '/engine/achievement-catalog.js',
       ['engine/achievement-catalog.js', 'text/javascript; charset=utf-8'],
     ],
-    ['/ui/event-art.js', ['ui/event-art.js', 'text/javascript; charset=utf-8']],
     ['/ui/attention-model.js', ['ui/attention-model.js', 'text/javascript; charset=utf-8']],
     ['/ui/attention-cards.js', ['ui/attention-cards.js', 'text/javascript; charset=utf-8']],
     ['/ui/notification-state.js', ['ui/notification-state.js', 'text/javascript; charset=utf-8']],

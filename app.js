@@ -1,3 +1,4 @@
+import { createStartupUI } from './ui/startup.js';
 import { createAttentionCards } from './ui/attention-cards.js';
 import { createNotificationCenter } from './ui/notification-center.js';
 import { createCustomerGrowthUI } from './ui/customer-growth.js';
@@ -376,6 +377,7 @@ import { createRoom } from './room.js';
   Object.assign(ctx, createOfflineUI(ctx));
   Object.assign(ctx, createProtectionUI(ctx));
   Object.assign(ctx, createDialogsUI(ctx));
+  Object.assign(ctx, createStartupUI(ctx));
   Object.assign(ctx, createTelemetryUI(ctx));
   Object.assign(ctx, createPersistenceUI(ctx));
   Object.assign(ctx, createNotificationsUI(ctx));

@@ -282,6 +282,7 @@ export function createPersistenceUI(ctx, platform = globalThis) {
     const report = await simulate();
     ctx.initialized = true;
     ctx.hideGuide = storageGet('root.guide.hidden') === '1';
+    ctx.prepareStartup?.({ hasSave: Boolean(localState || remoteState), offline: report });
     ctx.shell();
     if (emptyServerAfterConflict)
       ctx.toast(
@@ -294,7 +295,8 @@ export function createPersistenceUI(ctx, platform = globalThis) {
         true,
       );
     save();
-    if (report && report.seconds >= 60) ctx.openModal('offline', report);
+    if (ctx.showNextStartup) ctx.showNextStartup();
+    else if (report && report.seconds >= 60) ctx.openModal('offline', report);
     ctx.announceAchievements();
     platform.setInterval(tick, 1000);
     ctx.desktopReady?.().catch(() => {});

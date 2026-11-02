@@ -64,16 +64,27 @@ async function runSelfTest({ app, output, startDesktop }) {
     assert.equal(initial.settingsButton, true);
     assert.equal(initial.canUpdate, ['nsis', 'deb'].includes(installation.kind));
     result.initial = initial;
+    // A fresh installation presents its guide before the optional arrival animation.
+    result.onboarding = await contents.executeJavaScript(`(() => {
+      const welcome = document.querySelector('.modal .welcome-steps');
+      if (!welcome) return { visible: false };
+      document.querySelector('.modal [data-command="close"]').click();
+      return { visible: true, dismissed: !document.querySelector('.modal') };
+    })()`);
+    assert.equal(result.onboarding.visible, true);
+    assert.equal(result.onboarding.dismissed, true);
     result.catchup = await require('./catchup-smoke.cjs').checkCatchup(contents);
     result.arrival = await require('./arrival-smoke.cjs').checkArrival({ window, output });
     // Reload the same origin while the loopback service keeps its ephemeral port.
     assert.equal(await reload(), true);
     const reloaded = await contents.executeJavaScript(`(async () => {
       const saved = await (await fetch('/api/save')).json();
-      return { marker: localStorage.getItem('root.desktop.smoke'), network: saved.save.networkName };
+      return { marker: localStorage.getItem('root.desktop.smoke'), network: saved.save.networkName,
+        welcomeRepeated: Boolean(document.querySelector('.modal .welcome-steps')) };
     })()`);
     assert.equal(reloaded.marker, 'retained');
     assert.equal(reloaded.network, initial.network);
+    assert.equal(reloaded.welcomeRepeated, false);
     // The boot-ready bridge fires once per renderer. Wait for the real settings
     // control rather than treating did-finish-load as simulation readiness.
     await contents.executeJavaScript(`new Promise((resolve, reject) => {
