@@ -821,7 +821,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -859,7 +859,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -898,7 +898,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -936,7 +936,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -971,7 +971,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -1009,7 +1009,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -1047,7 +1047,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -1085,7 +1085,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -1123,7 +1123,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -1158,7 +1158,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
@@ -1196,7 +1196,7 @@
       "licenseSPDX": "CC0-1.0",
       "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
       "source": "tools/asset-generator/build_operations_assets.py",
-      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorSHA256": "d12f2d3bb6b14a4f40960b71d167f763ad9fc0ac9fa093720aeef3536d44f151",
       "generatorInputs": [
         {
           "path": "tools/asset-generator/operations_cooling.py",
