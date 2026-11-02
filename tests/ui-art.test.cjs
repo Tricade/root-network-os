@@ -33,13 +33,18 @@ test('every illustration category resolves to a hash-pinned local raster bundled
   const { technologyArt } = await import('../ui/research-art.js');
   const { achievementArt } = await import('../ui/business-art.js');
   const { roomArt } = await import('../ui/facility-art.js');
+  const { EVENT_ART, eventArt } = await import('../ui/event-art.js');
+  assert.equal(new Set(Object.values(EVENT_ART)).size, 6);
+  assert.notEqual(roomArt('server', 'planned'), roomArt('server', 'ready'));
+  assert.match(roomArt('server', 'planned'), /room-vacant/);
+  assert.match(roomArt('server', 'ready'), /room-server/);
   const E = require('../engine.js'),
     manifest = require('../asset-pack/docs/illustration-manifest.json');
   assert.deepEqual(Object.keys(JOB_ART).sort(), Object.keys(E.jobProfiles).sort());
   assert.deepEqual(Object.keys(RESEARCH_ART).sort(), E.catalog.research.map((r) => r.id).sort());
   const files = createStaticFiles(root),
     urls = new Set();
-  assert.equal(manifest.images.length, 12);
+  assert.equal(manifest.images.length, 20);
   for (const img of manifest.images) {
     const bytes = fs.readFileSync(path.join(root, 'asset-pack', img.file));
     assert.equal(createHash('sha256').update(bytes).digest('hex'), img.sha256);
@@ -51,10 +56,11 @@ test('every illustration category resolves to a hash-pinned local raster bundled
     urls.add('asset-pack/' + img.file);
   }
   const html = [
+    ...Object.keys(EVENT_ART).map((kind) => eventArt(kind)),
     ...Object.keys(JOB_ART).map((k) => workloadArt(k)),
     ...Object.keys(RESEARCH_ART).map((k) => workloadArt(k, true)),
     ...E.getResearch(E.createState(5)).technologies.map((n) => technologyArt(n.id)),
-    ...E.catalog.achievements.map((a) => achievementArt(a.id, false, false)),
+    ...E.catalog.achievements.map((a) => achievementArt(a.id, false, false, a.art)),
     ...['server', 'control', 'cooling', 'ups', 'distribution', 'floor'].flatMap((k) =>
       ['planned', 'building', 'ready'].map((p) => roomArt(k, p)),
     ),

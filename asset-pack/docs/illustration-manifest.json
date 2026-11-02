@@ -99,6 +99,70 @@
       "height": 1024,
       "bytes": 2261982,
       "sha256": "39ea251ec99883966633345a56b3221249f2ab9b8fba5ab510c6ddec7bfcdeda"
+    },
+    {
+      "key": "event-signal",
+      "file": "textures/illustrations/event-signal.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2399779,
+      "sha256": "1b505eb6975043fe6167034cdd2be072d2bd86c0c1e85183763913075f4ddbf5"
+    },
+    {
+      "key": "event-grant",
+      "file": "textures/illustrations/event-grant.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2641078,
+      "sha256": "baa2064a3dc49de6b79d5d8dbe04c690b00080c4ba59d0cf8663a2126c7c31a2"
+    },
+    {
+      "key": "event-maintenance",
+      "file": "textures/illustrations/event-maintenance.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2743121,
+      "sha256": "bbecb9b0773d71d18e37dbe0dc9c2643a1ecd7beb4260751b28b25013484179f"
+    },
+    {
+      "key": "event-client",
+      "file": "textures/illustrations/event-client.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2585185,
+      "sha256": "99450ca36230d400a5c439374ba99aa22972819b103b5a047cb87c0a0a02d807"
+    },
+    {
+      "key": "event-discovery",
+      "file": "textures/illustrations/event-discovery.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2678811,
+      "sha256": "f4b5727fd86b2f4780cc70636994c5cfe897070fed18a8e6f271b6ebe3d095c3"
+    },
+    {
+      "key": "event-procurement",
+      "file": "textures/illustrations/event-procurement.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2979696,
+      "sha256": "b237413d1ed12712d76bb0be43f7a2b3b72ee47477eb2262810464879177e19d"
+    },
+    {
+      "key": "room-server",
+      "file": "textures/illustrations/room-server.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2767452,
+      "sha256": "b38b3db866e4acd6a73d3c9f7923cf96af386bd28ed064d6a18680fc9e7ef9fa"
+    },
+    {
+      "key": "room-vacant",
+      "file": "textures/illustrations/room-vacant.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2916214,
+      "sha256": "5774166337c7ab88c05707002c14a1af40d998bca3da66367f89e4889827a703"
     }
   ]
 }

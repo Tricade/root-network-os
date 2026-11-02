@@ -3,8 +3,15 @@ import { attentionEntries } from './attention-model.js';
 /** Categories stay compact; the selected pane contains the actual pending work. */
 export function createDashboardAttention(ctx) {
   let selected = null,
-    expanded = false,
-    itemLimit = 5;
+    expanded = false;
+  const cursors = new Map();
+  function current(entries) {
+    const cursor = cursors.get(selected) || { id: null, index: 0 };
+    const found = entries.findIndex((entry) => entry.id === cursor.id);
+    const index = found >= 0 ? found : Math.min(cursor.index, Math.max(0, entries.length - 1));
+    cursors.set(selected, { id: entries[index]?.id || null, index });
+    return index;
+  }
   function attentionMarkup(model) {
     const category = model.actions.find((entry) => entry.id === selected) || model.actions[0];
     selected = category?.id || null;
@@ -12,15 +19,20 @@ export function createDashboardAttention(ctx) {
     const entries = attentionEntries(ctx.E, ctx.state, model).filter(
       (entry) => entry.group === selected,
     );
-    return `<div class="command-attention"><section class="panel command-inbox">${ctx.panelHeader('Jetzt wichtig', `<span class="count">${model.actions.length}</span>`)}<div class="command-action-list">${shown.map((a) => `<button class="command-action ${a.severity}" data-dashboard-select="${a.id}" aria-pressed="${a.id === selected}"><span class="command-action-icon">${ctx.icon(a.severity === 'urgent' ? 'shield' : a.severity === 'warning' ? 'pulse' : 'arrow')}</span><span><strong>${ctx.esc(ctx.tr(a.label))}</strong>${a.detail ? `<small>${ctx.esc(ctx.tr(a.detail))}</small>` : ''}</span>${a.count ? `<b>${ctx.fmt(a.count)}</b>` : ctx.icon('chevron')}</button>`).join('') || `<p class="panel-body">${ctx.tr('Keine offenen Vorgänge')}</p>`}</div>${model.actions.length > 4 ? `<div class="panel-footer"><span>${shown.length} / ${model.actions.length} ${ctx.tr('Hinweise')}</span><button class="text-button" data-dashboard-more aria-expanded="${expanded}">${ctx.tr(expanded ? 'Weniger anzeigen' : 'Alle anzeigen')}</button></div>` : ''}</section>
-      <section class="panel command-detail" aria-label="${ctx.tr('Ausgewählter Vorgang')}"><div class="command-detail-heading"><h3>${ctx.esc(ctx.tr(category?.label || 'Betrieb im Blick'))}</h3><span class="count">${entries.length}</span></div><div class="command-detail-items" tabindex="0" aria-label="${ctx.tr('Offene Vorgänge')}">${entries.slice(0, itemLimit).map(ctx.attentionCard).join('') || `<p>${ctx.tr('Neue Vorgänge erscheinen hier automatisch. Deine Regeln arbeiten im Hintergrund weiter.')}</p>`}${entries.length > itemLimit ? `<button class="button block" data-dashboard-items-more>${ctx.tr('Weitere Vorgänge laden')} · ${entries.length - itemLimit}</button>` : ''}</div></section></div>`;
+    const index = current(entries);
+    return `<div class="command-attention"><section class="panel command-inbox">${ctx.panelHeader(ctx.tr('Jetzt wichtig'), `<span class="count">${model.actions.length}</span>`)}<div class="command-action-list">${shown.map((a) => `<button class="command-action ${a.severity}" data-dashboard-select="${a.id}" aria-pressed="${a.id === selected}"><span class="command-action-icon">${ctx.icon(a.severity === 'urgent' ? 'shield' : a.severity === 'warning' ? 'pulse' : 'arrow')}</span><span><strong>${ctx.esc(ctx.tr(a.label))}</strong>${a.detail ? `<small>${ctx.esc(ctx.tr(a.detail))}</small>` : ''}</span>${a.count ? `<b>${ctx.fmt(a.count)}</b>` : ctx.icon('chevron')}</button>`).join('') || `<p class="panel-body">${ctx.tr('Keine offenen Vorgänge')}</p>`}</div>${model.actions.length > 4 ? `<div class="panel-footer"><span>${shown.length} / ${model.actions.length} ${ctx.tr('Hinweise')}</span><button class="text-button" data-dashboard-more aria-expanded="${expanded}">${ctx.tr(expanded ? 'Weniger anzeigen' : 'Alle anzeigen')}</button></div>` : ''}</section>
+      <section class="panel command-detail" aria-label="${ctx.tr('Ausgewählter Vorgang')}"><div class="command-detail-heading"><h3>${ctx.esc(ctx.tr(category?.label || 'Betrieb im Blick'))}</h3><span class="count">${entries.length}</span></div><div class="command-detail-items">${entries.length ? ctx.attentionCard(entries[index]) : `<p>${ctx.tr('Neue Vorgänge erscheinen hier automatisch. Deine Regeln arbeiten im Hintergrund weiter.')}</p>`}</div>${entries.length > 1 ? `<nav class="command-detail-pager" aria-label="${ctx.tr('Vorgänge durchsehen')}"><button class="button small" data-dashboard-page="-1" ${index === 0 ? 'disabled' : ''}>${ctx.tr('Vorheriger Vorgang')}</button><span aria-live="polite">${index + 1} / ${entries.length}</span><button class="button small" data-dashboard-page="1" ${index === entries.length - 1 ? 'disabled' : ''}>${ctx.tr('Nächster Vorgang')}</button></nav>` : ''}</section></div>`;
   }
   function updateAttention(model, force = false) {
     const entries = attentionEntries(ctx.E, ctx.state, model);
+    // Normalize selection before hashing so the next telemetry tick does not repaint it again.
+    selected =
+      (model.actions.find((entry) => entry.id === selected) || model.actions[0])?.id || null;
+    current(entries.filter((entry) => entry.group === selected));
     const signature = JSON.stringify([
       selected,
       expanded,
-      itemLimit,
+      [...cursors],
       model.actions,
       entries.map((e) => [
         e.id,
@@ -39,25 +51,38 @@ export function createDashboardAttention(ctx) {
       if (!force && root.querySelector('select:focus,input:focus')) return;
       const focus = document.activeElement;
       const focusId = focus?.getAttribute('data-dashboard-select');
-      const scroll = root.querySelector('.command-detail-items')?.scrollTop || 0;
+      const pageDirection = focus?.getAttribute('data-dashboard-page');
+      const hadFocus = root.contains(focus);
       root.innerHTML = attentionMarkup(model);
       root.dataset.signature = signature;
-      const list = root.querySelector('.command-detail-items');
-      if (list) list.scrollTop = scroll;
       if (focusId)
         root.querySelector(`[data-dashboard-select="${focusId}"]`)?.focus({ preventScroll: true });
-      else if (focus && !focus.isConnected)
-        root.querySelector('.command-action[aria-pressed="true"]')?.focus({ preventScroll: true });
+      else if (hadFocus) {
+        const pager =
+          pageDirection &&
+          root.querySelector(`[data-dashboard-page="${pageDirection}"]:not(:disabled)`);
+        (pager || root.querySelector('.command-action[aria-pressed="true"]'))?.focus({
+          preventScroll: true,
+        });
+      }
     });
   }
   function dashboardClick(target) {
+    const model = ctx.getDashboardModel();
     if (target.hasAttribute('data-dashboard-select')) {
       selected = target.dataset.dashboardSelect;
-      itemLimit = 5;
     } else if (target.hasAttribute('data-dashboard-more')) expanded = !expanded;
-    else if (target.hasAttribute('data-dashboard-items-more')) itemLimit += 5;
-    else return false;
-    updateAttention(ctx.getDashboardModel(), true);
+    else if (target.hasAttribute('data-dashboard-page')) {
+      const entries = attentionEntries(ctx.E, ctx.state, model).filter(
+        (entry) => entry.group === selected,
+      );
+      const index = Math.max(
+        0,
+        Math.min(entries.length - 1, current(entries) + Number(target.dataset.dashboardPage)),
+      );
+      cursors.set(selected, { id: entries[index]?.id, index });
+    } else return false;
+    updateAttention(model, true);
     ctx.updateAttentionCards();
     return true;
   }

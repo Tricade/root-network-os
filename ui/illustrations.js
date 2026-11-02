@@ -1,6 +1,15 @@
 /** Bundled original bitmap art. Fixed keys keep saved/user text out of asset URLs. */
 export const ILLUSTRATION_KEYS = [
   'network',
+  'event-signal',
+  'event-grant',
+  'event-maintenance',
+  'event-client',
+  'event-discovery',
+  'event-procurement',
+  'room-server',
+  'room-vacant',
+
   'cooling',
   'power',
   'storage',

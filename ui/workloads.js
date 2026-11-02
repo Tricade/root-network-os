@@ -1,3 +1,4 @@
+import { eventArt } from './event-art.js';
 import { workloadArt } from './workload-art.js';
 
 /** workloads UI: reads current state through the controller context. */
@@ -79,7 +80,7 @@ export function createWorkloadsUI(ctx) {
         'Besondere Situationen. Mehrere Wege. Du bestimmst die Richtung.',
         `<span class="tag amber">${ctx.state.events.length} OFFEN</span>`,
       ) +
-      `<div class="events-stack">${ctx.state.events.map((e) => `<section class="event-card"><span class="tag amber">${ctx.icon('inbox')}NETZWERKEREIGNIS</span><h3>${ctx.esc(e.title)}</h3><p>${ctx.esc(e.description)}</p><div class="event-choices">${e.choices.map((c, i) => `<button class="event-choice" data-action="resolveEvent" data-id="${e.id}" data-choice="${i}"><strong>${ctx.esc(c.label)} ${ctx.icon('arrow')}</strong><span>${ctx.esc(c.description)}</span></button>`).join('')}</div></section>`).join('') || `<section class="panel">${ctx.empty('Alles geklärt. Dein Netzwerk arbeitet.', 'Besondere Anfragen und Entdeckungen landen hier. Deine nächste Entscheidung kommt, während das Netzwerk wächst.', 'overview', 'Zur Übersicht', 'inbox')}</section>`}</div><div class="helper-card"><h3>Du gibst den Takt vor.</h3><p>Diese Entscheidungen haben kein Zeitlimit. Bis zu drei Ereignisse warten auf dich; der reguläre Betrieb geht währenddessen weiter.</p></div>`
+      `<div class="events-stack">${ctx.state.events.map((e) => `<section class="event-card"><div class="event-summary">${eventArt(e.kind)}<div><span class="tag amber">${ctx.icon('inbox')}NETZWERKEREIGNIS</span><h3>${ctx.esc(e.title)}</h3><p>${ctx.esc(e.description)}</p></div></div><div class="event-choices">${e.choices.map((c, i) => `<button class="event-choice" data-action="resolveEvent" data-id="${e.id}" data-choice="${i}"><strong>${ctx.esc(c.label)} ${ctx.icon('arrow')}</strong><span>${ctx.esc(c.description)}</span></button>`).join('')}</div></section>`).join('') || `<section class="panel">${ctx.empty('Alles geklärt. Dein Netzwerk arbeitet.', 'Besondere Anfragen und Entdeckungen landen hier. Deine nächste Entscheidung kommt, während das Netzwerk wächst.', 'overview', 'Zur Übersicht', 'inbox')}</section>`}</div><div class="helper-card"><h3>Du gibst den Takt vor.</h3><p>Diese Entscheidungen haben kein Zeitlimit. Bis zu drei Ereignisse warten auf dich; der reguläre Betrieb geht währenddessen weiter.</p></div>`
     );
   }
 

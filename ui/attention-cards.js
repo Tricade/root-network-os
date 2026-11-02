@@ -1,3 +1,5 @@
+import { eventArt } from './event-art.js';
+
 /** Compact actionable cards. Paid actions use the existing domain confirmation dialogs. */
 export function createAttentionCards(ctx) {
   const rooms = new Map();
@@ -172,7 +174,7 @@ export function createAttentionCards(ctx) {
     }
   }
   function attentionCard(entry) {
-    return `<article class="attention-item ${entry.severity}" data-attention-item="${ctx.esc(entry.id)}" data-attention-group="${entry.group}" data-attention-entity="${ctx.esc(entry.data.id || '')}"><h4>${text(entry.title)}</h4>${entry.detail ? `<p>${text(entry.detail)}</p>` : ''}${content(entry)}</article>`;
+    return `<article class="attention-item ${entry.severity}" data-attention-item="${ctx.esc(entry.id)}" data-attention-group="${entry.group}" data-attention-entity="${ctx.esc(entry.data.id || '')}"><div class="${entry.group === 'decisions' ? 'event-summary' : 'attention-summary'}">${entry.group === 'decisions' ? eventArt(entry.data.kind) : ''}<div><h4>${text(entry.title)}</h4>${entry.detail ? `<p>${text(entry.detail)}</p>` : ''}</div></div>${content(entry)}</article>`;
   }
   function updateAttentionCards(metrics = null) {
     const put = (card, key, value) => {
