@@ -1,18 +1,58 @@
-# Laboratory and research branches
+# Laboratory and research atlas
 
-Research is paid work over time. The lab runs **one project at a time**, reserves **10% of project throughput**, and charges research points when it starts. Its effect activates once, on completion. Cancelling frees the lab but refunds neither the points nor the time already spent. Losing every reachable server, or entering a global data/utility crisis, pauses the lab. It resumes after recovery, including during offline catch-up.
+The atlas contains **96 technologies in eight connected branches**, plus five repeatable research tracks. Drag to explore, use the wheel or buttons to zoom, search by name/effect, or focus a branch. Selecting a technology highlights its prerequisite path and shows its actual before/after effects. The focus view expands the map; Escape returns to the ordinary console. Keyboard users can tab to nodes, pan with arrow keys and fit the map with Home.
 
-| Branch                | Technologies                                                                              | Main trade-off                                                                                                             |
-| --------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Network architecture  | Packet switching, thermal telemetry, load balancing, failover procedures                  | More useful project work and lower risk/wear; physical power and cooling are still required.                               |
-| Customer operations   | Service Desk, incident support, capacity planning, account management                     | Faster staffed work, more patient clients, lower resource demand and a better retention chance. Customers can still leave. |
-| Operations automation | Provisioning workflows, predictive maintenance, energy coordination, lab automation       | Less manual overhead and lower operating costs; staffing and lab time still matter.                                        |
-| Research & AI         | Experimental methods, knowledge transfer, AI validation methods, production model serving | Better passive research and actual AI returns; advanced nodes also depend on other branches and later sectors.             |
+Research is paid work over time. The lab runs **one project at a time**, reserves **10% of project throughput**, and charges research points when it starts. Its effect activates once, on completion. Cancelling frees the lab but refunds neither points nor elapsed time. Losing all reachable servers, or entering a global data/utility crisis, pauses the lab. It resumes after recovery, including during offline catch-up.
 
-The clickable branch overview leads to each technology's detail card. Prerequisite links also lead across branches. Cards show the required sector, points, lab time, effect and current reason a project cannot start. The first projects cost 25–40 RP and take 10–15 minutes; advanced technologies take up to three hours and require sectors up to 6. Lab time forces a choice between an immediate operational need and a longer investment.
+| Branch                | Focus                                          | Alternative terminal specializations         |
+| --------------------- | ---------------------------------------------- | -------------------------------------------- |
+| Network architecture  | Packet handling, congestion and failover       | Throughput / deterministic networks          |
+| Customer operations   | Setup, support, demand and retention           | Concierge service / volume operations        |
+| Operations automation | Inventory, maintenance and dispatch            | Agile provisioning / conservative operations |
+| Research & AI         | Experiments, model validation and inference    | Fundamental research / production lab        |
+| Thermodynamics        | Airflow, hydraulic balancing and plant control | Economical / stable cooling                  |
+| Power engineering     | Metering, load profiles and power quality      | Lean / conservative supply                   |
+| Data architecture     | Indexing, locality, replicas and consistency   | High density / low latency                   |
+| Resilience            | Inspection, fault isolation and recovery       | Safety / availability focus                  |
 
-The five existing repeatable tracks remain: routing, cooling, contract analysis, automation and synthesis. New levels require their corresponding foundation technology and take `min(4 hours, 5 minutes + 2 minutes × current level)`. Their existing cost curves and diminishing-return effects remain in effect. Older saves keep every completed level; migration does not make players research those levels again.
+Each branch has twelve nodes and dependencies can cross into another branch. A prerequisite is an actual completed technology; buying points alone does not bypass it. All original sixteen technologies retain their IDs, prices, durations, dependencies and effects, including paid projects loaded from an older save.
 
-Completed technology IDs, a paid project's price, target level and remaining time are saved in schema 7. Invalid IDs, unmet prerequisites and fabricated paid-project records are rejected. The catalog in `engine/research-catalog.js` defines branches, dependencies, costs, times and effects; additional branches can be added without another independent lab simulation. Add translations and effect tests whenever extending it.
+## Time, cost and commitment
 
-Achievements are a separate menu item, with their own rewards and notifications. They do not occupy the lab or spend research points.
+The original foundations cost 25–40 RP and take 10–15 minutes. Original advanced nodes reach three hours. The eighty new technologies use these tiers:
+
+| Tier | Required sector | RP charged | Lab time |
+| ---- | --------------: | ---------: | -------: |
+| 1    |               2 |        200 |   30 min |
+| 2    |               3 |        500 |      2 h |
+| 3    |               4 |      1,200 |      4 h |
+| 4    |               6 |      2,600 |      8 h |
+| 5    |               8 |      5,000 |     12 h |
+| 6    |              10 |     10,000 |     24 h |
+
+The two tier-six nodes in each branch are alternatives. **Only one specialization per branch can be active.** Each improves one channel while imposing a downside elsewhere. Switching requires the other node's full price and lab time again. The previous specialization stays active until completion; cancellation keeps it but refunds no points. No later node depends on a terminal specialization, so switching cannot strand a prerequisite chain.
+
+The five repeatable tracks remain routing, cooling, contract analysis, automation and synthesis. Each requires its foundation and takes `min(4 hours, 5 minutes + 2 minutes × current level)`. Their existing cost curves and effects remain separate. Older saves keep every completed repeatable level.
+
+## Bounded benefits
+
+The new nodes do not compound dozens of percentage bonuses exponentially. For each effect channel, their positive contributions use `delta = limit × (1 − exp(−sum / limit))`. This additional benefit is applied to the unchanged original sixteen-node factor. Specialization penalties multiply afterwards and cannot be erased by a cap.
+
+| Additional benefit channel                                   | Asymptotic limit |
+| ------------------------------------------------------------ | ---------------: |
+| Project work, onboarding, energy saving, inference income    |         20% each |
+| Risk reduction, service-resource saving, research production |         18% each |
+| Wear reduction                                               |              15% |
+| Customer patience                                            |              25% |
+| AI job reward                                                |              24% |
+| Retention probability bonus                                  |            +0.10 |
+
+These are limits for the new atlas nodes, not final network-wide percentages. Staff, hardware, supply and repeatable research apply separately. The detail card computes the actual change against the current owned set, including replacement of a specialization. Research cannot create cooling capacity, replace a disconnected server or guarantee customer retention.
+
+## Save and extension boundary
+
+Schema 7 introduced the paid research ledger; current schema 8 retains its structure. Completed IDs and the active project's paid cost, target level and remaining time are validated. Duplicate specializations, invalid IDs, unmet dependencies and fabricated project payments are rejected. The current catalog is loaded in the same order by Node, browser and worker.
+
+`research-catalog.js` preserves the original definitions; three domain catalog modules supply the expansion, and `research-expansion.js` owns its tier rules and bounded aggregation. UI layout and camera controls live in separate modules. Add translations, reachable dependency paths, effect-bound tests and save round-trips when extending the atlas. The current eight-district layout must also be reconsidered if adding further branches.
+
+Achievements remain a separate menu page and do not occupy the laboratory.

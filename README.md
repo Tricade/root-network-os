@@ -105,6 +105,15 @@ _Real application captures using a separate synthetic demonstration save. Click 
 
 [Customer contract lifecycle →](docs/customer-contracts.md) · [Service economy and failure boundaries →](docs/service-economy.md) · [Measured balance and scaling →](docs/balance-verification.md)
 
+### Planned operations and overview
+
+- **Growing customers:** existing clients request expansion. Commit to a 1, 4 or 12 hour delivery window and budget; agents must provision the service in time.
+- **Capital plans:** up to twelve ordered construction and plant steps with price ceilings, earliest starts and a protected reserve.
+- **Preventive rack maintenance:** technicians, parts, service windows and customer delivery constrain execution. Automatic maintenance is off by default.
+- **Committed priorities:** choose the service class to receive capacity first before a shortage; one-hour commitment, without creating resources.
+- **Finding work and equipment:** dashboard attention and upcoming work, customer filters, facility search, favorites and compact agent rosters.
+- **Original illustrated cards:** twelve generated raster images for projects, research, achievements and buildings. [Rules, limits and physical representation →](docs/operations-planning.md)
+
 ### Agents, contracts and research
 
 - **Three agent roles:** operators accelerate project work, analysts produce research, and technicians support maintenance and reliability. Each agent has a level, trait and configurable focus.
@@ -113,7 +122,7 @@ _Real application captures using a separate synthetic demonstration save. Click 
 - **Automatic self-maintenance:** individual units can temporarily go offline. Their normal contributions and paid assignments pause; other systems continue, rewards are preserved, and units return automatically. [Recruitment and balance rules →](docs/personnel.md)
 - **Special assignments:** network diagnostics reduce risk, load optimization improves throughput, and research assignments deliver research points. The assigned agent contributes nothing to normal operations until completion, then has a cooldown. Matching roles complete their specialist work more efficiently.
 - **Competing contracts:** monitoring, migration, audits, optimization, recovery, research and AI work share finite capacity. Rewards, reputation and research arrive when a contract finishes. Automatic acceptance can favor a balanced mix, income or research.
-- **Timed research trees:** four branches with sixteen technologies, cross-branch prerequisites and five ongoing research tracks. One paid lab project reserves 10% of project throughput; cancellation gives no refund. Existing research levels survive migration. [Laboratory rules →](docs/research.md)
+- **Timed research atlas:** 96 technologies in eight connected branches, a searchable zoomable map and five ongoing research tracks. Sixteen terminal specializations form eight trade-off pairs; switching costs points and 24 hours of lab time again. Additional bonuses have diminishing returns. One paid lab project reserves 10% of project throughput; cancellation gives no refund. Existing research levels survive migration. [Laboratory rules →](docs/research.md)
 - **Visible upgrade consequences:** agent development compares actual before/after throughput, research, risk, wear, capabilities and running costs, including capped benefits.
 - **Dedicated achievements:** milestones, progress and claimable rewards have their own page, badge and notifications.
 - **Decisions and sectors:** optional events offer different benefits and wait without a timer; up to three can remain pending. Sector expansion requires credits and operational milestones; it unlocks further progression without creating free rooms.
@@ -151,6 +160,10 @@ The bunker has connecting corridors, adjacent-floor stairs, server rooms, plant 
 <summary><strong>See the control room and first-person controls</strong></summary>
 
 ![The walkable control room with live wall instruments and original workstations](screenshots/control-room.jpg)
+
+| Upgraded central cooling                                                                     | Connected server-room air handler                                                            |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| ![Enclosed cooling plant with connected pipework](screenshots/readme/operations-cooling.jpg) | ![Fan-coil air handler supplied by central cooling](screenshots/readme/room-air-handler.jpg) |
 
 | Control                            | Action                                                      |
 | :--------------------------------- | :---------------------------------------------------------- |

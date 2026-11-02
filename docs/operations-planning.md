@@ -1,0 +1,39 @@
+# Planned operations
+
+The dashboard's attention list and upcoming work summarize the same simulation used by the room displays. Customer filters, facility search, favorites and compact staff views organize the current network; they do not create a separate 3D economy.
+
+## Customer expansion promises
+
+Established active customers can request more capacity. Eligibility is reviewed every six simulated hours with a bounded chance, and at most twelve requests are retained. A request grows the source service by roughly 15%, bounded to one through ten units, and expires after 24 hours.
+
+Accept with a **1, 4 or 12 hour** delivery promise and an explicit budget ceiling. The authorized amount is held in escrow; the protected reserve must remain available. Real room resources and a productive agent are still required for setup. The added units earn nothing until provisioning completes, while the existing contract continues earning for its delivered units. Unused escrow is returned. Missing the promise damages reputation and satisfaction rather than awarding free capacity; source cancellation and expiry are handled explicitly.
+
+## Priorities during shortages
+
+Each server room defaults to equal sharing. A declared hosting, archive, database or inference priority allocates available resources to that class first and shares the remainder among other classes. It cannot exceed physical CPU, RAM, storage, network, GPU or VRAM capacity.
+
+A change is a **one-hour commitment**, selected while the room is fully supplied and before an incident, conversion or maintenance. This prevents repeatedly switching priorities after an outage to evade its consequences. The ordinary room-operation quote and confirmation are also used in the 3D console.
+
+## Preventive rack maintenance
+
+Preventive work targets worn but working servers; it does not resurrect failed hardware. It needs a technician, spare parts, money and a sufficiently supplied customer portfolio. The rack is interrupted only for the short service phase; other racks continue.
+
+The default automatic policy is **off**, threshold 70% condition, minimum delivery 100% and daily spending limit 2,500 CR. Thresholds can range from 50–80%, and the delivery floor can be relaxed to 95%. An earliest time and daily maintenance window allow scheduling around other commitments. A zero budget blocks spending. Automatic work retains a technician for other duties and rechecks constraints at execution time. Completed maintenance restores eligible condition up to 85%; continuous free full restoration is not available.
+
+## Capital plans
+
+Queue up to twelve ordered construction or utility steps, including prerequisite floors and rooms. Each entry has an earliest start and maximum price. Estimates project preceding steps without charging money or granting ownership. At execution, normal quotes recheck funds, prerequisites and conflicts, and respect the protected reserve and plan budget.
+
+The head waits when a temporary constraint is unmet. Reordering or removing unpaid steps is possible; impossible chains and upgrades beyond their cap are rejected. A started construction job follows the normal paid-building rules and cannot be cancelled for a refund. Planning does not give free rooms or instant upgrades.
+
+## Physical representation and prepared assets
+
+Central cooling level 1 uses the inexpensive open pump skid. Higher levels replace it with enclosed equipment; levels 3 and 5 add bounded parallel modules. Live capacity comes from the engine, not the visible cabinet count. Connected server rooms use fan-coil air handlers; hybrid supply deliberately retains local fallback equipment.
+
+Construction barriers, boards and pallets represent actual building work. Environmental displays and a maintenance robot, dock and cart remain **prepared assets only**. They are not automatically scattered through occupied rooms. All eleven operations models are original procedural ROOT geometry with editable source and an offline generator.
+
+The twelve original raster illustrations supply project, research, achievement and building-card artwork. Prompts, dimensions and hashes are in the asset pack. Small functional icons and graph edges remain vector UI.
+
+## State and verification
+
+Schema 8 stores priorities, customer growth, maintenance and capital plans. Old saves migrate with conservative defaults. Tests cover payment, resource conservation, constrained execution, failure and cancellation paths, offline equivalence and save validation. See [research rules](research.md), [development boundaries](development.md) and [verification scope](verification-planning.md).

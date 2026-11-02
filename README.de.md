@@ -104,6 +104,15 @@ _Echte Aufnahmen mit einem getrennten, synthetischen Demostand und englischer Ob
 
 [Regeln zu Wirtschaft, Ausfallbereichen und Betriebsplänen (Englisch) →](docs/service-economy.md)
 
+### Geplanter Betrieb und Übersicht
+
+- **Kunden wachsen mit:** Bestandskunden fragen Erweiterungen an. Sage ein Lieferfenster von 1, 4 oder 12 Stunden und ein Budget zu; Agenten müssen die Leistung rechtzeitig bereitstellen.
+- **Ausbauplan:** bis zu zwölf geordnete Bau- und Anlagenschritte mit Preisgrenzen, frühestem Start und geschützter Geldreserve.
+- **Vorbeugende Rackwartung:** Techniker, Ersatzteile, Wartungsfenster und Kundenversorgung begrenzen die Ausführung. Die Automatik bleibt standardmäßig aus.
+- **Verbindliche Prioritäten:** vor Engpässen auswählen, welche Dienstklasse zuerst versorgt wird; eine Stunde Bindung und keine zusätzliche Kapazität.
+- **Bessere Orientierung:** offene Arbeit und nächste Termine im Dashboard, Kundenfilter, Standortsuche, Favoriten und kompakte Agentenlisten.
+- **Originale Bildmotive:** zwölf generierte Rasterillustrationen für Aufträge, Forschung, Erfolge und Baukarten. [Regeln, Grenzen und 3D-Darstellung →](docs/operations-planning.md)
+
 ### Agenten, Aufträge und Forschung
 
 - **Drei Rollen:** Operatoren beschleunigen Projektarbeit, Analysten liefern Forschung, Techniker helfen bei Wartung und Zuverlässigkeit. Agenten haben Stufen, Eigenschaften und einen einstellbaren Schwerpunkt.
@@ -112,7 +121,7 @@ _Echte Aufnahmen mit einem getrennten, synthetischen Demostand und englischer Ob
 - **Automatische Selbstwartung:** einzelne Einheiten können zeitweise aussetzen. Ihr normaler Beitrag und bezahlte Einsätze pausieren; andere Systeme arbeiten weiter. Belohnungen bleiben erhalten und die Einheiten kommen automatisch zurück. [Personal und Balancing →](docs/personnel.md)
 - **Gezielte Einsätze:** Netzdiagnose senkt das Risiko, Lastoptimierung erhöht den Durchsatz und Forschungsaufträge liefern Punkte. Während eines Einsatzes fehlt der Agent vollständig im Normalbetrieb. Die Wirkung beginnt nach Abschluss; anschließend gilt eine Erholungszeit. Passende Rollen arbeiten bei ihren Spezialaufgaben effizienter.
 - **Konkurrierende Kundenaufträge:** Monitoring, Migration, Audits, Optimierung, Wiederherstellung, Forschung und KI-Arbeit teilen sich begrenzte Kapazitäten. Credits, Ansehen und Forschung werden bei Abschluss vergeben. Die automatische Annahme kann ausgewogen, auf Einnahmen oder auf Forschung ausgerichtet werden.
-- **Forschung mit Laborzeit:** vier Zweige mit 16 Technologien, Voraussetzungen zwischen Zweigen und fünf fortlaufenden Forschungsreihen. Ein bezahltes Projekt belegt das Labor und bindet 10 % des Projektdurchsatzes. Abbruch erstattet keine Punkte; vorhandene Forschungsstufen bleiben erhalten. [Laborregeln →](docs/research.md)
+- **Forschung mit Laborzeit:** 96 Technologien in acht verbundenen Zweigen, eine zoombare Karte mit Suche und fünf fortlaufende Forschungsreihen. 16 abschließende Spezialisierungen bieten paarweise Vorteile und Nachteile; ein Wechsel kostet erneut Punkte und 24 Stunden Laborzeit. Neue Boni haben abnehmenden Zusatznutzen. Ein bezahltes Projekt belegt das Labor und bindet 10 % des Projektdurchsatzes. Abbruch erstattet keine Punkte; vorhandene Forschungsstufen bleiben erhalten. [Laborregeln →](docs/research.md)
 - **Upgrade-Folgen sichtbar:** Agentenentwicklung vergleicht tatsächlichen Durchsatz, Forschung, Risiko, Verschleiß, Fähigkeiten und Betriebskosten vor und nach dem Kauf. Erreichte Grenzen werden berücksichtigt.
 - **Eigene Erfolge-Seite:** Meilensteine, Fortschritt und Belohnungen bekommen eine eigene Seite, Menüanzeige und Benachrichtigungen.
 - **Normaler Kundenbetrieb:** automatische Anfragen, Agenteneinrichtung, Verträge über einen, drei oder sieben Tage, Betreuung, Verlängerung und geschäftliche Kündigungen. Anhaltende Defizite haben Folgen; optionale Automatik beachtet ein Stundenbudget. [Vertragsregeln →](docs/customer-contracts.md)
@@ -151,6 +160,10 @@ Verbindungsflure, Treppen zwischen angrenzenden Etagen, Server- und Technikräum
 <summary><strong>Kontrollraum und Ego-Steuerung ansehen</strong></summary>
 
 ![Begehbarer Kontrollraum mit aktuellen Wandanzeigen und eigenen Arbeitsplätzen](screenshots/control-room.jpg)
+
+| Ausgebaute zentrale Kühlung                                                                           | Angeschlossene Lüftung im Serverraum                                                                  |
+| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| ![Geschlossene Kälteanlage mit angeschlossener Verrohrung](screenshots/readme/operations-cooling.jpg) | ![Lüftungseinheit mit Versorgung durch die zentrale Kühlung](screenshots/readme/room-air-handler.jpg) |
 
 | Steuerung                                  | Funktion                                                            |
 | :----------------------------------------- | :------------------------------------------------------------------ |

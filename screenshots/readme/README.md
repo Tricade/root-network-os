@@ -4,6 +4,8 @@ The interface gallery was refreshed on **2026-11-02** for the customer, research
 
 The native Electron 45.2.1 run verifies the requested route, decoded images and actual presented frames before recording. The control-room capture additionally waits for that physical room to render. Transient toast notifications are hidden only for the documentation capture; milestones, pending work, costs and normal controls remain visible. The gallery shows the grouped menus, dedicated achievements, resource-backed customer business, the research graph, actual upgrade comparisons and the shared room console. These captures were visually reviewed; they do not establish appearance on every platform or GPU.
 
+The planned-operations update replaces `research-tree.jpg`, `jobs.jpg` and `achievements.jpg` with actual embedded-browser captures of the 96-technology map and generated raster illustrations. `operations-cooling.jpg` and `room-air-handler.jpg` show the upgraded central plant and a server room after its paid central-cooling conversion. These five images use a separate synthetic fixture with 18 servers, six racks and two agents; the earlier gallery images retain their original fixture. No screenshot edits substitute for runtime geometry. See the [verification scope](../../docs/verification-planning.md).
+
 To reproduce on PowerShell:
 
 ```powershell
