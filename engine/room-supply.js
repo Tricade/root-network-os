@@ -95,6 +95,11 @@
       const cost = conversionPrice(system, mode, racks.length);
       let reason = '';
       if (room.conversion) reason = 'Dieser Raum wird bereits umgebaut.';
+      else if (
+        s.preventiveMaintenance?.operation &&
+        racks.some((r) => r.id === s.preventiveMaintenance.operation.rackId)
+      )
+        reason = 'Eine vorbeugende Rackwartung läuft bereits.';
       else if (room.supply[system] === mode) reason = 'Diese Versorgung ist bereits aktiv.';
       else if (mode !== 'local' && (!ctx.serviceRoomOwned(s, key) || ctx.centralLevels(s)[key] < 1))
         reason = 'Baue und bestücke zuerst den zugehörigen Technikraum.';

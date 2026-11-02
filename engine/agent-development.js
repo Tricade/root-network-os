@@ -13,6 +13,7 @@
       if (!a) reason = 'Agent nicht gefunden.';
       else if (
         a.assignment ||
+        ctx.preventiveAgentBusy(s, id) ||
         s.operations.projects.some((p) => p.agentId === id) ||
         ctx.customerAssignment(s, id)
       )

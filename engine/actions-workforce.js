@@ -18,6 +18,7 @@
         if (!x) return fail('Agent nicht gefunden.');
         if (
           x.assignment ||
+          context.preventiveAgentBusy(s, x.id) ||
           s.operations.projects.some((p) => p.agentId === x.id) ||
           context.customerAssignment(s, x.id)
         )

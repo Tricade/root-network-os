@@ -133,6 +133,7 @@
     function agentProductive(s, a, customerAssignments = null) {
       return (
         agentAvailable(s, a) &&
+        !ctx.preventiveAgentBusy(s, a.id) &&
         !a.assignment &&
         !(customerAssignments ? customerAssignments.has(a.id) : ctx.customerAssignment(s, a.id)) &&
         !s.operations?.projects?.some((p) => p.agentId === a.id)

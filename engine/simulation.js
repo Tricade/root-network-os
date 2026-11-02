@@ -216,6 +216,8 @@
           if (!r.operation) startAutomaticBackup(s);
         }
         context.advanceOperations(s, dt);
+        context.advancePreventiveMaintenance(s, dt);
+        context.advanceGrowth(s, dt);
         s.credits = clamp(s.credits, 0, 1e15);
         s.research = clamp(s.research, 0, 1e15);
         s.lifetimeCredits = clamp(s.lifetimeCredits, 0, 1e15);

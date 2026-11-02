@@ -8,6 +8,19 @@
   return function (ctx) {
     function planPayload(action, p) {
       if (action === 'createBackup') return {};
+      if (action === 'buildFloor') return {};
+      if (
+        action === 'buildRoom' &&
+        Number.isSafeInteger(p.floor) &&
+        p.floor >= 1 &&
+        p.floor <= 1000
+      )
+        return { floor: p.floor };
+      if (
+        action === 'buildServiceRoom' &&
+        ['control', 'cooling', 'ups', 'distribution'].includes(p.roomType)
+      )
+        return { roomType: p.roomType };
       if (
         action === 'upgradeRack' &&
         typeof p.rackId === 'string' &&
@@ -38,20 +51,32 @@
         if (
           !payload ||
           (payload.rackId && !s.facility.racks.some((r) => r.id === payload.rackId)) ||
-          (payload.roomId && !s.business.rooms.some((r) => r.roomId === payload.roomId)) ||
           o.queue.length >= 12 ||
           !Number.isSafeInteger(p.ceiling) ||
           p.ceiling < 0 ||
-          p.ceiling > 1e12
+          p.ceiling > ctx.PLAN_MAX_COST ||
+          !Number.isFinite(p.notBefore ?? s.time) ||
+          (p.notBefore ?? s.time) < 0 ||
+          (p.notBefore ?? s.time) > s.time + 30 * 86400
         )
           return { ok: false, message: 'Ungültiger oder voller Ablaufplan.' };
         const item = {
-          id: ctx.uid(s, 'plan'),
+          id: '',
           action: p.action,
           payload,
           ceiling: p.ceiling,
+          // The confirmation dialog can stay open while simulation time advances.
+          notBefore: Math.max(s.time, p.notBefore ?? s.time),
           reason: '',
         };
+        if (!ctx.planTargetsValid(s, [...o.queue, item]))
+          return {
+            ok: false,
+            message: 'Die Reihenfolge enthält ein noch nicht geplantes Bauziel.',
+          };
+        if (!ctx.planStepPossible(s, item, o.queue))
+          return { ok: false, message: 'Höchste Ausbaustufe erreicht.' };
+        item.id = ctx.uid(s, 'plan');
         o.queue.push(item);
         o.nextCheck = s.time;
         return {
@@ -62,8 +87,27 @@
       if (action === 'cancelPlannedOperation') {
         const index = o.queue.findIndex((x) => x.id === p.id);
         if (index < 0) return { ok: false, message: 'Geplante Maßnahme nicht gefunden.' };
-        o.queue.splice(index, 1);
+        const next = o.queue.filter((_, i) => i !== index);
+        if (!ctx.planTargetsValid(s, next))
+          return { ok: false, message: 'Entferne zuerst die davon abhängigen Bauaufträge.' };
+        o.queue = next;
         return { ok: true, message: 'Geplante Maßnahme entfernt.' };
+      }
+      if (action === 'movePlannedOperation') {
+        const index = o.queue.findIndex((x) => x.id === p.id),
+          target = index + p.direction;
+        if (index < 0 || ![-1, 1].includes(p.direction) || target < 0 || target >= o.queue.length)
+          return { ok: false, message: 'Diese Maßnahme kann nicht weiter verschoben werden.' };
+        const next = [...o.queue];
+        [next[index], next[target]] = [next[target], next[index]];
+        if (!ctx.planTargetsValid(s, next))
+          return {
+            ok: false,
+            message: 'Die Reihenfolge enthält ein noch nicht geplantes Bauziel.',
+          };
+        o.queue = next;
+        o.nextCheck = s.time;
+        return { ok: true, message: 'Reihenfolge gespeichert.' };
       }
       if (action === 'pauseOperations') {
         if (typeof p.value !== 'boolean') return { ok: false, message: 'Ungültiger Ablaufplan.' };
@@ -77,7 +121,13 @@
       const o = s.operations,
         item = o.queue[0];
       if (o.paused || !item) return;
+      if (s.time < (item.notBefore || 0)) {
+        item.reason = 'Wartet auf den frühesten Starttermin.';
+        return;
+      }
       if (
+        s.facility.building.project ||
+        s.preventiveMaintenance?.operation ||
         s.resilience.operation ||
         s.facility.operation ||
         s.facility.centralOperation ||

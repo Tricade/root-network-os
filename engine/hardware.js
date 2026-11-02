@@ -63,6 +63,7 @@
           server.condition > 0 &&
           !row.supply.converting &&
           !context.incidentAffects(s, server, row.rack) &&
+          !context.preventiveRackOffline(s, server.rackId) &&
           !(s.facility.operation && s.facility.operation.rackId === server.rackId);
         const demand =
           available && !row.rack.disabledPorts.includes(server.port)
@@ -153,6 +154,7 @@
         server.powered &&
         server.bootRemaining <= 0 &&
         !rack.disabledPorts.includes(server.port) &&
+        !context.preventiveRackOffline(s, rack.id) &&
         !(s.facility.operation && s.facility.operation.rackId === rack.id) &&
         !context.incidentAffects(s, server, rack) &&
         !context.roomState(s, rack.roomId)?.conversion,

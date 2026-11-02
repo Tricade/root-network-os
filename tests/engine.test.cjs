@@ -56,7 +56,7 @@ test('catalog, initial state, and exported engine API match the ROOT contract', 
     assert.ok(Number.isFinite(catalog.servers[id].baseCost) && catalog.servers[id].baseCost > 0);
   }
   const state = createState(12345);
-  assert.equal(state.version, 7);
+  assert.equal(state.version, 8);
   assert.equal(state.seed, 12345);
   assert.ok(state.servers.length >= 1);
   assert.ok(state.agents.length >= 2);

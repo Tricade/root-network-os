@@ -121,7 +121,7 @@
         const limits = {};
         for (const key of LIMIT_KEYS) {
           const v = p[key];
-          if (!Number.isSafeInteger(v) || v < 0 || v > 1e12)
+          if (!Number.isSafeInteger(v) || v < 0 || v > ctx.PLAN_MAX_COST)
             return { ok: false, message: 'Ungültige Budgetgrenze.' };
           limits[key] = v;
         }
@@ -146,7 +146,10 @@
         limits: maintenancePolicy(s),
         partsCapacity: partsCapacity(s),
         repairSpent: s.resilience.budgetSpent,
-        queue: s.operations.queue.map((item) => ({ ...item, quote: ctx.planQuote(s, item) })),
+        queue: s.operations.queue.map((item, index) => ({
+          ...item,
+          quote: ctx.quotePlannedOperation(s, item, s.operations.queue.slice(0, index)),
+        })),
         projectOptions: s.agents.map((a) => ({
           id: a.id,
           options: Object.keys(ctx.PROJECTS).map((kind) => ctx.projectQuote(s, { id: a.id, kind })),

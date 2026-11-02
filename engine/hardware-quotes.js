@@ -48,7 +48,8 @@
         context.globalIncident(s) ||
         s.resilience.operation ||
         s.facility.operation ||
-        s.facility.centralOperation,
+        s.facility.centralOperation ||
+        s.preventiveMaintenance?.operation,
       );
       if (action === 'upgradeCentral') {
         const system = CENTRAL_SYSTEMS.find((item) => item.id === payload.system);

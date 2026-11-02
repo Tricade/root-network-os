@@ -8,7 +8,7 @@ const { randomUUID, createHash } = require('node:crypto');
 const ROOT = __dirname;
 const PORT = Number.parseInt(process.env.ROOT_PORT || '18473', 10);
 const DATA_DIR = path.resolve(process.env.ROOT_DATA_DIR || path.join(ROOT, 'data'));
-const API_VERSION = 7;
+const API_VERSION = 8;
 const RELEASE = require('./package.json').version;
 const MAX_BODY = 16 * 1024 * 1024;
 const { createStaticFiles } = require('./server/static-files.cjs');
@@ -218,7 +218,8 @@ function createServer(options = {}) {
             parsed.version === 3 ||
             parsed.version === 4 ||
             parsed.version === 5 ||
-            parsed.version === 6)
+            parsed.version === 6 ||
+            parsed.version === 7)
         ) {
           return send(res, 409, {
             ok: false,
@@ -227,11 +228,14 @@ function createServer(options = {}) {
               'Diese Oberfläche stammt aus einer älteren Version. Lade sie neu, bevor du fortfährst.',
           });
         }
-        // Import/GET migrate legacy saves. Writes require schema 7 so cached
+        // Import/GET migrate legacy saves. Writes require schema 8 so cached
         // clients cannot silently erase commercial contracts or staff state.
         if (
-          parsed?.version === 7 &&
-          (!parsed.lab ||
+          parsed?.version === 8 &&
+          (!parsed.customerGrowth ||
+            !parsed.preventiveMaintenance ||
+            !parsed.servicePriorities ||
+            !parsed.lab ||
             !parsed.customers ||
             !parsed.personnel ||
             !parsed.facility?.central ||

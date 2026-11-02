@@ -57,7 +57,7 @@
     function createState(seed = 12345) {
       const nseed = (Number.isInteger(seed) ? seed : 12345) >>> 0;
       const s = {
-        version: 7,
+        version: 8,
         seed: nseed,
         rng: nseed || 0x6d2b79f5,
         networkName: 'Mein Netzwerk',
@@ -184,6 +184,7 @@
       context.migratePersonnel(s);
       context.migrateCustomers(s);
       context.migrateResearch(s);
+      context.migratePlanning(s);
       s.offers.push(makeJob(s), makeJob(s));
       addLog(s, 'system', 'ROOT ist bereit. Dein erster Überwachungsauftrag läuft.');
       updateAchievementUnlocks(s);

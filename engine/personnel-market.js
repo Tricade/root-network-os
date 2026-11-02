@@ -203,6 +203,8 @@
           return { ok: false, message: 'Mindestens ein Agent muss im Team bleiben.' };
         if (
           a.assignment ||
+          ctx.preventiveAgentBusy(s, a.id) ||
+          s.preventiveMaintenance?.schedule?.agentId === a.id ||
           s.operations.projects.some((x) => x.agentId === a.id) ||
           ctx.customerAssignment(s, a.id)
         )

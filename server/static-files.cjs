@@ -5,6 +5,47 @@ const path = require('node:path');
 // A closed allowlist keeps local saves and build sources outside the HTTP surface.
 function createStaticFiles(root) {
   const FILES = new Map([
+    ['/room/operations-assets.js', ['room/operations-assets.js', 'text/javascript; charset=utf-8']],
+    [
+      '/room/operations-asset-kit.js',
+      ['room/operations-asset-kit.js', 'text/javascript; charset=utf-8'],
+    ],
+    ['/room/operations-plant.js', ['room/operations-plant.js', 'text/javascript; charset=utf-8']],
+    [
+      '/room/construction-assets.js',
+      ['room/construction-assets.js', 'text/javascript; charset=utf-8'],
+    ],
+    ['/ui/capital-plan.js', ['ui/capital-plan.js', 'text/javascript; charset=utf-8']],
+    ['/ui/customer-growth.js', ['ui/customer-growth.js', 'text/javascript; charset=utf-8']],
+    [
+      '/ui/preventive-maintenance.js',
+      ['ui/preventive-maintenance.js', 'text/javascript; charset=utf-8'],
+    ],
+    ['/ui/customer-portfolio.js', ['ui/customer-portfolio.js', 'text/javascript; charset=utf-8']],
+    ['/ui/dashboard-attention.js', ['ui/dashboard-attention.js', 'text/javascript; charset=utf-8']],
+    ['/ui/facility-navigator.js', ['ui/facility-navigator.js', 'text/javascript; charset=utf-8']],
+    ['/ui/facility-art.js', ['ui/facility-art.js', 'text/javascript; charset=utf-8']],
+    ['/ui/research-art.js', ['ui/research-art.js', 'text/javascript; charset=utf-8']],
+    ['/ui/business-art.js', ['ui/business-art.js', 'text/javascript; charset=utf-8']],
+    ['/ui/navigation-state.js', ['ui/navigation-state.js', 'text/javascript; charset=utf-8']],
+    ['/engine/capital-plans.js', ['engine/capital-plans.js', 'text/javascript; charset=utf-8']],
+    [
+      '/engine/priority-allocation.js',
+      ['engine/priority-allocation.js', 'text/javascript; charset=utf-8'],
+    ],
+    [
+      '/engine/service-priorities.js',
+      ['engine/service-priorities.js', 'text/javascript; charset=utf-8'],
+    ],
+    ['/engine/customer-growth.js', ['engine/customer-growth.js', 'text/javascript; charset=utf-8']],
+    ['/engine/preventive-save.js', ['engine/preventive-save.js', 'text/javascript; charset=utf-8']],
+    [
+      '/engine/preventive-maintenance.js',
+      ['engine/preventive-maintenance.js', 'text/javascript; charset=utf-8'],
+    ],
+    ['/engine/save-planning.js', ['engine/save-planning.js', 'text/javascript; charset=utf-8']],
+    ['/locales/planning-en.js', ['locales/planning-en.js', 'text/javascript; charset=utf-8']],
+
     ['/', ['index.html', 'text/html; charset=utf-8']],
     ['/index.html', ['index.html', 'text/html; charset=utf-8']],
     ['/styles.css', ['styles.css', 'text/css; charset=utf-8']],

@@ -23,6 +23,9 @@
       const m = getMetrics(s);
       for (const apply of [
         context.applyPersonnel,
+        context.applyGrowth,
+        context.applyPreventiveMaintenance,
+        context.applyServicePriority,
         context.applyOperations,
         context.applySupply,
         context.applyResearch,

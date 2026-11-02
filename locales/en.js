@@ -24,12 +24,16 @@
     typeof module === 'object' && module.exports
       ? require('./workspace-en.js')
       : root.RootWorkspaceEnglish;
+  const planning =
+    typeof module === 'object' && module.exports
+      ? require('./planning-en.js')
+      : root.RootPlanningEnglish;
   const create = (translate) =>
-    factory(translate, { building, business, personnel, customers, research, workspace });
+    factory(translate, { building, business, personnel, customers, research, workspace, planning });
   if (typeof module === 'object' && module.exports) module.exports = create;
   if (root) root.RootEnglishCatalog = create;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate, catalogs) {
-  const { building, business, personnel, customers, research, workspace } = catalogs;
+  const { building, business, personnel, customers, research, workspace, planning } = catalogs;
   const en = Object.create(null);
   const add = (pairs) => {
     for (const [de, english] of pairs) en[de] = english;
@@ -2624,9 +2628,12 @@
   add(control.pairs);
   const laboratory = research(translate);
   add(laboratory.pairs);
+  const planned = planning(translate);
+  add(planned.pairs);
   return {
     en,
     patterns: [
+      ...planned.patterns,
       ...control.patterns,
       ...laboratory.patterns,
       ...commercial.patterns,

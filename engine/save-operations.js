@@ -17,7 +17,7 @@
         limits[key] =
           o.limits[key] === null && ['repair', 'backup', 'reserve'].includes(key)
             ? null
-            : n(o.limits[key], 0, 1e12, true);
+            : n(o.limits[key], 0, ctx.PLAN_MAX_COST, true);
       function list(value, max) {
         if (!Array.isArray(value) || value.length > max) throw new Error('Zu großer Betriebsplan.');
         return value;
@@ -50,10 +50,7 @@
         ids.add(v.id);
         const payload = ctx.planPayload(v.action, ctx.checkedRecord(v.payload));
         if (!payload) throw new Error('Unzulässige geplante Aktion.');
-        if (
-          (payload.rackId && !s.facility.racks.some((r) => r.id === payload.rackId)) ||
-          (payload.roomId && !s.business.rooms.some((r) => r.roomId === payload.roomId))
-        )
+        if (payload.rackId && !s.facility.racks.some((r) => r.id === payload.rackId))
           throw new Error('Unbekanntes Planziel.');
         if (typeof v.reason !== 'string' || v.reason.length > 250)
           throw new Error('Ungültiger Planstatus.');
@@ -61,10 +58,12 @@
           id: v.id,
           action: v.action,
           payload,
-          ceiling: n(v.ceiling, 0, 1e12, true),
+          ceiling: n(v.ceiling, 0, ctx.PLAN_MAX_COST, true),
+          notBefore: n(v.notBefore ?? 0, 0, s.time + 30 * 86400),
           reason: v.reason,
         };
       });
+      if (!ctx.planTargetsValid(s, queue)) throw new Error('Ungültige Bauplan-Reihenfolge.');
       const busy = new Set();
       const projects = list(o.projects, 12).map((v) => {
         ctx.checkedRecord(v);
@@ -107,7 +106,7 @@
         limits,
         backupSpent: n(o.backupSpent, 0, 1e12),
         partsSpent: n(o.partsSpent, 0, 1e12),
-        planSpent: n(o.planSpent, 0, 1e12),
+        planSpent: n(o.planSpent, 0, ctx.PLAN_MAX_COST),
         partsTarget: n(o.partsTarget, 0, ctx.partsCapacity(s), true),
         autoParts: b(o.autoParts),
         orders,

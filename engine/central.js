@@ -58,7 +58,8 @@
         s.resilience.incident?.scope === 'central' ||
         s.resilience.operation ||
         s.facility.operation ||
-        s.facility.centralOperation,
+        s.facility.centralOperation ||
+        s.preventiveMaintenance?.operation,
       );
       let reason =
         s.sector < system.unlockSector
@@ -119,7 +120,8 @@
         context.roomState(s, rack.roomId)?.conversion ||
         s.resilience.operation ||
         s.facility.operation ||
-        s.facility.centralOperation,
+        s.facility.centralOperation ||
+        s.preventiveMaintenance?.operation,
       );
       const reason = locked
         ? 'Während einer Krise oder laufenden Infrastrukturmaßnahme nicht verfügbar.'

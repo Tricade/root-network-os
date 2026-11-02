@@ -111,18 +111,20 @@
           roomDelivered = 0;
         const consumed = zeroResources(),
           groups = [];
+        const priority = ctx.servicePriority(s, room.roomId);
+        const fractions = ctx.allocateServiceResources(
+          raw.available,
+          room.groups.map((group) => ({
+            kind: group.kind,
+            resources: groupDemand(room, group, false, research.serviceEfficiency),
+          })),
+          priority.kind,
+        );
         for (const group of room.groups) {
           const needs = groupDemand(room, group, false, research.serviceEfficiency);
           // Only resources needed by this service can block it. A missing GPU
           // must not stop hosting or archives sharing the same room.
-          const supplied =
-            crewFactor *
-            Math.min(
-              1,
-              ...RESOURCES.filter((k) => needs[k] > 0).map(
-                (k) => raw.available[k] / Math.max(0.001, demand[k]),
-              ),
-            );
+          const supplied = crewFactor * fractions.get(group.kind);
           for (const key of RESOURCES) consumed[key] += needs[key] * supplied;
           roomDelivered += group.units * supplied;
           groups.push({ ...group, supplied });
@@ -156,6 +158,8 @@
         rows.push({
           ...room,
           ...raw,
+          priority: priority.kind,
+          priorityUntil: priority.until,
           demand,
           reserved,
           units,

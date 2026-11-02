@@ -37,33 +37,42 @@
         const project = s.operations?.projects.find((p) => p.agentId === agent.id);
         const cooldown = Math.max(0, agent.cooldownUntil - s.time);
         const customer = customers.assignments.get(agent.id);
-        const assignment = customer
-          ? {
-              kind: 'customer',
-              label:
-                customer.work === 'setup'
-                  ? 'Kundeneinrichtung'
-                  : customer.work === 'retention'
-                    ? 'Kundenrückgewinnung'
-                    : 'Kundenbetreuung',
-              remaining: customer.workRemaining,
-              total: customer.workTotal,
-            }
-          : agent.assignment
+        const maintenance = s.preventiveMaintenance?.operation;
+        const assignment =
+          maintenance?.agentId === agent.id
             ? {
-                kind: agent.assignment.kind,
-                label: agent.assignment.label,
-                remaining: agent.assignment.remaining,
-                total: agent.assignment.total,
+                kind: 'preventive',
+                label: 'Vorbeugende Rackwartung',
+                remaining: maintenance.remaining,
+                total: maintenance.total,
               }
-            : project
+            : customer
               ? {
-                  kind: 'project',
-                  label: context.PROJECTS[project.kind].name,
-                  remaining: project.remaining,
-                  total: project.total,
+                  kind: 'customer',
+                  label:
+                    customer.work === 'setup'
+                      ? 'Kundeneinrichtung'
+                      : customer.work === 'retention'
+                        ? 'Kundenrückgewinnung'
+                        : 'Kundenbetreuung',
+                  remaining: customer.workRemaining,
+                  total: customer.workTotal,
                 }
-              : null;
+              : agent.assignment
+                ? {
+                    kind: agent.assignment.kind,
+                    label: agent.assignment.label,
+                    remaining: agent.assignment.remaining,
+                    total: agent.assignment.total,
+                  }
+                : project
+                  ? {
+                      kind: 'project',
+                      label: context.PROJECTS[project.kind].name,
+                      remaining: project.remaining,
+                      total: project.total,
+                    }
+                  : null;
         const definitions = [
           {
             key: 'diagnose',
