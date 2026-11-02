@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "generator": "Built-in image_gen",
+  "license": "CC0-1.0",
+  "prompts": "illustration-prompts.json",
+  "images": [
+    {
+      "key": "network",
+      "file": "textures/illustrations/network.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2389610,
+      "sha256": "9d7c6e073510c2f0beb4d0d2f143b9ea8379c98087e8546aa2d1729b06f00dd0"
+    },
+    {
+      "key": "cooling",
+      "file": "textures/illustrations/cooling.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 3195395,
+      "sha256": "8433683690d453607b9bf361d85d081a99748874322dfdde4bf8ebff67975a87"
+    },
+    {
+      "key": "power",
+      "file": "textures/illustrations/power.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2748617,
+      "sha256": "16f024292724eb1de7d27a252229d9d68b9c9246cb8e469738772dc2043e9487"
+    },
+    {
+      "key": "storage",
+      "file": "textures/illustrations/storage.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2688913,
+      "sha256": "08dcf7ca2b67e40ee4ac3251bc43e05da4681391287a855c1f8f3d1cb97fec2b"
+    },
+    {
+      "key": "automation",
+      "file": "textures/illustrations/automation.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2576426,
+      "sha256": "c0925f2f7fa4f38de16a743748a1da4065bf024cb8caf885e2d6cdd1c6547124"
+    },
+    {
+      "key": "business",
+      "file": "textures/illustrations/business.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2734729,
+      "sha256": "2f1802d591c069b30b635fa2481e85b34966915fd79dd94231fcacff722cca19"
+    },
+    {
+      "key": "science",
+      "file": "textures/illustrations/science.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2764215,
+      "sha256": "72c771bd409e5d0b994af51388177e8f53c987141a656111c20004608f7cb4a9"
+    },
+    {
+      "key": "reliability",
+      "file": "textures/illustrations/reliability.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 3002270,
+      "sha256": "62c920f17bc865629e62d43ce3a43b1b18380fb45c72772c6b4b27972a765ff8"
+    },
+    {
+      "key": "construction",
+      "file": "textures/illustrations/construction.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 3248376,
+      "sha256": "adeb54b64434b671970cc65a1ea826b29fc8e768dda5c1117e0b89da46e46b26"
+    },
+    {
+      "key": "award-contract",
+      "file": "textures/illustrations/award-contract.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2420655,
+      "sha256": "d8e4698bff936e272cbdf00e29948b06d871cde09cc5d913ba2c45d906426f55"
+    },
+    {
+      "key": "award-resilience",
+      "file": "textures/illustrations/award-resilience.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2417504,
+      "sha256": "b611e3d6c9206e76aa7372119cb117343837247053ad9ca1d4d5f56f3ffb6f79"
+    },
+    {
+      "key": "award-growth",
+      "file": "textures/illustrations/award-growth.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2261982,
+      "sha256": "39ea251ec99883966633345a56b3221249f2ab9b8fba5ab510c6ddec7bfcdeda"
+    }
+  ]
+}

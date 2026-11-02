@@ -28,19 +28,41 @@ test('all 64 original robot portraits are present, hash-pinned and served from t
   }
 });
 
-test('each actual job category and research topic has its own local SVG schematic with no duplicate document IDs or remote sources', async () => {
+test('every illustration category resolves to a hash-pinned local raster bundled in HTTP and desktop', async () => {
   const { JOB_ART, RESEARCH_ART, workloadArt } = await import('../ui/workload-art.js');
-  const E = require('../engine.js');
+  const { technologyArt } = await import('../ui/research-art.js');
+  const { achievementArt } = await import('../ui/business-art.js');
+  const { roomArt } = await import('../ui/facility-art.js');
+  const E = require('../engine.js'),
+    manifest = require('../asset-pack/docs/illustration-manifest.json');
   assert.deepEqual(Object.keys(JOB_ART).sort(), Object.keys(E.jobProfiles).sort());
   assert.deepEqual(Object.keys(RESEARCH_ART).sort(), E.catalog.research.map((r) => r.id).sort());
-  const diagrams = [
+  const files = createStaticFiles(root),
+    urls = new Set();
+  assert.equal(manifest.images.length, 12);
+  for (const img of manifest.images) {
+    const bytes = fs.readFileSync(path.join(root, 'asset-pack', img.file));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), img.sha256);
+    assert.equal(bytes.subarray(1, 4).toString(), 'PNG');
+    assert.equal(bytes.readUInt32BE(16), img.width);
+    assert.equal(bytes.readUInt32BE(20), img.height);
+    assert.ok(img.width >= 1024 && img.height >= 512);
+    assert.ok(files.has('/asset-pack/' + img.file));
+    urls.add('asset-pack/' + img.file);
+  }
+  const html = [
     ...Object.keys(JOB_ART).map((k) => workloadArt(k)),
     ...Object.keys(RESEARCH_ART).map((k) => workloadArt(k, true)),
+    ...E.getResearch(E.createState(5)).technologies.map((n) => technologyArt(n.id)),
+    ...E.catalog.achievements.map((a) => achievementArt(a.id, false, false)),
+    ...['server', 'control', 'cooling', 'ups', 'distribution', 'floor'].flatMap((k) =>
+      ['planned', 'building', 'ready'].map((p) => roomArt(k, p)),
+    ),
   ];
-  assert.equal(new Set(diagrams).size, 20);
-  for (const svg of diagrams) {
-    assert.match(svg, /viewBox="0 0 360 120"/);
-    assert.match(svg, /aria-hidden="true"/);
-    assert.doesNotMatch(svg, /\bid=|https?:|<script|<animate/);
+  for (const art of html) {
+    assert.match(art, /<img /);
+    assert.match(art, /aria-hidden="true"/);
+    assert.doesNotMatch(art, /<svg|https?:|<script|<animate/);
+    assert.ok(urls.has(art.match(/src="([^"]+)"/)[1]));
   }
 });
