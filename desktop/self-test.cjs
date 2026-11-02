@@ -187,6 +187,7 @@ async function runSelfTest({ app, output, startDesktop }) {
     result.saved = true;
     result.reloaded = reloaded;
     result.workspaces = await require('./workspace-smoke.cjs').checkWorkspaces(contents);
+    result.sidebar = await require('./sidebar-smoke.cjs').checkSidebar({ window, output });
     if (process.env.ROOT_CAPTURE_DOCS === '1')
       result.documentation = await require('./docs-capture.cjs').captureDocumentation({
         window,

@@ -160,6 +160,7 @@ button {
 }
 .brand {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 10px;
   padding: 0 14px 24px;
@@ -2476,8 +2477,20 @@ tr:last-child td {
 }
 
 .sidebar {
+  overflow: hidden;
+}
+/* Keep the wordmark visible when keyboard focus scrolls a long navigation menu. */
+.sidebar-scroll {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+.sidebar-scroll > * {
+  flex-shrink: 0;
 }
 .sector-tile-label {
   display: flex;
