@@ -71,7 +71,7 @@ test('automatic server labels and live backup/maintenance feedback translate wit
   }
 });
 
-test('customer, utility and unattended operation feedback is translated without renaming clients', () => {
+test('customer and unattended feedback translates built-in clients while preserving unknown names', () => {
   for (const [source, expected] of [
     ['Kunden & Betrieb', 'Customers & operations'],
     ['Betriebspläne', 'Operation plans'],
@@ -84,7 +84,7 @@ test('customer, utility and unattended operation feedback is translated without 
       '3 spare parts ordered. Delivery in 300 seconds.',
     ],
     ['3 Ersatzteile eingetroffen.', '3 spare parts delivered.'],
-    ['Nordlicht Mobilität', 'Nordlicht Mobilität'],
+    ['Nordlicht Mobilität', 'Nordlicht Mobility'],
   ])
     assert.equal(I18N.translate(source, 'en'), expected);
 });
@@ -272,7 +272,13 @@ test('German remains the default and English translates known phrases while pres
       'KI-Inferenz auswerten for Institut für angewandte KI completed: 11839 credits.',
       'Evaluate AI inference for Institut für angewandte KI completed: 11839 credits.',
     ],
-    ['Hanseatische Werkstätten', 'Hanseatische Werkstätten'],
+    ['Hanseatische Werkstätten', 'Hanseatic Workshops'],
+    ['Institut für Umweltfunk', 'Environmental Radio Institute'],
+    ['Meine eigenen Werkstätten', 'Meine eigenen Werkstätten'],
+    [
+      'Sensornetz überwachen for Institut für Umweltfunk completed: 108 credits.',
+      'Monitor sensor network for Environmental Radio Institute completed: 108 credits.',
+    ],
     [
       'Operator · Hält Aufträge am Laufen und steigert die Netzwerkerlöse.',
       'Operator · Keeps jobs running and increases network revenue.',

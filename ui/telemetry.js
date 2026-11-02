@@ -13,6 +13,8 @@ export function createTelemetryUI(ctx) {
       ctx.facilitySignature(),
       ctx.businessSignature?.(),
       ctx.operationsSignature?.(),
+      ctx.growthSignature?.(),
+      ctx.preventiveSignature?.(),
       ctx.researchSignature?.(),
     ].join('|');
     if (ctx.view === 'overview')
@@ -39,6 +41,8 @@ export function createTelemetryUI(ctx) {
     ctx.updatePersonnel?.();
     ctx.updateRoomOperations?.();
     ctx.updateOperations?.();
+    ctx.updateGrowth?.();
+    ctx.updatePreventive?.();
     if (ctx.view === 'facility') ctx.updateCentralTelemetry();
     const m = ctx.E.getMetrics(ctx.state),
       facility = ctx.E.getRackModel(ctx.state, m),

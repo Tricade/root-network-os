@@ -40,7 +40,7 @@ export function stationRows(view, state, m, resilience, agents, dashboard, forma
     return [
       ['AKTIVE VERTRÄGE', fmt(customers.active)],
       ['OFFENE ANFRAGEN', fmt(customers.leads.length)],
-      ['IN EINRICHTUNG', fmt(customers.settingUp)],
+      ['EINRICHTUNG / ERWEITERUNG', `${customers.settingUp} / ${dashboard.expansionPromises}`],
       ['KUNDENFÄLLE', fmt(customers.attention)],
       ['KUNDENUMSATZ / MIN', `${one(dashboard.gross)} CR`],
       [
@@ -84,7 +84,14 @@ export function stationRows(view, state, m, resilience, agents, dashboard, forma
       ['GEPLANTE MASSNAHMEN', fmt(dashboard.queue)],
       ['ERSATZTEILE IM LAGER', fmt(resilience.parts)],
       ['LIEFERUNGEN UNTERWEGS', fmt(dashboard.deliveries)],
-      ['LANGZEITPROJEKTE', fmt(state.operations.projects.length)],
+      [
+        'RACKWARTUNG',
+        dashboard.preventive?.operation
+          ? duration(dashboard.preventive.operation.remaining)
+          : dashboard.preventive?.schedule
+            ? 'Terminiert'
+            : 'Keine geplant',
+      ],
       ['AGENTEN FREI / IM EINSATZ', `${active} / ${working}`],
     ];
   if (view === 'jobs')

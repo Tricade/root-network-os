@@ -2094,7 +2094,7 @@
     [
       /^(.+?) for (.+?) completed(?:: (.+))?$/,
       (whole, title, client, result) =>
-        `${translate(title, 'en')} for ${client} completed${result ? `: ${result}` : ''}`,
+        `${translate(title, 'en')} for ${translate(client, 'en')} completed${result ? `: ${result}` : ''}`,
     ],
     [/^(.+?) · (\d+(?:\.\d+)?) TB · (\d+) Einschübe$/, '$1 · $2 TB · $3 slots'],
     [/^(\d+) im Normalbetrieb \/ (\d+) Plätze$/, '$1 on regular duty / $2 slots'],
@@ -2133,7 +2133,7 @@
     [
       /^(.+?) für (.+?) abgeschlossen: (.+?) Credits\.$/,
       (whole, jobTitle, client, credits) =>
-        `${translate(jobTitle, 'en')} for ${client} completed: ${credits} credits.`,
+        `${translate(jobTitle, 'en')} for ${translate(client, 'en')} completed: ${credits} credits.`,
     ],
     [
       /^(.+?): Hardwarefehler erkannt\. Aufträge laufen auf verbleibenden Knoten weiter\.$/,
@@ -2542,12 +2542,12 @@
     [
       /^(.+?) · (.+?) abgeschlossen: (.+?) Credits\.$/,
       (whole, jobTitle, client, credits) =>
-        `${translate(jobTitle, 'en')} · ${client} completed: ${credits} credits.`,
+        `${translate(jobTitle, 'en')} · ${translate(client, 'en')} completed: ${credits} credits.`,
     ],
     [
       /^(.+?) für (.+?) abgeschlossen: (.+?) Credits\.$/,
       (whole, jobTitle, client, credits) =>
-        `${translate(jobTitle, 'en')} for ${client} completed: ${credits} credits.`,
+        `${translate(jobTitle, 'en')} for ${translate(client, 'en')} completed: ${credits} credits.`,
     ],
     [
       /^(.+?) in (.+?) abgeschlossen\. Versorgung und Verbindungen sind wieder verfügbar\.$/,

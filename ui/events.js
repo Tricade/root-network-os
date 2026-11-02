@@ -11,9 +11,14 @@ export function createEventsUI(ctx, platform = globalThis) {
       }
       if (target.disabled || ctx.desktopClosing?.()) return;
       if (target.dataset.dashboardTour !== undefined) return ctx.Room.enter();
+      if (ctx.dashboardClick?.(target)) return;
+      if (ctx.workforceClick?.(target)) return;
+      if (ctx.facilityClick?.(target)) return;
       if (ctx.agentDevelopmentClick?.(target)) return;
       if (ctx.researchClick?.(target)) return;
       if (ctx.personnelClick?.(target)) return;
+      if (ctx.growthClick?.(target)) return;
+      if (ctx.preventiveClick?.(target)) return;
       if (ctx.businessClick?.(target)) return;
       if (ctx.operationsClick?.(target)) return;
       if (ctx.handleDesktopCommand?.(target.dataset.desktopCommand)) return;
@@ -123,9 +128,18 @@ export function createEventsUI(ctx, platform = globalThis) {
         return ctx.replaceState(next);
       }
     });
+    platform.document.addEventListener('input', (event) => {
+      if (ctx.desktopClosing?.()) return;
+      if (ctx.businessInput?.(event.target)) return;
+      ctx.facilityInput?.(event.target);
+    });
     platform.document.addEventListener('change', (event) => {
       if (ctx.desktopClosing?.()) return;
       if (ctx.businessChange?.(event.target)) return;
+      if (ctx.workforceChange?.(event.target)) return;
+      if (ctx.facilityChange?.(event.target)) return;
+      if (ctx.growthChange?.(event.target)) return;
+      if (ctx.preventiveChange?.(event.target)) return;
       if (ctx.operationsChange?.(event.target)) return;
       if (event.target.hasAttribute('data-building-floor')) {
         if (ctx.selectFacilityFloor(event.target.value)) ctx.render();

@@ -1,4 +1,7 @@
+import { createCustomerGrowthUI } from './ui/customer-growth.js';
+import { createPreventiveMaintenanceUI } from './ui/preventive-maintenance.js';
 import { NAVIGATION_ITEMS } from './ui/navigation.js';
+import { createNavigationState } from './ui/navigation-state.js';
 import { createAchievementsUI } from './ui/achievements.js';
 import { createRacks } from './rack-ui.js';
 import { createUIFoundation } from './ui/foundation.js';
@@ -48,6 +51,7 @@ import { createRoom } from './room.js';
     roleClass,
   } = createUIFoundation(I18N);
   const STORAGE = 'root.network.save.v1';
+  const navigationState = createNavigationState();
   let state,
     view = 'overview',
     modal = null,
@@ -361,6 +365,8 @@ import { createRoom } from './room.js';
   Object.assign(ctx, createWorkforceUI(ctx));
   Object.assign(ctx, createWorkloadsUI(ctx));
   Object.assign(ctx, createResearchUI(ctx));
+  Object.assign(ctx, createCustomerGrowthUI(ctx));
+  Object.assign(ctx, createPreventiveMaintenanceUI(ctx));
   Object.assign(ctx, createBusinessUI(ctx));
   Object.assign(ctx, createRoomOperationsUI(ctx));
   Object.assign(ctx, createOperationsUI(ctx));
@@ -396,16 +402,22 @@ import { createRoom } from './room.js';
     }
     const roomMode = Room.isInRoom(),
       container = roomMode ? Room.consoleBody() : $('#main');
+    const scrollPosition = roomMode ? container.scrollTop : window.scrollY;
+    const openDetails = new Set(
+      [...container.querySelectorAll('[data-persist-details][open]')].map(
+        (el) => el.dataset.persistDetails,
+      ),
+    );
     const protection = E.getResilience(state);
     const alert =
-      protection.incident && view !== 'resilience'
+      protection.incident && !['overview', 'resilience'].includes(view)
         ? `<aside class="protection-banner" role="status"><span class="signal-icon">${icon('shield')}</span><div><strong>${esc(protection.incident.title)}</strong><span>Schutzmodus aktiv. Weitere Schäden sind gestoppt; eine Entscheidung wartet auf dich.</span></div><button class="button small" data-nav="resilience">Vorfall öffnen${icon('arrow')}</button></aside>`
-        : protection.failed > 0 && view !== 'resilience'
+        : protection.failed > 0 && !['overview', 'resilience'].includes(view)
           ? `<aside class="protection-banner warning" role="status"><span class="signal-icon">${icon('server')}</span><div><strong>${protection.failed} Server ausgefallen</strong><span>Kapazität und Einnahmen sind reduziert. Prüfe die verfügbaren Reparaturen.</span></div><button class="button small" data-nav="resilience">Betrieb & Schutz${icon('arrow')}</button></aside>`
           : '';
     const rewards = pendingAchievements();
     const rewardAlert =
-      rewards.length && view !== 'achievements'
+      rewards.length && !['overview', 'achievements'].includes(view)
         ? `<aside class="reward-banner" role="status">${icon('trophy')}<div><strong>${rewards.length === 1 ? 'Ein Erfolg wartet auf dich' : rewards.length + ' Erfolge warten auf dich'}</strong><span>${rewards.map((a) => '<span>' + esc(a.name) + '</span>').join(' · ')} · ${ctx.stat('achievementReward')} <span>CR abholbereit</span></span></div><button class="button small" data-nav="achievements">Belohnung abholen${icon('arrow')}</button></aside>`
         : '';
     container.innerHTML = `${saveError ? `<div class="save-warning" role="status">${esc(saveError)}${saveConflict ? '<button class="button small" data-command="reload">Aktuellen Stand laden</button>' : ''}</div>` : ''}${alert}${rewardAlert}<div class="view-content">${roomMode && view === 'overview' ? ctx.consoleOverviewView() : viewFunctions[view]()}</div><footer class="bottom-caption"><span><i class="live-dot"></i>${ctx.stat('systemStatus')} · ${ctx.stat('runtime')}</span><span>DEIN NETZWERK. DEINE REGELN.</span></footer>`;
@@ -419,19 +431,32 @@ import { createRoom } from './room.js';
     if (roomMode) Room.setConsoleTitle(navs.find((n) => n[0] === view)[2], view);
     else if (view === 'overview') Room.mount();
     else Room.hide();
+    container.querySelectorAll('[data-persist-details]').forEach((el) => {
+      el.open = openDetails.has(el.dataset.persistDetails);
+    });
+    ctx.mountResearch?.(container);
     signature = ctx.stateSignature();
     renderPending = false;
     ctx.updateLive();
+    if (roomMode) container.scrollTop = scrollPosition;
+    else window.scrollTo(0, scrollPosition);
   }
 
   function navigate(next) {
     if (!viewFunctions[next]) return;
+    const mode = Room.isInRoom() ? 'console' : 'web';
+    navigationState.remember(
+      view,
+      mode,
+      mode === 'console' ? Room.consoleBody()?.scrollTop : window.scrollY,
+    );
     if (Room.isInRoom()) {
       view = next;
       ctx.closeModal();
       document.activeElement?.blur();
       Room.openConsole(navs.find((n) => n[0] === view)[2]);
       render();
+      Room.consoleBody().scrollTop = navigationState.restore(next, mode);
       return;
     }
     Room.hide();
@@ -440,7 +465,7 @@ import { createRoom } from './room.js';
     ctx.closeModal();
     document.activeElement?.blur();
     render();
-    window.scrollTo(0, 0);
+    window.scrollTo(0, navigationState.restore(next, mode));
   }
   function hideMobile() {
     $('.sidebar')?.classList.remove('open');

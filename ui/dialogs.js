@@ -114,12 +114,16 @@ export function createDialogsUI(ctx) {
       'business-confirm': 'Betriebsauftrag prüfen',
       'research-confirm': 'Forschungsentscheidung prüfen',
       'operations-confirm': 'Betriebsauftrag prüfen',
+      'growth-confirm': 'Kundenerweiterung prüfen',
+      'preventive-confirm': 'Rackwartung prüfen',
     };
     let content = '';
     if (type === 'agent-upgrade') content = ctx.agentUpgradeModal(extra);
     else if (type === 'research-confirm') content = ctx.researchConfirm(extra);
     else if (type === 'business-confirm') content = ctx.businessConfirm(extra);
     else if (type === 'operations-confirm') content = ctx.operationsConfirm(extra);
+    else if (type === 'growth-confirm') content = ctx.growthConfirm(extra);
+    else if (type === 'preventive-confirm') content = ctx.preventiveConfirm(extra);
     else if (type === 'personnel-confirm') content = ctx.personnelConfirm(extra);
     else if (type === 'servers' || type === 'agents') content = shop(type);
     else if (type.startsWith('hardware-')) content = ctx.R.modal(type, extra);
