@@ -47,7 +47,7 @@ The new nodes do not compound dozens of percentage bonuses exponentially. For ea
 | AI job reward                                                |              24% |
 | Retention probability bonus                                  |            +0.10 |
 
-These are limits for the new atlas nodes, not final network-wide percentages. Staff, hardware, supply and repeatable research apply separately. The detail card computes the actual change against the current owned set, including replacement of a specialization. Research cannot create cooling capacity, replace a disconnected server or guarantee customer retention.
+These are limits for the new atlas nodes, not final network-wide percentages. Staff, hardware, supply and repeatable research apply separately. Selecting a node opens a compact dialog over the map with its actual effect changes, prerequisites, cost and lab time. Prerequisite links replace that same dialog; only the explicit start button pays for research. Closing returns focus to the selected node without changing the map's zoom or page scroll. This works in the web interface, expanded atlas and 3D console. Research cannot create cooling capacity, replace a disconnected server or guarantee customer retention.
 
 ## Save and extension boundary
 

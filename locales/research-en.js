@@ -283,6 +283,7 @@
         'Das Labor bearbeitet ein Projekt gleichzeitig. Währenddessen sinkt der Projektdurchsatz um 10 %. Ohne erreichbare Server pausiert die Laborarbeit. Ein Abbruch erstattet keine Forschungspunkte.',
         'The lab handles one project at a time. Project throughput is reduced by 10% while it is active. Lab work pauses if no servers are reachable. Cancellation does not refund research points.',
       ],
+      ['Forschungsdetails', 'Research details'],
       ['Forschungsprojekt starten', 'Start research project'],
       [
         'Forschungsprojekt gestartet. Wirkung folgt nach Abschluss.',

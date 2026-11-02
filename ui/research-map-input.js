@@ -12,7 +12,8 @@ export function zoomResearchCamera(camera, factor, point, min = 0.12, max = 1.4)
 
 /** UI-only camera. Remounts cancel listeners; pointer cancellation never leaves a drag active. */
 export function createResearchMapInput(ctx) {
-  let expanded = false;
+  let expanded = false,
+    restoringFocus = false;
   let camera = null,
     controller = null,
     search = '',
@@ -241,7 +242,7 @@ export function createResearchMapInput(ctx) {
       'focusin',
       (event) => {
         const id = event.target.dataset.researchFocus;
-        if (id && !drag) focus(id);
+        if (id && !drag && !restoringFocus) focus(id);
       },
       { signal },
     );
@@ -285,5 +286,14 @@ export function createResearchMapInput(ctx) {
         0.88,
     );
   }
-  return { mount, control, focus, fit, focusTree };
+  function restoreFocus(id) {
+    const button = world?.querySelector(`[data-research-focus="${id}"]`);
+    if (!button?.isConnected) return false;
+    // Returning from details must not zoom the map or scroll the page.
+    restoringFocus = true;
+    button.focus({ preventScroll: true });
+    restoringFocus = false;
+    return true;
+  }
+  return { mount, control, focus, fit, focusTree, restoreFocus };
 }

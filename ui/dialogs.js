@@ -112,7 +112,7 @@ export function createDialogsUI(ctx) {
       'hardware-move': 'Umsetzen / Umpatchen',
       'hardware-confirm': 'Infrastruktur ändern',
       'business-confirm': 'Betriebsauftrag prüfen',
-      'research-confirm': 'Forschungsentscheidung prüfen',
+      'research-confirm': extra?.cancel ? 'Forschungsentscheidung prüfen' : 'Forschungsdetails',
       'operations-confirm': 'Betriebsauftrag prüfen',
       'growth-confirm': 'Kundenerweiterung prüfen',
       'preventive-confirm': 'Rackwartung prüfen',
@@ -141,7 +141,7 @@ export function createDialogsUI(ctx) {
     else if (type === 'import')
       content = `<p class="modal-intro">Der Netzwerkstand wurde geprüft. Wiederherstellen ersetzt den aktuellen Fortschritt. Dieser wird zuvor als Datei exportiert.</p><div class="breakdown"><div class="status-row"><span>Netzwerk</span><strong>${ctx.esc(ctx.importing.networkName)}</strong></div><div class="status-row"><span>Sektor / Server / Agenten</span><strong>${ctx.importing.sector} / ${ctx.importing.servers.length} / ${ctx.importing.agents.length}</strong></div><div class="status-row"><span>Credits</span><strong>${ctx.fmt(ctx.importing.credits)} CR</strong></div></div><button class="button primary block" data-command="import-confirm">${ctx.icon('upload')}Sicherung wiederherstellen</button>`;
     ctx.$('#modal-root').innerHTML =
-      `<div class="modal-backdrop" data-backdrop="true"><section class="modal ${['servers', 'agents', 'repair', 'agent-task', 'hardware-shop', 'hardware-move'].includes(type) ? 'wide' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1"><div class="modal-header"><h2 id="modal-title">${titles[type] || 'ROOT'}</h2><button class="icon-button" data-command="close" aria-label="Dialog schließen">${ctx.icon('cross')}</button></div><div class="modal-body">${content}</div></section></div>`;
+      `<div class="modal-backdrop" data-backdrop="true"><section class="modal ${['servers', 'agents', 'repair', 'agent-task', 'hardware-shop', 'hardware-move'].includes(type) ? 'wide' : ''} ${type === 'research-confirm' && !extra?.cancel ? 'research-dialog' : ''}" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1"><div class="modal-header"><h2 id="modal-title">${titles[type] || 'ROOT'}</h2><button class="icon-button" data-command="close" aria-label="Dialog schließen">${ctx.icon('cross')}</button></div><div class="modal-body">${content}</div></section></div>`;
     window.ROOTI18N?.localize?.(ctx.$('#modal-root'));
     ctx.updateDesktopControls?.();
     ctx.$('#app').inert = true;
@@ -152,11 +152,14 @@ export function createDialogsUI(ctx) {
 
   function closeModal() {
     if (!ctx.modal) return;
+    const returnNode = ctx.modal.type === 'research-confirm' && ctx.modal.extra?.returnNode;
     ctx.modal = null;
     ctx.$('#modal-root').innerHTML = '';
     ctx.$('#app').inert = false;
     document.body.style.overflow = '';
-    if (ctx.lastFocus?.isConnected) ctx.lastFocus.focus();
+    // The map can rerender while a lab project completes behind the dialog.
+    const restored = returnNode && ctx.restoreResearchFocus?.(returnNode);
+    if (!restored && ctx.lastFocus?.isConnected) ctx.lastFocus.focus();
     if (ctx.view === 'overview' && !ctx.Room.isInRoom()) ctx.Room.startArrival();
   }
   return { shop, sectorModal, helpModal, settingsModal, openModal, closeModal };
