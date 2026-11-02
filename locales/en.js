@@ -451,11 +451,9 @@
     ['PHYSICAL INFRASTRUCTURE', 'PHYSICAL INFRASTRUCTURE'],
     ['WORKSPACE / PHYSICAL INFRASTRUCTURE', 'WORKSPACE / PHYSICAL INFRASTRUCTURE'],
     ['Begehe deinen Serverraum', 'Explore your server room'],
-    [
-      'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Shift lässt dich sprinten, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Escape führt zurück. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
-      'Enter room opens the first-person view. WASD moves you; hold Shift to sprint and use the mouse or left/right arrow keys to turn. E opens the targeted device; Escape returns. If mouse capture is unavailable, hold the mouse button to look around. The device list also links directly to each server. The control desk monitors and console open every management area in the room. Escape closes the dialog first, then the console; Web UI ends the tour.',
-    ],
     ['Plane dein Rechenzentrum', 'Plan your data center'],
+    ['1. Plane dein Rechenzentrum', '1. Plan your data center'],
+    ['KI braucht eigene Hardware', 'AI needs dedicated hardware'],
     ['Gib Agenten einen Schwerpunkt', 'Assign agents a focus'],
     ['Wähle passende Aufträge', 'Choose suitable jobs'],
     ['Lass die Routine laufen', 'Automate routine work'],

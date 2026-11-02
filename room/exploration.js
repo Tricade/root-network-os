@@ -191,7 +191,7 @@ export function createRoomExploration(sceneContext) {
     const length = Math.hypot(forward, strafe) || 1,
       sprinting = sceneContext.keys.has('ShiftLeft') || sceneContext.keys.has('ShiftRight'),
       // Scale both paces together so Shift remains useful at the faster walking speed.
-      speed = (sprinting ? 3.9 : 2.475) * Math.min(delta, 0.05);
+      speed = (sprinting ? 5.85 : 3.7125) * Math.max(0, Math.min(delta, 0.05));
     const dx =
       ((-Math.sin(sceneContext.yaw) * forward + Math.cos(sceneContext.yaw) * strafe) / length) *
       speed;
@@ -201,26 +201,34 @@ export function createRoomExploration(sceneContext) {
     const back = sceneContext.camera.userData.backLimit || -12;
     // The rack faces form the aisle walls; this keeps the camera inside their actual clearance.
     if (sceneContext.assetBank) {
-      const x = sceneContext.camera.position.x + dx,
-        z = sceneContext.camera.position.z + dz;
-      if (canStand(x, sceneContext.camera.position.z)) sceneContext.camera.position.x = x;
-      if (canStand(sceneContext.camera.position.x, z)) sceneContext.camera.position.z = z;
-      const stair = sceneContext.facilityInterior?.stairAt(
-        sceneContext.camera.position.x,
-        sceneContext.camera.position.z,
-      );
-      sceneContext.camera.position.y =
-        sceneContext.eyeHeight +
-        (stair ? sceneContext.stairHeight(stair, sceneContext.camera.position.z) : 0);
-      if (performance.now() > sceneContext.roomTransitionUntil) {
-        const door = sceneContext.facilityInterior?.crossing(
+      // Faster sprinting must still sample narrow doorways and props. At most eight
+      // bounded substeps per frame retain wall sliding without jumping through a jamb.
+      const steps = Math.max(1, Math.ceil(speed / 0.04));
+      for (let step = 0; step < steps; step++) {
+        const x = sceneContext.camera.position.x + dx / steps,
+          z = sceneContext.camera.position.z + dz / steps;
+        if (canStand(x, sceneContext.camera.position.z)) sceneContext.camera.position.x = x;
+        if (canStand(sceneContext.camera.position.x, z)) sceneContext.camera.position.z = z;
+        const stair = sceneContext.facilityInterior?.stairAt(
           sceneContext.camera.position.x,
           sceneContext.camera.position.z,
         );
-        if (door)
-          sceneContext.changeLocation(door.destination, sceneContext.selectedFloor, 'threshold');
-        else if (stair && sceneContext.camera.position.z < stair.endZ + 0.04)
-          sceneContext.changeLocation('hall', stair.floor, 'stairs');
+        sceneContext.camera.position.y =
+          sceneContext.eyeHeight +
+          (stair ? sceneContext.stairHeight(stair, sceneContext.camera.position.z) : 0);
+        if (performance.now() > sceneContext.roomTransitionUntil) {
+          const door = sceneContext.facilityInterior?.crossing(
+            sceneContext.camera.position.x,
+            sceneContext.camera.position.z,
+          );
+          if (door) {
+            sceneContext.changeLocation(door.destination, sceneContext.selectedFloor, 'threshold');
+            return;
+          } else if (stair && sceneContext.camera.position.z < stair.endZ + 0.04) {
+            sceneContext.changeLocation('hall', stair.floor, 'stairs');
+            return;
+          }
+        }
       }
     } else {
       sceneContext.camera.position.x = sceneContext.THREE.MathUtils.clamp(

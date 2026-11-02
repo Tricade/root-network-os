@@ -19,6 +19,8 @@ test('customer workflow, research dialogs and development controls have complete
     ['Schwerpunkt angepasst.', 'Focus updated.'],
     ['19 Zoll · 18 HE', '19 in · 18 RU'],
     ['3 Server · 9 / 16 HE', '3 servers · 9 / 16 RU'],
+    ['1. Plane dein Rechenzentrum', '1. Plan your data center'],
+    ['KI braucht eigene Hardware', 'AI needs dedicated hardware'],
   ])
     assert.equal(I18N.translate(source, 'en'), english);
 });
