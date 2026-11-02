@@ -91,6 +91,8 @@
         ...q,
         costNow: 0,
         estimated: true,
+        canSchedule:
+          planTargetsValid(s, [...preceding, item]) && planStepPossible(s, item, preceding),
         ceiling: item.ceiling,
         notBefore: item.notBefore ?? s.time,
       };
@@ -106,7 +108,11 @@
       }
       if (item.action === 'upgradeCentral') {
         const system = ctx.CENTRAL_SYSTEMS.find((row) => row.id === p.system);
-        return Boolean(system && projected.facility.central[p.system] < system.maxLevel);
+        return Boolean(
+          system &&
+          projected.facility.building.specialRooms.includes(p.system) &&
+          projected.facility.central[p.system] < system.maxLevel,
+        );
       }
       return true;
     }

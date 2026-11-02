@@ -75,7 +75,10 @@
             message: 'Die Reihenfolge enthält ein noch nicht geplantes Bauziel.',
           };
         if (!ctx.planStepPossible(s, item, o.queue))
-          return { ok: false, message: 'Höchste Ausbaustufe erreicht.' };
+          return {
+            ok: false,
+            message: 'Ausbauziel ist nicht verfügbar oder bereits vollständig ausgebaut.',
+          };
         item.id = ctx.uid(s, 'plan');
         o.queue.push(item);
         o.nextCheck = s.time;
