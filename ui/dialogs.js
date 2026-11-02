@@ -72,7 +72,7 @@ export function createDialogsUI(ctx) {
       [
         'globe',
         '9. Beachte die Verbindungen',
-        'Abgeschaltete Server und getrennte Switch-Ports liefern keine Kapazität. Ein Neustart oder Umsetzen dauert 30 Sekunden. Rack-Umbauten legen das betroffene Rack für 45–90 Sekunden still. Strom, Kühlung und Uplink begrenzen den Durchsatz; die Anzeigen zeigen dir die Engpässe.',
+        'Abgeschaltete Server und getrennte Switch-Ports liefern keine Kapazität. Ein Neustart oder Umsetzen dauert 30 Sekunden. Bis zu drei Rack-Umbauten teilen sich einen Stillstand von 45–195 Sekunden. Eine optionale Kundenankündigung gegen Credits verringert den wartungsbedingten Zufriedenheitsverlust. Strom, Kühlung und Uplink begrenzen den Durchsatz; die Anzeigen zeigen dir die Engpässe.',
       ],
       [
         'cpu',

@@ -1,5 +1,5 @@
 [![Checks](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml)
-[![Vorschau 1.6.1](https://img.shields.io/badge/Preview-1.6.1-8ab4f8)](package.json)
+[![Vorschau 1.7.0](https://img.shields.io/badge/Preview-1.7.0-8ab4f8)](package.json)
 [![Lizenz: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![KI-Transparenz](https://img.shields.io/badge/AI-transparency_notice-6f42c1)](AI-DISCLOSURE.md)
 [![Auf Ko-fi unterstützen](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/tricade)
@@ -32,7 +32,7 @@ Dir gefällt ROOT? **Gib dem Repository einen ⭐ [Stern auf GitHub](https://git
 </p>
 
 <p align="center">
-  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Lokal im Browser · Weboberfläche und Ego-Ansicht · Deutsch und Englisch · Vorschau 1.6.1 · Entwicklung mit KI-Unterstützung" width="1200"></a>
+  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Lokal im Browser · Weboberfläche und Ego-Ansicht · Deutsch und Englisch · Vorschau 1.7.0 · Entwicklung mit KI-Unterstützung" width="1200"></a>
 </p>
 
 ## Vom ersten Rack zum Cyberbunker
@@ -56,6 +56,8 @@ Das Menü gliedert sich in **Leitstelle, Geschäft, Rechenzentrum, Team & Entwic
 Auch die physische Infrastruktur lässt sich vollständig in der normalen Oberfläche verwalten: Gerätespezifikationen, GPU-Auslastung, Switch-Ports, Verkabelung, Stromprofile und die Folgen von Ausbauten sind direkt zugänglich.
 
 Die kompakte Aufmerksamkeitsliste zeigt neben der gewählten Kategorie konkrete Entscheidungen, Anfragen, Reparaturen und Belohnungen mit Aktionen und aktuellen Angeboten. Der Detailbereich zeigt jeweils einen Vorgang mit Vor-/Zurück-Navigation und benötigt keine eigene Scrollleiste. Auch auf großen Bildschirmen bleiben Kategorien und normale Aktionsbuttons kompakt. Die Glocke sammelt offene Vorgänge und den Verlauf; „gelesen“ erledigt die zugrunde liegende Aufgabe nicht. Forschungsknoten öffnen ihre Details direkt über der Karte. Bereits erforschte Technologien zeigen ihre aktive Wirkung statt eines überholten Kaufbereichs.
+
+Meldungstypen haben eigene Symbole und getrennte Einstellungen für Anzeige, Glockenzähler und automatische Pop-ups. Routineaufträge erhöhen den Zähler standardmäßig nicht und bleiben ohne Pop-up. Forschungs- und Ausbauabschlüsse erscheinen unten rechts, mit direktem Link zum Bereich und einem Schließen-Button.
 
 [![Dashboard mit kompakten Kategorien und direkt bearbeitbaren Kundenanfragen](screenshots/readme/dashboard-attention.png)](screenshots/readme/dashboard-attention.png)
 
@@ -249,7 +251,7 @@ Danach **[127.0.0.1:18473](http://127.0.0.1:18473/)** öffnen. Unter Windows kan
 <details>
 <summary><strong>Vorschaustatus, technische Grenzen und Prüfungen</strong></summary>
 
-ROOT ist eine laufend entwickelte **Vorschau 1.6.1**. Balancing, Übersetzung, Barrierefreiheit und 3D-Darstellung freuen sich über Beiträge. Der Ausbau endet nicht nach sechs Racks. Die Datenprüfung akzeptiert derzeit bis zu 10.000 Racks, 10.000 Server und 1.000.000 Sektoren sowie 100 Stufen zentraler Anlagen. Nur der ausgewählte Raum wird gerendert. Eine erfolgreiche Datenprüfung am Maximum belegt keine gute Echtzeit-Performance bei dieser Größe.
+ROOT ist eine laufend entwickelte **Vorschau 1.7.0**. Balancing, Übersetzung, Barrierefreiheit und 3D-Darstellung freuen sich über Beiträge. Der Ausbau endet nicht nach sechs Racks. Die Datenprüfung akzeptiert derzeit bis zu 10.000 Racks, 10.000 Server und 1.000.000 Sektoren sowie 100 Stufen zentraler Anlagen. Nur der ausgewählte Raum wird gerendert. Eine erfolgreiche Datenprüfung am Maximum belegt keine gute Echtzeit-Performance bei dieser Größe.
 
 [Integrationsprüfung](docs/verification-construction.md), [Laufzeit-Hinweise](docs/runtime-1.4.md) und [Asset-Prüfungen](docs/asset-audit.md) dokumentieren Nachweise und Grenzen. Die Desktop-Paketprüfungen ergänzen die früheren Nachweise der Version 1.4; siehe [Prüfumfang und Grenzen](docs/desktop.md).
 

@@ -1080,8 +1080,8 @@
       'Diagnostics and optimization help the whole network. Research assignments grant points when completed. The agent is unavailable for normal operations during the assignment, followed by a cooldown.',
     ],
     [
-      'Abgeschaltete Server und getrennte Switch-Ports liefern keine Kapazität. Ein Neustart oder Umsetzen dauert 30 Sekunden. Rack-Umbauten legen das betroffene Rack für 45–90 Sekunden still. Strom, Kühlung und Uplink begrenzen den Durchsatz; die Anzeigen zeigen dir die Engpässe.',
-      'Powered-off servers and disconnected switch ports provide no capacity. Restarting or moving a server takes 30 seconds. Rack upgrades take the affected rack offline for 45–90 seconds. Power, cooling, and uplink limit throughput; indicators show bottlenecks.',
+      'Abgeschaltete Server und getrennte Switch-Ports liefern keine Kapazität. Ein Neustart oder Umsetzen dauert 30 Sekunden. Bis zu drei Rack-Umbauten teilen sich einen Stillstand von 45–195 Sekunden. Eine optionale Kundenankündigung gegen Credits verringert den wartungsbedingten Zufriedenheitsverlust. Strom, Kühlung und Uplink begrenzen den Durchsatz; die Anzeigen zeigen dir die Engpässe.',
+      'Powered-off servers and disconnected switch ports provide no capacity. Restarting or moving a server takes 30 seconds. Up to three rack upgrades share one outage of 45–195 seconds. An optional paid customer notice reduces maintenance-related satisfaction loss. Power, cooling, and uplink limit throughput; indicators show bottlenecks.',
     ],
     [
       'Der A480 belegt 4 HE und liefert vier GPUs mit 320 GB VRAM. Inferenz- und Trainingsaufträge brauchen freie GPU-Kapazität zusätzlich zu CU. Ausfälle, Porttrennung, Strom-, Kühlungs- und Uplink-Engpässe begrenzen diese Leistung. Ein stärkerer KI-Auftrag bindet mehr GPUs und bringt entsprechend mehr Arbeit, Vergütung und Forschung.',
