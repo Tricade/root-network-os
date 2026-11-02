@@ -54,8 +54,8 @@
   };
   add([
     [
-      'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Shift lässt dich sprinten, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Escape führt zurück. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
-      'Entering the room opens first-person view. Use WASD to move, hold Shift to sprint, and use the mouse or left/right arrow keys to turn. Press E while targeting a rack to open its door. Press E while targeting the open door to close it; target the exposed hardware to manage it. Room doors can be operated from either side and close after you pass through. Press Escape to return. If pointer lock is unavailable, hold the mouse button to look around. The device list also links directly to each server. The control desk monitors and console open every management area in the room. Escape closes the dialog first, then the console; switch to the web interface to leave the tour.',
+      'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Shift lässt dich sprinten, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Maus fangen bindet den Zeiger an die Ansicht; Escape gibt ihn wieder frei. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
+      'Entering the room opens first-person view. Use WASD to move, hold Shift to sprint, and use the mouse or left/right arrow keys to turn. Press E while targeting a rack to open its door. Press E while targeting the open door to close it; target the exposed hardware to manage it. Room doors can be operated from either side and close after you pass through. Capture mouse locks the pointer to the view; Escape releases it. If pointer lock is unavailable, hold the mouse button to look around. The device list also links directly to each server. The control desk monitors and console open every management area in the room. Escape closes the dialog first, then the console; switch to the web interface to leave the tour.',
     ],
     ['Weboberfläche und Raumkonsole', 'Web interface and room console'],
     ['Zugang zum Cyberbunker', 'Cyberbunker access'],
@@ -775,7 +775,10 @@
     ['Bewege dich mit WASD.', 'Move with WASD.'],
     ['Drehe dich mit der Maus oder den Pfeiltasten.', 'Turn with the mouse or arrow keys.'],
     ['Drücke E, um das Gerät zu öffnen.', 'Press E to open the device.'],
-    ['Drücke Escape, um zurückzukehren.', 'Press Escape to return.'],
+    [
+      'Drücke Escape, um zurückzukehren.',
+      'Capture mouse locks the pointer to the view; Escape releases it.',
+    ],
   ]);
   add([
     ['Edge-Knoten', 'Edge node'],
@@ -1201,6 +1204,14 @@
       'Click a device to open its management view.',
     ],
     ['<kbd>Maus</kbd> Umsehen · Esc zurück', '<kbd>Mouse</kbd> Look around · Esc to return'],
+    ['Maus fangen', 'Capture mouse'],
+    ['Maus freigeben · Esc', 'Release mouse · Esc'],
+    [
+      'Maus konnte nicht gefangen werden. Ziehen zum Umsehen.',
+      'Mouse capture unavailable. Drag to look around.',
+    ],
+    ['Maus: Umsehen · Esc: Maus freigeben', 'Mouse: look around · Esc: release mouse'],
+    ['Maus ziehen / ← → drehen', 'Drag mouse / ← → turn'],
     ['Maus', 'Mouse'],
     ['Ziehen / ← → drehen', 'Drag / ← → turn'],
     ['Bewegen', 'Move'],
@@ -2188,9 +2199,9 @@
         `${racks} rack${racks === '1' ? '' : 's'} · ${servers} installed server${servers === '1' ? '' : 's'}.`,
     ],
     [
-      /^Begehbarer Serverraum: (\d+) Racks und (\d+) eingebaute Server\. WASD bewegen, Shift sprinten, Maus oder Pfeiltasten drehen, E Gerät öffnen, Escape zurück\.$/,
+      /^Begehbarer Serverraum: (\d+) Racks und (\d+) eingebaute Server\. WASD bewegen, Shift sprinten, Maus oder Pfeiltasten drehen, E Gerät öffnen, Escape gibt die Maus frei\.$/,
       (whole, racks, servers) =>
-        `Walkable server room: ${racks} rack${racks === '1' ? '' : 's'} and ${servers} installed server${servers === '1' ? '' : 's'}. WASD to move, hold Shift to sprint, mouse or arrow keys to turn, E to open a device, Escape to return.`,
+        `Walkable server room: ${racks} rack${racks === '1' ? '' : 's'} and ${servers} installed server${servers === '1' ? '' : 's'}. WASD to move, hold Shift to sprint, mouse or arrow keys to turn, E to open a device, Escape releases the mouse.`,
     ],
     [
       /^Während deiner Abwesenheit hat ROOT (.+?) weitergearbeitet\. Berücksichtigt wurden maximal 12 Stunden\.$/,

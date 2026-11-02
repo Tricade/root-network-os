@@ -214,6 +214,7 @@ export function createRoom({
     isConsoleOpen: () => ctx.consoleOpen,
     consoleBody: () => ctx.consoleContent,
     openConsole: ctx.openConsole,
+    releasePointer: ctx.releasePointer,
     closeConsole: ctx.closeConsole,
     setConsoleTitle: ctx.setConsoleTitle,
     leave: ctx.leave,

@@ -563,7 +563,7 @@ export function createRoomWorld(sceneContext) {
     sceneContext.shell.className = 'root-room';
     sceneContext.shell.setAttribute('aria-label', 'Simulierter Serverraum');
     sceneContext.shell.innerHTML =
-      '<div class="root-room-stage"><div class="root-room-empty"><span class="root-room-mark">ROOT<span>.</span></span><p>Lokale Infrastruktur · Live-Simulation</p></div><div class="root-room-top"><div class="root-room-brand"><strong>ROOT<span>.</span></strong><i></i><span data-room-place-label>SERVERRAUM</span></div><div class="root-room-live"><i class="root-room-led"></i><span data-room-system>SYSTEM ONLINE</span><span class="root-room-badge">SIMULATION</span></div></div><div class="root-room-reticle" aria-hidden="true"></div><div class="root-room-target" data-room-target></div><div class="root-room-summary" data-room-summary></div><div class="root-room-controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Bewegen</span><span><kbd>Shift</kbd> Sprinten</span><span data-room-mouse-help><kbd>Maus</kbd> Ziehen / ← → drehen</span><span><kbd>E</kbd> Öffnen</span><button type="button" data-room-enter>Raum betreten</button><button type="button" data-room-leave hidden>Leitstelle</button><button type="button" data-room-navigation aria-expanded="false">Geräte-Liste</button><button type="button" class="root-room-incident-action" data-room-incident hidden>Vorfall bearbeiten</button></div><div class="root-room-fallback" hidden></div></div><div class="root-room-nav" aria-label="Racks und Server"></div>';
+      '<div class="root-room-stage"><div class="root-room-empty"><span class="root-room-mark">ROOT<span>.</span></span><p>Lokale Infrastruktur · Live-Simulation</p></div><div class="root-room-top"><div class="root-room-brand"><strong>ROOT<span>.</span></strong><i></i><span data-room-place-label>SERVERRAUM</span></div><div class="root-room-live"><i class="root-room-led"></i><span data-room-system>SYSTEM ONLINE</span><span class="root-room-badge">SIMULATION</span></div></div><div class="root-room-reticle" aria-hidden="true"></div><div class="root-room-target" data-room-target></div><div class="root-room-summary" data-room-summary></div><div class="root-room-controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Bewegen</span><span><kbd>Shift</kbd> Sprinten</span><span data-room-mouse-help><kbd>Maus</kbd> Ziehen / ← → drehen</span><span><kbd>E</kbd> Öffnen</span><button type="button" data-room-enter>Raum betreten</button><button type="button" data-room-pointer hidden aria-pressed="false">Maus fangen</button><button type="button" data-room-leave hidden>Leitstelle</button><button type="button" data-room-navigation aria-expanded="false">Geräte-Liste</button><button type="button" class="root-room-incident-action" data-room-incident hidden>Vorfall bearbeiten</button></div><div class="root-room-fallback" hidden></div></div><div class="root-room-nav" aria-label="Racks und Server"></div>';
     sceneContext.stage = sceneContext.shell.querySelector('.root-room-stage');
     sceneContext.nav = sceneContext.shell.querySelector('.root-room-nav');
     sceneContext.summary = sceneContext.shell.querySelector('[data-room-summary]');
@@ -583,12 +583,16 @@ export function createRoomWorld(sceneContext) {
     sceneContext.shell
       .querySelector('[data-room-enter]')
       .addEventListener('click', sceneContext.startExploration);
+    sceneContext.shell.querySelector('[data-room-pointer]').addEventListener('click', () => {
+      if (document.pointerLockElement === sceneContext.canvas) sceneContext.releasePointer();
+      else sceneContext.capturePointer();
+    });
     const terminalButton = document.createElement('button');
     terminalButton.type = 'button';
     terminalButton.dataset.roomTerminal = '';
     terminalButton.textContent = 'Konsole';
     terminalButton.addEventListener('click', () => {
-      if (!sceneContext.exploring) sceneContext.startExploration();
+      if (!sceneContext.exploring) sceneContext.startExploration(false);
       sceneContext.openView?.('overview', sceneContext.locationId);
     });
     sceneContext.shell.querySelector('.root-room-controls').appendChild(terminalButton);

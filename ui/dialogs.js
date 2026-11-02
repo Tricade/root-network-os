@@ -22,7 +22,7 @@ export function createDialogsUI(ctx) {
       [
         'globe',
         'Begehe deinen Serverraum',
-        'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Shift lässt dich sprinten, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Escape führt zurück. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
+        'Raum betreten öffnet die Ego-Ansicht. WASD bewegt dich, Shift lässt dich sprinten, Maus oder Pfeiltasten links/rechts drehen den Blick. Am Rack öffnet E zuerst die Tür und danach die freiliegende Hardware. E an der Tür schließt sie. Raumtüren lassen sich von beiden Seiten bedienen und schließen nach dem Durchgehen. Maus fangen bindet den Zeiger an die Ansicht; Escape gibt ihn wieder frei. Ohne Mausbindung halte die Maustaste zum Umsehen gedrückt. Die Geräte-Liste führt auch direkt zu jedem Server. Die Monitore an den Leitständen und die Konsole öffnen alle Verwaltungsbereiche direkt im Raum. Escape schließt zuerst den Dialog, dann die Konsole; Weboberfläche beendet den Rundgang.',
       ],
       [
         'server',
@@ -94,6 +94,7 @@ export function createDialogsUI(ctx) {
   }
 
   function openModal(type, extra) {
+    ctx.Room?.releasePointer?.();
     if (!ctx.modal) ctx.lastFocus = document.activeElement;
     ctx.modal = { type, extra };
     const titles = {

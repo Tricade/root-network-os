@@ -1,3 +1,4 @@
+import { createRoomPointer } from './pointer.js';
 /** 3D input. The per-view context owns scene resources and mutable interaction state. */
 export function createMovementKeys(now = () => performance.now()) {
   const held = new Set();
@@ -37,6 +38,9 @@ export function rackInteraction(cabinet, hitDoor = false) {
   return 'hardware';
 }
 export function createRoomInput(sceneContext) {
+  const pointer = createRoomPointer(sceneContext);
+  const { onPointerDown, onPointerMove, onPointerUp, onPointerLockChange, onLockedMouseMove } =
+    pointer;
   function bindCanvas() {
     sceneContext.canvas.addEventListener('webglcontextlost', (event) => {
       event.preventDefault();
@@ -57,7 +61,9 @@ export function createRoomInput(sceneContext) {
       sceneContext.keys.clear();
       onPointerUp();
     });
+    sceneContext.canvas.addEventListener('lostpointercapture', onPointerUp);
     document.addEventListener('pointerlockchange', onPointerLockChange);
+    document.addEventListener('pointerlockerror', pointer.onPointerLockError);
     document.addEventListener('mousemove', onLockedMouseMove);
     document.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp, true);
@@ -166,63 +172,6 @@ export function createRoomInput(sceneContext) {
     sceneContext.updateNavigationTelemetry(sceneContext.currentRacks);
   }
 
-  function onPointerDown(event) {
-    if (!sceneContext.exploring || sceneContext.consoleOpen || sceneContext.pointerLocked) return;
-    sceneContext.dragPoint = { x: event.clientX, y: event.clientY };
-    sceneContext.dragMoved = false;
-    sceneContext.canvas.setPointerCapture?.(event.pointerId);
-  }
-
-  function onPointerMove(event) {
-    if (!sceneContext.exploring || sceneContext.pointerLocked || !sceneContext.dragPoint) return;
-    const dx = event.clientX - sceneContext.dragPoint.x,
-      dy = event.clientY - sceneContext.dragPoint.y;
-    if (Math.abs(dx) + Math.abs(dy) > 2) sceneContext.dragMoved = true;
-    sceneContext.dragPoint = { x: event.clientX, y: event.clientY };
-    rotateCamera(dx * 0.004, dy * 0.004);
-  }
-
-  function onLockedMouseMove(event) {
-    if (sceneContext.exploring && !sceneContext.consoleOpen && sceneContext.pointerLocked)
-      rotateCamera((event.movementX || 0) * 0.0024, (event.movementY || 0) * 0.0024);
-  }
-
-  function onPointerUp() {
-    sceneContext.dragPoint = null;
-    setTimeout(() => {
-      sceneContext.dragMoved = false;
-    }, 40);
-  }
-
-  function onPointerLockChange() {
-    const locked = document.pointerLockElement === sceneContext.canvas;
-    if (
-      locked &&
-      (!sceneContext.exploring ||
-        sceneContext.consoleOpen ||
-        sceneContext.hidden ||
-        !sceneContext.mounted)
-    ) {
-      document.exitPointerLock();
-      sceneContext.pointerLocked = false;
-      return;
-    }
-    if (locked === sceneContext.pointerLocked) return;
-    sceneContext.pointerLocked = locked;
-    if (sceneContext.shell) {
-      sceneContext.shell.classList.toggle('pointer-locked', sceneContext.pointerLocked);
-      sceneContext.shell.querySelector('[data-room-mouse-help]').innerHTML =
-        sceneContext.pointerLocked
-          ? '<kbd>Maus</kbd> Umsehen · Esc zurück'
-          : '<kbd>Maus</kbd> Ziehen / ← → drehen';
-    }
-    // Pointer Lock 2.0 also releases on focus loss. Keep DOM controls reachable.
-    if (!locked) {
-      sceneContext.keys.clear();
-      sceneContext.dragPoint = null;
-    }
-  }
-
   function rotateCamera(dx, dy) {
     sceneContext.yaw -= dx;
     sceneContext.pitch = sceneContext.THREE.MathUtils.clamp(sceneContext.pitch - dy, -1.15, 1.15);
@@ -297,7 +246,8 @@ export function createRoomInput(sceneContext) {
     )
       event.preventDefault();
     sceneContext.keys.press(event.code, event.repeat);
-    if (event.code === 'Escape') sceneContext.leave();
+    // Esc only releases the mouse; the explicit Web UI button leaves the room.
+    if (event.code === 'Escape') pointer.releasePointer();
     if (event.code === 'KeyE' && !event.repeat) {
       if (sceneContext.targetStation) sceneContext.activateStation(sceneContext.targetStation);
       else if (sceneContext.targetPortal)
@@ -316,16 +266,15 @@ export function createRoomInput(sceneContext) {
       sceneContext.saveRoomSession();
       sceneContext.stopAnimation();
       sceneContext.keys.clear();
-      sceneContext.dragPoint = null;
+      pointer.releasePointer();
     } else if (sceneContext.mounted && !sceneContext.hidden) sceneContext.syncAnimation();
   }
 
   function onWindowBlur() {
-    sceneContext.keys.clear();
-    sceneContext.dragPoint = null;
-    if (document.pointerLockElement === sceneContext.canvas) document.exitPointerLock();
+    pointer.releasePointer();
   }
   return {
+    ...pointer,
     bindCanvas,
     onCanvasClick,
     activateTarget,

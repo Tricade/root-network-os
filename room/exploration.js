@@ -29,17 +29,8 @@ export function createRoomExploration(sceneContext) {
       .querySelector('[data-room-navigation]')
       .setAttribute('aria-expanded', 'false');
     document.body.classList.add('root-room-open');
-    try {
-      if (pointer && sceneContext.canvas.requestPointerLock) {
-        const request = sceneContext.canvas.requestPointerLock();
-        if (request && request.catch)
-          request.catch(() => {
-            sceneContext.pointerLocked = false;
-          });
-      }
-    } catch {
-      sceneContext.pointerLocked = false;
-    }
+    sceneContext.updatePointerUI();
+    if (pointer) sceneContext.capturePointer();
     sceneContext.saveRoomSession();
     sceneContext.syncAnimation();
     sceneContext.canvas.focus({ preventScroll: true });
@@ -48,6 +39,7 @@ export function createRoomExploration(sceneContext) {
   function leave() {
     if (!sceneContext.exploring && !sceneContext.pointerLocked) return;
     sceneContext.exploring = false;
+    sceneContext.releasePointer();
     sceneContext.pointerLocked = false;
     sceneContext.keys.clear();
     sceneContext.dragPoint = null;
@@ -82,13 +74,7 @@ export function createRoomExploration(sceneContext) {
 
   function openConsole(title = 'Leitstelle') {
     sceneContext.consoleOpen = true;
-    sceneContext.keys.clear();
-    sceneContext.dragPoint = null;
-    sceneContext.pointerLocked = false;
-    sceneContext.shell.classList.remove('pointer-locked');
-    sceneContext.shell.querySelector('[data-room-mouse-help]').innerHTML =
-      '<kbd>Maus</kbd> Ziehen / ← → drehen';
-    if (document.pointerLockElement === sceneContext.canvas) document.exitPointerLock();
+    sceneContext.releasePointer();
     sceneContext.shell.classList.add('console-open');
     sceneContext.consolePanel.hidden = false;
     sceneContext.consolePanel.querySelector('[data-room-console-title]').textContent =
@@ -101,6 +87,7 @@ export function createRoomExploration(sceneContext) {
     sceneContext.consoleOpen = false;
     sceneContext.consolePanel.hidden = true;
     sceneContext.shell.classList.remove('console-open');
+    sceneContext.updatePointerUI();
     sceneContext.keys.clear();
     sceneContext.canvas?.focus({ preventScroll: true });
   }
@@ -119,6 +106,7 @@ export function createRoomExploration(sceneContext) {
     sceneContext.finishArrival(false);
     sceneContext.hidden = true;
     sceneContext.mounted = false;
+    sceneContext.releasePointer();
     sceneContext.stopAnimation();
     sceneContext.consoleOpen = false;
     if (sceneContext.consolePanel) sceneContext.consolePanel.hidden = true;

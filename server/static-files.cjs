@@ -154,6 +154,7 @@ function createStaticFiles(root) {
     ['/room/station-content.js', ['room/station-content.js', 'text/javascript; charset=utf-8']],
     ['/room/telemetry.js', ['room/telemetry.js', 'text/javascript; charset=utf-8']],
     ['/room/input.js', ['room/input.js', 'text/javascript; charset=utf-8']],
+    ['/room/pointer.js', ['room/pointer.js', 'text/javascript; charset=utf-8']],
     ['/room/exploration.js', ['room/exploration.js', 'text/javascript; charset=utf-8']],
     ['/room/renderer.js', ['room/renderer.js', 'text/javascript; charset=utf-8']],
     ['/room-navigation.js', ['room-navigation.js', 'text/javascript; charset=utf-8']],
