@@ -33,11 +33,20 @@ test('first installation welcomes once; a reload or a new network does not repea
   assert.equal(again.ui.showNextStartup(), false);
 });
 
-test('existing networks establish a release baseline without a fictitious update', async () => {
+test('upgrading an existing network from before release markers shows notes once', async () => {
   const h = await harness();
   h.ui.prepareStartup({ hasSave: true });
-  assert.equal(h.ui.showNextStartup(), false);
+  assert.equal(
+    h.memory.has('root.release.seen'),
+    false,
+    'notes are not marked read before opening',
+  );
+  assert.equal(h.ui.showNextStartup(), true);
+  assert.deepEqual(h.opened, ['changelog']);
   assert.equal(h.memory.get('root.release.seen'), release.version);
+  const again = await harness(h.memory);
+  again.ui.prepareStartup({ hasSave: true });
+  assert.equal(again.ui.showNextStartup(), false);
 });
 
 test('an update waits behind the offline report, appears once, and stays available in help', async () => {
@@ -54,9 +63,21 @@ test('an update waits behind the offline report, appears once, and stays availab
   const again = await harness(h.memory);
   again.ui.prepareStartup({ hasSave: true });
   assert.equal(again.ui.showNextStartup(), false);
-  assert.match(again.ui.changelogModal(), /One consistent name/);
+  assert.ok(again.ui.changelogModal().includes(again.ctx.esc(release.notes[0][1])));
   assert.match(again.ui.welcomeModal(), /welcome-steps/);
   assert.equal(again.memory.get('root.release.seen'), release.version);
+});
+
+test('a legacy upgrade also keeps its notes pending until the offline report closes', async () => {
+  const h = await harness();
+  h.ui.prepareStartup({ hasSave: true, offline: { seconds: 120 } });
+  assert.equal(h.ui.showNextStartup(), true);
+  assert.deepEqual(h.opened, ['offline']);
+  assert.equal(h.memory.has('root.release.seen'), false);
+  assert.equal(h.ui.showNextStartup(), false);
+  h.ctx.modal = null;
+  assert.equal(h.ui.showNextStartup(), true);
+  assert.deepEqual(h.opened, ['offline', 'changelog']);
 });
 
 test('release notes, desktop package and web UI share one release number', () => {

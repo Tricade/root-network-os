@@ -10,9 +10,11 @@ export function createStartupUI(ctx, release = globalThis.ROOTRelease) {
     if (offline?.seconds >= 60) pending.push({ type: 'offline', extra: offline });
     const seen = ctx.storageGet('root.release.seen');
     if (!hasSave && ctx.storageGet('root.welcome.seen') !== '1') pending.push({ type: 'welcome' });
-    else if (seen && seen !== release.version) pending.push({ type: 'changelog' });
+    else if ((seen && seen !== release.version) || (!seen && hasSave))
+      // Releases before the startup-dialog feature have saves but no seen marker.
+      pending.push({ type: 'changelog' });
     else if (!seen) {
-      // Existing saves predate this feature. Establish a baseline without inventing an update.
+      // A previously welcomed profile with no current save needs no second introduction.
       ctx.storageSet('root.release.seen', release.version);
     }
   }

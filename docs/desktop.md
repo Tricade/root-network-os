@@ -50,7 +50,7 @@ Main-process modules separate the local service/protocol, profile, window policy
 
 ## First-run introduction and version notes
 
-The browser and desktop editions share `ui/startup.js`. A new profile without a save sees the welcome dialog once; existing installations are quietly baselined when no version marker exists. A later version change shows the bilingual notes from `release.js` once. An offline report is presented first, and the arrival sequence waits until startup dialogs are dismissed. The guide can reopen either dialog. Markers are local to the profile and do not change the network save.
+The browser and desktop editions share `ui/startup.js`. A new profile without a save sees the welcome dialog once. Existing installations see the bilingual notes from `release.js` once after a version change, including upgrades from releases that did not store a version marker. An offline report is presented first, and the arrival sequence waits until startup dialogs are dismissed. The guide can reopen either dialog. Markers are local to the profile and do not change the network save.
 
 When preparing a release, update `release.js` with the matching `package.json` version and concise German/English notes for that published version. The version-match test deliberately fails if these drift apart. Development branches keep the current release version until the maintainer prepares the next release.
 
