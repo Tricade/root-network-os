@@ -88,6 +88,11 @@ export function createResearchUI(ctx) {
       const q = ctx.E.quoteResearch(ctx.state, ctx.modal.extra.id);
       const start = ctx.$('[data-research-confirm="start"]'),
         reason = ctx.$('[data-research-decision-reason]');
+      if (q.unique && q.level > 0 && start) {
+        ctx.$('#modal-root .modal-body').innerHTML = cards.researchDecision(ctx.modal.extra.id);
+        ctx.$('#modal-root .modal').focus({ preventScroll: true });
+        return;
+      }
       if (start) start.disabled = !q.enabled;
       if (reason) reason.textContent = ctx.tr(q.reason || '');
     }

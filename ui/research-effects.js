@@ -26,18 +26,19 @@ export function researchEffectPreview(E, state, node) {
 export function researchEffectTable(ctx, node) {
   const rows = researchEffectPreview(ctx.E, ctx.state, node);
   if (!rows.length) return '';
+  const owned = ctx.state.lab.owned.includes(node.id);
   const format = new Intl.NumberFormat(ctx.I18N?.getLanguage?.() === 'en' ? 'en-US' : 'de-DE', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 3,
   });
-  return `<div class="research-effects"><h4>${ctx.tr('Heute → nach Abschluss')}</h4>${rows
+  return `<div class="research-effects"><h4>${ctx.tr(owned ? 'Aktive Wirkung' : 'Heute → nach Abschluss')}</h4>${rows
     .map(({ key, before, after }) => {
       const bonus = key === 'retentionBonus';
       const value = (n) =>
         bonus
           ? '+' + format.format(n * 100) + ' ' + ctx.tr('Prozentpunkte')
           : '×' + format.format(n);
-      return `<div><span>${ctx.tr(RESEARCH_EFFECT_LABELS[key])}</span><strong>${value(before)} → ${value(after)}</strong></div>`;
+      return `<div><span>${ctx.tr(RESEARCH_EFFECT_LABELS[key])}</span><strong>${owned ? value(before) : `${value(before)} → ${value(after)}`}</strong></div>`;
     })
     .join(
       '',

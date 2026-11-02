@@ -55,8 +55,12 @@ export function createResearchCards(ctx) {
       <div class="research-prerequisites"><span>${ctx.tr('Voraussetzungen')}</span>${requirements.map((node) => `<button class="text-button ${ctx.state.lab.owned.includes(node.id) ? 'positive' : ''}" data-research-focus="${node.id}">${ctx.icon(ctx.state.lab.owned.includes(node.id) ? 'check' : 'layers')}${ctx.esc(ctx.tr(node.name))}</button>`).join('') || `<span>${ctx.tr('Keine Vorforschung erforderlich')}</span>`}${def.sector > 1 ? `<span>${ctx.tr('Ab Sektor')} ${def.sector}</span>` : ''}</div>
       ${q.replaces?.length ? `<p class="modal-alert">${ctx.tr('Ersetzt bei Abschluss')}: ${q.replaces.map((key) => ctx.esc(ctx.tr(model.technologies.find((n) => n.id === key).name))).join(', ')}</p>` : ''}
       ${def.doctrine ? `<p class="research-doctrine-note">${ctx.tr('Eine Spezialisierung pro Zweig. Die bisherige bleibt während eines Wechsels aktiv; erst beim Abschluss wird sie ersetzt. Abbruch erstattet keine Punkte.')}</p>` : ''}
-      <p class="research-decision-policy">${ctx.tr('Das Labor bearbeitet ein Projekt gleichzeitig. Währenddessen sinkt der Projektdurchsatz um 10 %. Ohne erreichbare Server pausiert die Laborarbeit. Ein Abbruch erstattet keine Forschungspunkte.')}</p>
-      <div class="research-decision-footer"><div class="research-commitment"><strong>${ctx.fmt(q.cost)} ${ctx.tr('FP')}</strong><span>${ctx.duration(q.duration)} ${ctx.tr('Laborzeit')}</span></div><p class="modal-alert" data-research-decision-reason aria-live="polite">${ctx.esc(ctx.tr(q.reason || ''))}</p><button class="button primary block" data-research-confirm="start" data-id="${ctx.esc(id)}" ${q.enabled ? '' : 'disabled'}>${ctx.tr('Forschungsprojekt starten')}</button></div>`;
+      ${
+        owned
+          ? `<div class="research-decision-footer research-complete"><span class="tag green">${ctx.icon('check')}${ctx.tr('Forschung abgeschlossen')}</span><p>${ctx.tr('Die Wirkung ist bereits in deinen aktuellen Werten enthalten.')}</p></div>`
+          : `<p class="research-decision-policy">${ctx.tr('Das Labor bearbeitet ein Projekt gleichzeitig. Währenddessen sinkt der Projektdurchsatz um 10 %. Ohne erreichbare Server pausiert die Laborarbeit. Ein Abbruch erstattet keine Forschungspunkte.')}</p>
+      <div class="research-decision-footer"><div class="research-commitment"><strong>${ctx.fmt(q.cost)} ${ctx.tr('FP')}</strong><span>${ctx.duration(q.duration)} ${ctx.tr('Laborzeit')}</span></div><p class="modal-alert" data-research-decision-reason aria-live="polite">${ctx.esc(ctx.tr(q.reason || ''))}</p><button class="button primary block" data-research-confirm="start" data-id="${ctx.esc(id)}" ${q.enabled ? '' : 'disabled'}>${ctx.tr('Forschungsprojekt starten')}</button></div>`
+      }`;
   }
   return { researchCard, researchBranch, researchDecision };
 }

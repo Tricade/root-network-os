@@ -5,6 +5,12 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate) {
   return {
     pairs: [
+      ['Aktive Wirkung', 'Active effect'],
+      ['Forschung abgeschlossen', 'Research complete'],
+      [
+        'Die Wirkung ist bereits in deinen aktuellen Werten enthalten.',
+        'The effect is already included in your current values.',
+      ],
       ['Fokusansicht', 'Focus view'],
       ['Fokusansicht schließen', 'Close focus view'],
       ['Thermodynamik', 'Thermodynamics'],
