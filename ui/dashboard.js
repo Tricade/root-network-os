@@ -16,8 +16,8 @@ export function createDashboardUI(ctx) {
       next
         .slice(0, upcomingCount)
         .map(
-          ({ label, remaining: time, route, count }) =>
-            `<button class="text-button" data-nav="${route}"><strong>${count ? count + ' · ' : ''}${ctx.esc(ctx.tr(label))}</strong><span>${ctx.duration(time)}</span></button>`,
+          ({ label, remaining: time, route, section, count }) =>
+            `<button class="text-button" ${section ? `data-attention-route="${route}" data-ops-section="${section}"` : `data-nav="${route}"`}><strong>${count ? count + ' · ' : ''}${ctx.esc(ctx.tr(label))}</strong><span>${ctx.duration(time)}</span></button>`,
         )
         .join('') || `<span>${ctx.tr('Keine terminierten Vorgänge')}</span>`
     }${next.length > upcomingCount ? `<button class="text-button" data-upcoming-more>+${next.length - upcomingCount} ${ctx.tr('weitere Vorgänge')}</button>` : ''}${upcomingCount > 3 ? `<button class="text-button" data-upcoming-less>${ctx.tr('Weniger anzeigen')}</button>` : ''}`;

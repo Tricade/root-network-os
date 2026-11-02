@@ -165,7 +165,10 @@ export function createAttentionCards(ctx) {
       case 'research':
         return `<div data-attention-research-options></div>${button('Forschungsbaum öffnen', 'data-attention-route="research"')}`;
       default:
-        return button('Plan prüfen', `data-attention-route="${entry.route}"`);
+        return button(
+          'Plan prüfen',
+          `data-attention-route="${entry.route}" ${entry.route === 'operations' ? `data-ops-section="${entry.group === 'maintenance' ? 'maintenance' : 'capital'}"` : ''}`,
+        );
     }
   }
   function attentionCard(entry) {
@@ -267,6 +270,7 @@ export function createAttentionCards(ctx) {
   function attentionClick(target) {
     if (!target.hasAttribute('data-attention-route')) return false;
     if (target.dataset.attentionFilter) ctx.selectCustomerFilter(target.dataset.attentionFilter);
+    if (target.dataset.opsSection) ctx.selectOperationsSection(target.dataset.opsSection);
     ctx.navigate(target.dataset.attentionRoute);
     return true;
   }

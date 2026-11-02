@@ -132,6 +132,7 @@ export function createEventsUI(ctx, platform = globalThis) {
     });
     platform.document.addEventListener('input', (event) => {
       if (ctx.desktopClosing?.()) return;
+      if (ctx.operationsInput?.(event.target)) return;
       if (ctx.businessInput?.(event.target)) return;
       ctx.facilityInput?.(event.target);
     });

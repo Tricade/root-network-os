@@ -75,8 +75,8 @@ test('dynamic maintenance logs and equipment requirements preserve IDs and numer
 test('planning, growth and maintenance copy covers budget caps, delivery guarantees and service reserves', () => {
   for (const [source, expected] of [
     [
-      'Das Stundenbudget des Ablaufplans ist 0. Lege oben ein Budget fest, damit Maßnahmen starten können.',
-      'The operations plan budget is 0 per hour. Set a budget above to let tasks start.',
+      'Das Stundenbudget des Ablaufplans ist 0. Lege unter Budgets & Beschaffung ein Budget fest, damit Maßnahmen starten können.',
+      'The operations plan budget is 0 per hour. Set a budget under Budgets & procurement to let tasks start.',
     ],
     [
       'Ein Tagesbudget von 0 verhindert Wartungsstarts.',

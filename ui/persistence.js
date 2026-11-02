@@ -180,6 +180,7 @@ export function createPersistenceUI(ctx, platform = globalThis) {
     if (ctx.saveConflict) return false;
     ctx.state = next;
     ctx.resetNotifications?.();
+    ctx.resetOperationsDrafts?.();
     ctx.seenAchievements = new Set();
     ctx.state.savedAt = Date.now();
     ctx.lastTick = ctx.state.savedAt;

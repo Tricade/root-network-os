@@ -5,6 +5,46 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate) {
   return {
     pairs: [
+      ['Vorgänge durchsehen', 'Browse items'],
+      ['Vorheriger Vorgang', 'Previous item'],
+      ['Nächster Vorgang', 'Next item'],
+      ['Budgets & Beschaffung', 'Budgets & procurement'],
+      ['Ausbauplan', 'Expansion plan'],
+      ['Wartungsplanung', 'Maintenance planning'],
+      ['Bereiche der Betriebsplanung', 'Operations planning sections'],
+      ['Lieferungen', 'Deliveries'],
+      ['Geplante Maßnahmen', 'Planned actions'],
+      ['Wartung läuft', 'Maintenance in progress'],
+      ['Wartung geplant', 'Maintenance scheduled'],
+      ['Keine Wartung geplant', 'No maintenance scheduled'],
+      ['Aktive Projekte', 'Active projects'],
+      ['Einführung ansehen', 'View introduction'],
+      ['Änderungen dieser Version', 'Changes in this version'],
+      ['Neu in dieser Version', 'New in this version'],
+      ['Handbuch öffnen', 'Open guide'],
+      [
+        'Dein unterirdisches Rechenzentrum beginnt mit einem Rack. Das Dashboard zeigt dir, was gerade Aufmerksamkeit braucht.',
+        'Your underground data center starts with one rack. The dashboard shows what needs your attention.',
+      ],
+      ['Kapazität aufbauen', 'Build capacity'],
+      [
+        'Prüfe Strom, Kühlung und freie Ressourcen, bevor du Hardware oder Kunden hinzufügst.',
+        'Check power, cooling and free resources before adding hardware or customers.',
+      ],
+      ['Arbeit passend verteilen', 'Allocate work'],
+      [
+        'Aufträge liefern einmalige Belohnungen. Kundenverträge bringen laufende Einnahmen; Agenten richten sie ein.',
+        'Jobs pay one-off rewards. Customer contracts generate recurring income; agents provision them.',
+      ],
+      ['In deinem Tempo zurückkommen', 'Return at your own pace'],
+      [
+        'Automatisierung und Betriebspläne übernehmen Routinen. Du kannst im Dashboard verwalten oder den Bunker in 3D erkunden.',
+        'Automation and operation plans handle routines. Manage everything from the dashboard or explore the bunker in 3D.',
+      ],
+      [
+        'Dieser Hinweis erscheint einmal nach einem Versionswechsel. Du findest ihn jederzeit im Handbuch wieder.',
+        'This notice appears once after a version change. You can always reopen it in the guide.',
+      ],
       ['Meldungstyp', 'Notification type'],
       ['Alle Bereiche', 'All categories'],
       ['Benachrichtigungen', 'Notifications'],

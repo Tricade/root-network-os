@@ -4,12 +4,43 @@ import { createCapitalPlanUI } from './capital-plan.js';
 
 export function createOperationsUI(ctx) {
   const capital = createCapitalPlanUI(ctx);
+  let activeSection = 'budget';
+  const drafts = new Map();
+  const sections = {
+    budget: 'Budgets & Beschaffung',
+    capital: 'Ausbauplan',
+    maintenance: 'Wartungsplanung',
+    projects: 'Agentenprojekte',
+  };
+  const section = (key, markup) =>
+    `<div class="operations-section ${activeSection === key ? '' : 'is-inactive'}" data-ops-panel="${key}">${markup}</div>`;
+  function resetOperationsDrafts() {
+    drafts.clear();
+    activeSection = 'budget';
+    capital.resetCapitalDraft();
+  }
+  function selectOperationsSection(key) {
+    if (!Object.hasOwn(sections, key)) return false;
+    activeSection = key;
+    ctx
+      .$$('[data-ops-panel]')
+      .forEach((el) => el.classList.toggle('is-inactive', el.dataset.opsPanel !== key));
+    ctx
+      .$$('[data-ops-section]')
+      .forEach((el) => el.setAttribute('aria-pressed', String(el.dataset.opsSection === key)));
+    return true;
+  }
+  function operationsInput(el) {
+    if (!el.hasAttribute('data-ops-field')) return false;
+    drafts.set(el.dataset.opsField, el.type === 'checkbox' ? el.checked : el.value);
+    return true;
+  }
 
   const numeric = (key, label, value) =>
-    `<label class="field-label">${ctx.tr(label)}<input class="input" data-ops-field="${key}" type="number" min="0" max="200000000000000" step="1" value="${value}"></label>`;
+    `<label class="field-label">${ctx.tr(label)}<input class="input" data-ops-field="${key}" type="number" min="0" max="200000000000000" step="1" value="${ctx.esc(String(drafts.get(key) ?? value))}"></label>`;
 
   const select = (key, label, rows) =>
-    `<label class="field-label">${ctx.tr(label)}<select class="select" data-ops-field="${key}">${rows.map(([v, t]) => `<option value="${ctx.esc(v)}" ${key === 'mode' && v === 'ups' ? 'disabled' : ''}>${ctx.esc(ctx.tr(t))}</option>`).join('')}</select></label>`;
+    `<label class="field-label">${ctx.tr(label)}<select class="select" data-ops-field="${key}">${rows.map(([v, t]) => `<option value="${ctx.esc(v)}" ${key === 'mode' && v === 'ups' ? 'disabled' : ''} ${String(drafts.get(key)) === String(v) ? 'selected' : ''}>${ctx.esc(ctx.tr(t))}</option>`).join('')}</select></label>`;
 
   const button = (action, label, extra = '') =>
     `<button class="button" data-ops="${action}" ${extra}>${ctx.tr(label)}</button>`;
@@ -29,8 +60,7 @@ export function createOperationsUI(ctx) {
   }
 
   function operationsView() {
-    const o = ctx.E.getOperations(ctx.state),
-      _rooms = ctx.E.getFacilityLayout(ctx.state).rooms;
+    const o = ctx.E.getOperations(ctx.state);
 
     return (
       ctx.head(
@@ -38,51 +68,65 @@ export function createOperationsUI(ctx) {
 
         'Budgets, Lieferungen und Projekte laufen auch während deiner Abwesenheit weiter.',
       ) +
-      `<div class="policy-grid operations-grid"><section class="panel" data-ops-form="limits">${ctx.panelHeader('Budgets & Reserven')}<div class="panel-body"><div class="business-controls">${[
-        ['repair', 'Reparaturen / Stunde'],
+      `<nav class="operations-sections" aria-label="${ctx.tr('Bereiche der Betriebsplanung')}">${Object.entries(
+        sections,
+      )
+        .map(
+          ([key, label]) =>
+            `<button class="button" data-ops-section="${key}" aria-pressed="${activeSection === key}"><strong>${ctx.tr(label)}</strong><small data-ops-summary="${key}"></small></button>`,
+        )
+        .join('')}</nav>` +
+      section(
+        'budget',
+        `<div class="policy-grid operations-grid"><section class="panel" data-ops-form="limits">${ctx.panelHeader('Budgets & Reserven')}<div class="panel-body"><div class="business-controls">${[
+          ['repair', 'Reparaturen / Stunde'],
 
-        ['backup', 'Backups / Stunde'],
+          ['backup', 'Backups / Stunde'],
 
-        ['parts', 'Beschaffung / Stunde'],
+          ['parts', 'Beschaffung / Stunde'],
 
-        ['plan', 'Ablaufplan / Stunde'],
+          ['plan', 'Ablaufplan / Stunde'],
 
-        ['reserve', 'Geschützte Geldreserve'],
+          ['reserve', 'Geschützte Geldreserve'],
 
-        ['savings', 'Sparziel für Ausbau'],
-      ]
+          ['savings', 'Sparziel für Ausbau'],
+        ]
 
-        .map(([key, label]) => numeric(key, label, o.limits[key]))
+          .map(([key, label]) => numeric(key, label, o.limits[key]))
 
-        .join(
-          '',
-        )}</div><p data-ops-spent></p><p class="policy-explainer"><span>Budget für vier Sicherungen pro Stunde:</span> <strong data-ops-backup-budget></strong></p><p class="policy-explainer">Wartung nutzt die Geldreserve als Untergrenze. Geplante Ausbauten schützen zusätzlich dein Sparziel. Änderungen setzen verbrauchte Stundenbudgets nicht zurück.</p><div class="operations-policy-footer">${numeric('partsTarget', 'Zielbestand Ersatzteile', o.partsTarget)}<label class="field-label operations-check"><input data-ops-field="autoParts" type="checkbox" ${o.autoParts ? 'checked' : ''}> ${ctx.tr('Ersatzteile automatisch nachbestellen')}</label>${button('policy', 'Betriebsplan speichern')}</div></div></section>` +
-      `<section class="panel" data-ops-form="delivery">${ctx.panelHeader('Ersatzteillogistik')}<div class="panel-body"><p data-ops-stock></p><div class="business-controls">${numeric('quantity', 'Bestellmenge', 3)}${select(
-        'method',
+          .join(
+            '',
+          )}</div><p data-ops-spent></p><p class="policy-explainer"><span>Budget für vier Sicherungen pro Stunde:</span> <strong data-ops-backup-budget></strong></p><p class="policy-explainer">Wartung nutzt die Geldreserve als Untergrenze. Geplante Ausbauten schützen zusätzlich dein Sparziel. Änderungen setzen verbrauchte Stundenbudgets nicht zurück.</p><div class="operations-policy-footer">${numeric('partsTarget', 'Zielbestand Ersatzteile', o.partsTarget)}<label class="field-label operations-check"><input data-ops-field="autoParts" type="checkbox" ${(drafts.get('autoParts') ?? o.autoParts) ? 'checked' : ''}> ${ctx.tr('Ersatzteile automatisch nachbestellen')}</label>${button('policy', 'Betriebsplan speichern')}</div></div></section>` +
+          `<section class="panel" data-ops-form="delivery">${ctx.panelHeader('Ersatzteillogistik')}<div class="panel-body"><p data-ops-stock></p><div class="business-controls">${numeric('quantity', 'Bestellmenge', 3)}${select(
+            'method',
 
-        'Lieferung',
+            'Lieferung',
 
-        [
-          ['standard', 'Standard · 30 Minuten'],
+            [
+              ['standard', 'Standard · 30 Minuten'],
 
-          ['express', 'Express · 5 Minuten · doppelter Preis'],
-        ],
-      )}</div>${button('delivery', 'Bestellung prüfen')}<div class="deliveries">${deliveries(o.orders)}</div><p class="policy-explainer">Jeder Serverraum erweitert das Lager. Höchstens zwei Lieferungen können gleichzeitig unterwegs sein.</p></div></section></div>` +
-      capital.capitalMarkup() +
-      ctx.preventiveMarkup() +
-      `<section class="panel section-spacer" data-ops-form="project">${ctx.panelHeader('Agentenprojekte')}<div class="panel-body"><p>Während eines Projekts entfallen der normale Beitrag und die Teamleitung dieses Agenten. Die zugesagte Belohnung bleibt bis zum Abschluss fest.</p><div class="business-controls">${select(
-        'id',
+              ['express', 'Express · 5 Minuten · doppelter Preis'],
+            ],
+          )}</div>${button('delivery', 'Bestellung prüfen')}<div class="deliveries">${deliveries(o.orders)}</div><p class="policy-explainer">Jeder Serverraum erweitert das Lager. Höchstens zwei Lieferungen können gleichzeitig unterwegs sein.</p></div></section></div>`,
+      ) +
+      section('capital', capital.capitalMarkup()) +
+      section('maintenance', ctx.preventiveMarkup()) +
+      section(
+        'projects',
+        `<section class="panel" data-ops-form="project">${ctx.panelHeader('Agentenprojekte')}<div class="panel-body"><p>Während eines Projekts entfallen der normale Beitrag und die Teamleitung dieses Agenten. Die zugesagte Belohnung bleibt bis zum Abschluss fest.</p><div class="business-controls">${select(
+          'id',
 
-        'Agent',
+          'Agent',
 
-        ctx.state.agents.map((a) => [a.id, a.name]),
-      )}${select('kind', 'Projekt', [
-        ['audit', 'Betriebsaudit'],
+          ctx.state.agents.map((a) => [a.id, a.name]),
+        )}${select('kind', 'Projekt', [
+          ['audit', 'Betriebsaudit'],
 
-        ['research', 'Forschungsprojekt'],
+          ['research', 'Forschungsprojekt'],
 
-        ['tuning', 'Kapazitätsanalyse'],
-      ])}${button('project', 'Projekt prüfen')}</div><div data-ops-projects></div></div></section>`
+          ['tuning', 'Kapazitätsanalyse'],
+        ])}${button('project', 'Projekt prüfen')}</div><div data-ops-projects></div></div></section>`,
+      )
     );
   }
 
@@ -91,6 +135,11 @@ export function createOperationsUI(ctx) {
   }
 
   function operationsClick(target) {
+    if (target.hasAttribute('data-ops-section')) {
+      if (selectOperationsSection(target.dataset.opsSection) && ctx.view !== 'operations')
+        ctx.navigate('operations');
+      return true;
+    }
     if (target.hasAttribute('data-ops-confirm')) {
       const extra = ctx.modal?.extra;
 
@@ -172,6 +221,7 @@ export function createOperationsUI(ctx) {
   }
 
   function operationsChange(el) {
+    operationsInput(el);
     if (capital.capitalChange(el)) return true;
 
     if (el.matches('[data-ops-field="supplySystem"]')) {
@@ -256,6 +306,19 @@ export function createOperationsUI(ctx) {
           .join(' · '),
     );
 
+    const summary = {
+      budget: `${o.orders.length} ${ctx.tr('Lieferungen')}`,
+      capital: `${o.queue.length} ${ctx.tr('Geplante Maßnahmen')}`,
+      maintenance: ctx.tr(
+        ctx.state.preventiveMaintenance.operation
+          ? 'Wartung läuft'
+          : ctx.state.preventiveMaintenance.schedule
+            ? 'Wartung geplant'
+            : 'Keine Wartung geplant',
+      ),
+      projects: `${o.projects.length} ${ctx.tr('Aktive Projekte')}`,
+    };
+    ctx.$$('[data-ops-summary]').forEach((el) => (el.textContent = summary[el.dataset.opsSummary]));
     put('backup-budget', ctx.fmt(ctx.E.getResilience(ctx.state).backup.cost * 4) + ' CR');
 
     put(
@@ -294,6 +357,9 @@ export function createOperationsUI(ctx) {
 
   return {
     operationsView,
+    resetOperationsDrafts,
+    selectOperationsSection,
+    operationsInput,
 
     operationsClick,
 

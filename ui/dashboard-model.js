@@ -151,6 +151,7 @@ export function dashboardModel(
       count: order.quantity,
       remaining: Math.max(0, order.arrivalAt - state.time),
       route: 'operations',
+      section: 'budget',
     });
   const build = E.getConstructionProject(state);
   if (build) upcoming.push({ label: build.label, remaining: build.remaining, route: 'facility' });
@@ -169,12 +170,14 @@ export function dashboardModel(
       label: 'Vorbeugende Rackwartung',
       remaining: preventive.operation.remaining,
       route: 'operations',
+      section: 'maintenance',
     });
   else if (preventive?.schedule)
     upcoming.push({
       label: 'Frühester Wartungsstart',
       remaining: Math.max(0, preventive.schedule.earliestAt - state.time),
       route: 'operations',
+      section: 'maintenance',
     });
   const rank = { urgent: 0, warning: 1, normal: 2 };
   actions.sort((a, b) => rank[a.severity] - rank[b.severity]);

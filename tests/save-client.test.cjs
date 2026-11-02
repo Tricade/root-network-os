@@ -433,6 +433,7 @@ test('replaceState does not mutate a session already paused by conflict', async 
 
 test('failed persistence after import reports failure, never persisted success', async (t) => {
   const notices = [];
+  let draftsReset = false;
   const h = await makeHarness(t, { fetch: async () => response(503, { ok: false }) });
   h.app.set({
     state: { savedAt: Date.now(), marker: 'before-import' },
@@ -442,6 +443,9 @@ test('failed persistence after import reports failure, never persisted success',
     render() {},
     updateLive() {},
     closeModal() {},
+    resetOperationsDrafts() {
+      draftsReset = true;
+    },
     toast(message) {
       notices.push(message);
     },
@@ -458,6 +462,7 @@ test('failed persistence after import reports failure, never persisted success',
 
   assert.equal(outcome.persisted, false);
   assert.equal(h.app.state().marker, 'imported');
+  assert.equal(draftsReset, true, 'import clears drafts even if the disk write fails');
   assert.ok(notices.some((message) => message.includes('nur im Browser')));
   assert.ok(!notices.some((message) => message.includes('ist bereit')));
 });

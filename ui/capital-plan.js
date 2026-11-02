@@ -9,7 +9,7 @@ export function createCapitalPlanUI(ctx) {
     convertRoomSupply: 'Raumversorgung umbauen',
     createBackup: 'Betriebssicherung',
   };
-  const draft = {
+  const initialDraft = {
     action: 'buildRoom',
     floor: 0,
     roomType: 'cooling',
@@ -22,7 +22,12 @@ export function createCapitalPlanUI(ctx) {
     delay: 0,
     ceiling: 0,
   };
+  const draft = { ...initialDraft };
   let manualCeiling = false;
+  function resetCapitalDraft() {
+    Object.assign(draft, initialDraft);
+    manualCeiling = false;
+  }
   const field = (key, label, rows) =>
     `<label class="field-label">${ctx.tr(label)}<select class="select" data-capital-field="${key}">${rows.map(([v, t]) => `<option value="${ctx.esc(v)}" ${String(v) === String(draft[key]) ? 'selected' : ''}>${ctx.esc(ctx.tr(t))}</option>`).join('')}</select></label>`;
   function item() {
@@ -64,7 +69,7 @@ export function createCapitalPlanUI(ctx) {
     if (!manualCeiling) draft.ceiling = q.cost;
     const section = (action, content) =>
       `<div data-capital-for="${action}" ${action === draft.action ? '' : 'hidden'}>${content}</div>`;
-    return `<section class="panel section-spacer" data-capital-plan>${ctx.panelHeader('Ausbau- & Ablaufplan', `<button class="button small" data-capital-pause>${ctx.tr(o.paused ? 'Fortsetzen' : 'Pausieren')}</button>`)}<div class="panel-body"><p>${ctx.tr('Bau, Anlagen und Wartung laufen in deiner Reihenfolge. Bezahlt wird erst beim Start; Reserven und Freigaben bleiben verbindlich.')}</p>${o.limits.plan === 0 ? `<p class="modal-alert">${ctx.tr('Das Stundenbudget des Ablaufplans ist 0. Lege oben ein Budget fest, damit Maßnahmen starten können.')}</p>` : ''}<div class="business-controls">${field('action', 'Maßnahme', Object.entries(names))}${section(
+    return `<section class="panel section-spacer" data-capital-plan>${ctx.panelHeader('Ausbau- & Ablaufplan', `<button class="button small" data-capital-pause>${ctx.tr(o.paused ? 'Fortsetzen' : 'Pausieren')}</button>`)}<div class="panel-body"><p>${ctx.tr('Bau, Anlagen und Wartung laufen in deiner Reihenfolge. Bezahlt wird erst beim Start; Reserven und Freigaben bleiben verbindlich.')}</p>${o.limits.plan === 0 ? `<p class="modal-alert">${ctx.tr('Das Stundenbudget des Ablaufplans ist 0. Lege unter Budgets & Beschaffung ein Budget fest, damit Maßnahmen starten können.')}</p>` : ''}<div class="business-controls">${field('action', 'Maßnahme', Object.entries(names))}${section(
       'buildRoom',
       field(
         'floor',
@@ -158,5 +163,5 @@ export function createCapitalPlanUI(ctx) {
     ctx.render();
     return true;
   }
-  return { capitalMarkup, capitalClick, capitalChange };
+  return { capitalMarkup, capitalClick, capitalChange, resetCapitalDraft };
 }

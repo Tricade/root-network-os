@@ -488,8 +488,8 @@
         'Construction, facilities and maintenance run in your chosen order. Payment is due only when work starts; reserves and spending limits remain in force.',
       ],
       [
-        'Das Stundenbudget des Ablaufplans ist 0. Lege oben ein Budget fest, damit Maßnahmen starten können.',
-        'The operations plan budget is 0 per hour. Set a budget above to let tasks start.',
+        'Das Stundenbudget des Ablaufplans ist 0. Lege unter Budgets & Beschaffung ein Budget fest, damit Maßnahmen starten können.',
+        'The operations plan budget is 0 per hour. Set a budget under Budgets & procurement to let tasks start.',
       ],
       ['Fortsetzen', 'Resume'],
       ['Pausieren', 'Pause'],
@@ -597,8 +597,8 @@
       ['Ablaufplan gespeichert.', 'Operations plan saved.'],
       ['Reihenfolge gespeichert.', 'Order saved.'],
       [
-        'Das Stundenbudget des Ablaufplans ist 0. Lege oben ein Budget fest, damit Maßnahmen starten können.',
-        'The operations plan budget is 0 per hour. Set a budget above to let tasks start.',
+        'Das Stundenbudget des Ablaufplans ist 0. Lege unter Budgets & Beschaffung ein Budget fest, damit Maßnahmen starten können.',
+        'The operations plan budget is 0 per hour. Set a budget under Budgets & procurement to let tasks start.',
       ],
       [
         'Der voraussichtliche Preis liegt über der Preisobergrenze.',
