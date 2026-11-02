@@ -3,7 +3,11 @@ const test = require('node:test'),
   assert = require('node:assert/strict');
 const E = require('../engine.js');
 const { TECHNOLOGIES, RESEARCH_TREES, researchEffects } = require('../engine/research-catalog.js')(
-  {},
+  require('../engine/research-expansion.js')({
+    ...require('../engine/research-infrastructure-catalog.js')({}),
+    ...require('../engine/research-business-catalog.js')({}),
+    ...require('../engine/research-compute-catalog.js')({}),
+  }),
 );
 function lab(seed = 9101) {
   const s = E.createState(seed);
@@ -46,11 +50,11 @@ test('research is funded once, binds the lab and project throughput, and applies
   assert.deepEqual(s, after);
 });
 
-test('tree prerequisites, sector gates and all 16 technologies are finite and form an acyclic extensible graph', () => {
-  assert.equal(RESEARCH_TREES.length, 4);
-  assert.equal(TECHNOLOGIES.length, 16);
+test('tree prerequisites, sector gates and all 96 technologies are finite and form an acyclic extensible graph', () => {
+  assert.equal(RESEARCH_TREES.length, 8);
+  assert.equal(TECHNOLOGIES.length, 96);
   const ids = new Set(TECHNOLOGIES.map((n) => n.id));
-  assert.equal(ids.size, 16);
+  assert.equal(ids.size, 96);
   const visited = new Set(),
     visiting = new Set();
   function visit(id) {
@@ -70,8 +74,8 @@ test('tree prerequisites, sector gates and all 16 technologies are finite and fo
   const s = lab();
   assert.equal(E.quoteResearch(s, 'science-serving').enabled, false);
   assert.equal(E.quoteResearch(s, 'routing').enabled, false);
-  s.sector = 8;
-  for (const n of TECHNOLOGIES) {
+  s.sector = 10;
+  for (const n of TECHNOLOGIES.filter((n) => !n.expansion)) {
     complete(s, n.id);
     assert.equal(s.lab.owned.includes(n.id), true);
     assert.deepEqual(E.normalizeState(s).lab, s.lab);

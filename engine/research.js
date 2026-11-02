@@ -35,6 +35,11 @@
       const missing = requires.filter((key) => !s.lab.owned.includes(key));
       const cost = researchPrice(s, id),
         duration = unique ? def.duration : Math.min(14400, 300 + 120 * level);
+      const replaces = def.doctrine
+        ? ctx.TECHNOLOGIES.filter(
+            (n) => n.id !== id && n.doctrine === def.doctrine && s.lab.owned.includes(n.id),
+          ).map((n) => n.id)
+        : [];
       const reason =
         unique && level
           ? 'Diese Technologie ist bereits erforscht.'
@@ -61,6 +66,7 @@
         level,
         unique,
         targetLevel: level + 1,
+        replaces,
       };
     }
     function applyResearch(s, action, p) {
@@ -101,8 +107,14 @@
       if (!p || !m.onlineServers || ctx.globalIncident(s)) return;
       p.remaining = Math.max(0, p.remaining - dt);
       if (p.remaining) return;
-      if (p.unique) s.lab.owned.push(p.id);
-      else s.upgrades[p.id] = p.targetLevel;
+      if (p.unique) {
+        const def = researchDefinition(p.id);
+        if (def.doctrine)
+          s.lab.owned = s.lab.owned.filter(
+            (id) => researchDefinition(id)?.doctrine !== def.doctrine,
+          );
+        s.lab.owned.push(p.id);
+      } else s.upgrades[p.id] = p.targetLevel;
       s.lab.project = null;
       ctx.addLog(
         s,

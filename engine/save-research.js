@@ -24,6 +24,10 @@
         if (!def || def.sector > s.sector || def.requires.some((key) => !lab.owned.includes(key)))
           bad();
       }
+      // Terminal alternatives never have dependants. A paid replacement leaves the old
+      // doctrine active until completion, but two active doctrines cannot be imported.
+      const doctrines = lab.owned.map((id) => ctx.researchDefinition(id).doctrine).filter(Boolean);
+      if (new Set(doctrines).size !== doctrines.length) bad();
       s.lab = { version: 1, owned: [...lab.owned], project: null };
       if (lab.project !== null) {
         const p = ctx.checkedRecord(lab.project),

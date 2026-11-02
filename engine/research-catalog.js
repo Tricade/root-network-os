@@ -5,7 +5,7 @@
   if (root) (root.RootEngineModules ||= {})['research-catalog'] = create;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  return function () {
+  return function (ctx) {
     const RESEARCH_TREES = [
       {
         id: 'network',
@@ -214,6 +214,8 @@
         effects: { inferenceIncome: 1.06 },
       },
     ];
+    RESEARCH_TREES.push(...ctx.EXPANSION_TREES);
+    TECHNOLOGIES.push(...ctx.EXPANSION_TECHNOLOGIES);
     const REPEATABLE_GATES = {
       routing: 'network-fabric',
       cooling: 'network-telemetry',
@@ -224,7 +226,11 @@
     function researchDefaults() {
       return { version: 1, owned: [], project: null };
     }
+    let cachedKey = null,
+      cachedEffects = null;
     function researchEffects(s) {
+      const key = (s.lab?.owned || []).join('|');
+      if (key === cachedKey) return { ...cachedEffects };
       const owned = new Set(s.lab?.owned || []);
       const effects = {
         work: 1,
@@ -240,11 +246,16 @@
         inferenceIncome: 1,
       };
       for (const node of TECHNOLOGIES)
-        if (owned.has(node.id))
+        if (owned.has(node.id) && !node.expansion)
           for (const [key, value] of Object.entries(node.effects))
             if (key.endsWith('Bonus')) effects[key] += value;
             else effects[key] *= value;
-      return effects;
+      cachedKey = key;
+      cachedEffects = ctx.expandedResearchEffects(
+        effects,
+        TECHNOLOGIES.filter((n) => n.expansion && owned.has(n.id)),
+      );
+      return { ...cachedEffects };
     }
     return { RESEARCH_TREES, TECHNOLOGIES, REPEATABLE_GATES, researchDefaults, researchEffects };
   };
