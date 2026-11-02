@@ -207,6 +207,17 @@ Raumtüren sind von beiden Seiten bedienbar und schließen nach dem Durchgehen. 
 
 Node.js muss dafür nicht separat installiert werden. Portable speichert im benachbarten `ROOT-data`-Ordner; behalte ihn beim Austausch der Anwendung. Installierte Ausgaben bieten **Einstellungen → Desktop & Updates** zum Prüfen, Herunterladen und Installieren nach bestätigtem Speichern. Die Vorschaupakete sind unsigniert. AppImage benötigt FUSE und erlaubte Chromium-Sandbox/Benutzernamensräume. [Einrichtung, Fortschritt übernehmen und Update-Details →](docs/desktop.md)
 
+### Docker / NAS
+
+Die Browser-Version mit dauerhaftem Speicherstand läuft auf x86-64 und ARM64. [compose.yaml](compose.yaml) speichern und im gleichen Ordner starten:
+
+```sh
+docker compose pull
+docker compose up -d --no-build --wait
+```
+
+Danach [127.0.0.1:18473](http://127.0.0.1:18473/) öffnen. Weboberfläche und 3D laufen im Browser; der Fortschritt bleibt beim Container-Austausch im benannten Volume erhalten. [Ports, NAS/Proxy, Sicherungen und Updates →](docs/docker.md)
+
 ### Lokal im Browser
 
 Benötigt wird **Node.js 24**, geprüft mit **24.22.1**. Repository klonen oder herunterladen und im Ordner starten:
@@ -233,7 +244,7 @@ Danach **[127.0.0.1:18473](http://127.0.0.1:18473/)** öffnen. Unter Windows kan
 - JSON-Export und -Import umfassen das komplette Netzwerk. Unterstützte Speicherstände der Versionen 1 bis 3 lassen sich importieren. Vor dem Wechsel auf ältere Versionen exportieren.
 - Beim Zurückkehren werden bis zu **zwölf Stunden** nachgerechnet, einschließlich Arbeit, Einnahmen, Wartung und Baufortschritt. Längere Abwesenheit wird begrenzt. Die Berechnung erfolgt im Client; auf dem Server läuft keine dauerhafte Wirtschaftssimulation.
 - Widersprüchliche Sitzungen überschreiben neueren Fortschritt nicht stillschweigend. Eine veraltete Sitzung pausiert; ihre abweichende Browserkopie bleibt exportierbar.
-- Der Dienst bindet nur an Loopback. Es gibt **keine Telemetrie, Analyse-Dienste oder Online-KI-Aufrufe**. Installierte Ausgaben können optional GitHub auf Updates prüfen; Simulation, Browser-Modus und Portable funktionieren offline. Hardware, Agenten und KI-Aufträge werden simuliert; ROOT trainiert keine Modelle auf deinem Rechner. Optionale Unterstützungslinks führen zu externen Webseiten. [Sicherheits- und Bereitstellungsgrenzen →](SECURITY.md)
+- Der lokale Dienst und der Docker-Hostport sind standardmäßig auf Loopback begrenzt; LAN-Zugriff wird ausdrücklich konfiguriert. Es gibt **keine Telemetrie, Analyse-Dienste oder Online-KI-Aufrufe**. Installierte Ausgaben können optional GitHub auf Updates prüfen; Simulation, Browser-Modus und Portable funktionieren offline. Hardware, Agenten und KI-Aufträge werden simuliert; ROOT trainiert keine Modelle auf deinem Rechner. Optionale Unterstützungslinks führen zu externen Webseiten. [Sicherheits- und Bereitstellungsgrenzen →](SECURITY.md)
 
 <details>
 <summary><strong>Vorschaustatus, technische Grenzen und Prüfungen</strong></summary>

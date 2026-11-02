@@ -27,7 +27,8 @@
     "desktop:build": "electron-builder --config electron-builder.config.cjs --publish never",
     "assets": "node tools/asset-generator/generate.mjs",
     "assets:audit": "node tools/audit-assets.mjs",
-    "assets:inventory": "node tools/inventory-assets.mjs"
+    "assets:inventory": "node tools/inventory-assets.mjs",
+    "docker:test": "node tools/docker/smoke.cjs"
   },
   "devDependencies": {
     "@electron/asar": "4.3.1",

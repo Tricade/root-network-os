@@ -2,19 +2,19 @@
 
 ROOT runs directly from source with Node.js 24. The server has no third-party npm dependencies; Three.js 0.186.1 and glTF assets are bundled for the browser. See [CONTRIBUTING.md](../CONTRIBUTING.md) for an isolated instance and the test command.
 
-| Area                   | Files                                                                | Responsibility                                                                                       |
-| ---------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Simulation composition | `engine.js`                                                          | Compose per-instance domains and preserve the browser/CommonJS public API                            |
-| Simulation domains     | `engine/`                                                            | Building ownership, economy, hardware, agents, contracts, recovery, simulation and save migration    |
-| Local service          | `server.cjs`, `server/static-files.cjs`                              | Loopback HTTP API, closed static allowlist, atomic persistence, backup and optimistic revisions      |
-| Web composition        | `app.js`, `rack-ui.js`                                               | State ownership, navigation and composition of interface factories                                   |
-| Web features           | `ui/`, `ui/racks/`, CSS                                              | Facility plan, hardware selection, confirmations, live updates, persistence and feedback             |
-| Desktop                | `desktop/`, `ui/desktop.js`, `tools/desktop/`, package config        | Isolated Electron shell, profiles, confirmed save handoff, updater and native release verification   |
-| Localization           | `i18n.js`, `locales/`                                                | DOM localization lifecycle and separate English catalogs, preserving custom names                    |
-| 3D composition         | `room.js`                                                            | Per-view resources, shared context and public controls                                               |
-| 3D features            | `room/`, `room-navigation.js`, `room-facility.js`, `room-arrival.js` | Input, rendering, rack/server geometry, owned-space navigation, sessions, room interiors and arrival |
-| Scene details          | Other `room-*.js` modules                                            | Loading/batching, surfaces, furniture, stations and throttled live instruments                       |
-| Models                 | `asset-pack/`, `tools/asset-generator/`                              | Runtime files, editable sources, generators and component provenance                                 |
+| Area                   | Files                                                                | Responsibility                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Simulation composition | `engine.js`                                                          | Compose per-instance domains and preserve the browser/CommonJS public API                                      |
+| Simulation domains     | `engine/`                                                            | Building ownership, economy, hardware, agents, contracts, recovery, simulation and save migration              |
+| Local service          | `server.cjs`, `server/static-files.cjs`                              | Local/configured-origin HTTP API, closed static allowlist, atomic persistence, backup and optimistic revisions |
+| Web composition        | `app.js`, `rack-ui.js`                                               | State ownership, navigation and composition of interface factories                                             |
+| Web features           | `ui/`, `ui/racks/`, CSS                                              | Facility plan, hardware selection, confirmations, live updates, persistence and feedback                       |
+| Desktop                | `desktop/`, `ui/desktop.js`, `tools/desktop/`, package config        | Isolated Electron shell, profiles, confirmed save handoff, updater and native release verification             |
+| Localization           | `i18n.js`, `locales/`                                                | DOM localization lifecycle and separate English catalogs, preserving custom names                              |
+| 3D composition         | `room.js`                                                            | Per-view resources, shared context and public controls                                                         |
+| 3D features            | `room/`, `room-navigation.js`, `room-facility.js`, `room-arrival.js` | Input, rendering, rack/server geometry, owned-space navigation, sessions, room interiors and arrival           |
+| Scene details          | Other `room-*.js` modules                                            | Loading/batching, surfaces, furniture, stations and throttled live instruments                                 |
+| Models                 | `asset-pack/`, `tools/asset-generator/`                              | Runtime files, editable sources, generators and component provenance                                           |
 
 Simulation state is shared by the web UI and 3D controls. Route operations through the same quotes, confirmation and engine actions; do not create a second economy inside scene callbacks. Browser view state is separate from save exports. The server's optimistic revision check prevents stale tabs overwriting newer writes.
 
@@ -79,3 +79,5 @@ The research expansion is split across infrastructure, business and compute cata
 Pointer input uses capture and cancels on pointer-up, cancellation, lost capture or focus loss. The wheel listener is non-passive only inside the map. Compatibility was checked against the W3C [Pointer Events 3 Recommendation of 2026-06-30](https://www.w3.org/TR/2026/REC-pointerevents3-20260630/) and [UI Events draft of 2026-02-21](https://www.w3.org/TR/2026/WD-uievents-20260221/) for the installed Chromium 156 runtime.
 
 `ui/illustrations.js` allowlists the twelve local PNGs. Domain wrappers map project, research, facility and achievement categories to those images. `ui-art.test.cjs` verifies the complete mappings, dimensions, checksums and HTTP delivery. `research-atlas.test.cjs` exercises all eighty new nodes and every combination of the eight specialization pairs. See [planning rules](operations-planning.md) and [research balance](research.md).
+
+Docker packaging and its runtime tests live in `Dockerfile`, `compose.yaml` and `tools/docker/`; see [Docker](docker.md). `server/request-origin.cjs` owns explicit write origins, and `server/shutdown.cjs` drains CLI/container requests. Electron retains ownership of its embedded service lifecycle.

@@ -1,0 +1,22 @@
+# Allowlist: local profiles, secrets, Git history and development dependencies never enter the context.
+**
+!/*.js
+!/*.css
+!/index.html
+!/favicon.svg
+!/package.json
+!/server.cjs
+!/LICENSE
+!/NOTICE.md
+!/AI-DISCLOSURE.md
+!/server/**
+!/engine/**
+!/ui/**
+!/room/**
+!/locales/**
+!/vendor/**
+!/asset-pack/assets/**
+!/asset-pack/textures/**
+!/asset-pack/LICENSE.md
+!/asset-pack/docs/**
+!/docker/healthcheck.cjs

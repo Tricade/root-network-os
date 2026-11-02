@@ -73,3 +73,7 @@ If AI tools helped, say what they did and how you checked the result. Contributo
 ## License
 
 Code contributions use the project's [MIT license](LICENSE). Original asset submissions must state their license and source; ROOT's own generated models/maps use CC0-1.0 as described in [NOTICE.md](NOTICE.md). Contribute only material you are authorized to redistribute.
+
+## Container changes
+
+See [Docker development and deployment](docs/docker.md). Build the runtime image and run `npm run docker:test -- root-network-os:docker-test` in addition to `npm run check`. The test deliberately fails if Docker is unavailable; it must not be reported as a skipped green check. Preserve the default loopback port, explicit origin validation, non-root runtime and volume ownership. CI runs actual containers on both x86-64 and ARM64. Container publication belongs to release CI; PRs must never push images or receive registry write credentials.
