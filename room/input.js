@@ -111,7 +111,11 @@ export function createRoomInput(sceneContext) {
     sceneContext.raycaster.setFromCamera(sceneContext.mouse, sceneContext.camera);
     const hit = sceneContext.raycaster
       .intersectObjects(
-        [...sceneContext.pickTargets, ...(sceneContext.stationSystem?.pickTargets || [])],
+        [
+          ...sceneContext.pickTargets,
+          ...(sceneContext.facilityInterior?.picks || []),
+          ...(sceneContext.stationSystem?.pickTargets || []),
+        ],
         false,
       )
       .find((item) => {

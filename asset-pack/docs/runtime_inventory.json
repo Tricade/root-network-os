@@ -6,11 +6,12 @@
     "up": "+Y",
     "front": "+Z"
   },
-  "assetCount": 36,
-  "textureCount": 34,
+  "assetCount": 47,
+  "textureCount": 46,
   "counts": {
     "supplied": 27,
     "facility": 5,
+    "operations": 11,
     "originalFurniture": 4
   },
   "historicalManifest": "asset-pack/docs/asset_manifest.json",
@@ -813,6 +814,423 @@
       ]
     },
     {
+      "path": "asset-pack/assets/operations/central_chiller_module.glb",
+      "sha256": "ae1ff602392abf6136427f480cbc6a3e857be556b60430831cbda8fd117ffe71",
+      "bytes": 120676,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.5,
+          0,
+          -0.435
+        ],
+        "max": [
+          0.5,
+          2.1,
+          0.4725
+        ]
+      },
+      "activeRuntimeTriangles": 1936,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_architecture_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_architecture_atlas_normal_2k.png",
+        "asset-pack/textures/root_architecture_atlas_orm_2k.png",
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/construction_material_pallet.glb",
+      "sha256": "8b3f9d66b3b80baa496f4777e4ae46c41439ec4444063b00d6f198850c20900d",
+      "bytes": 59388,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.495,
+          0,
+          -0.39
+        ],
+        "max": [
+          0.495,
+          0.775,
+          0.413
+        ]
+      },
+      "activeRuntimeTriangles": 668,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_architecture_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_architecture_atlas_normal_2k.png",
+        "asset-pack/textures/root_architecture_atlas_orm_2k.png",
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png",
+        "asset-pack/textures/root_labels_atlas_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/enclosed_pump_skid.glb",
+      "sha256": "43e49b0579f54b44e2ed175c38ce5135794836f1926839fd11d427ca3a7d8b0e",
+      "bytes": 62784,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.65,
+          0,
+          -0.48
+        ],
+        "max": [
+          0.65,
+          1.58,
+          0.496
+        ]
+      },
+      "activeRuntimeTriangles": 772,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_architecture_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_architecture_atlas_normal_2k.png",
+        "asset-pack/textures/root_architecture_atlas_orm_2k.png",
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/environment_sensor_wall.glb",
+      "sha256": "4342f1aa10c00c4d9281846eea70a8bd45786c40ae8faa05c2104451d572a9bd",
+      "bytes": 40296,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.095,
+          0.005,
+          -0.046
+        ],
+        "max": [
+          0.095,
+          0.265,
+          0.046
+        ]
+      },
+      "activeRuntimeTriangles": 434,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/maintenance_robot.glb",
+      "sha256": "ae1894745153282fe965021e7ad93d93aed36ad73bbbf73be4e9eea5359cb7be",
+      "bytes": 84368,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.23500000000000001,
+          0.037000000000000005,
+          -0.22
+        ],
+        "max": [
+          0.23500000000000001,
+          0.599,
+          0.262
+        ]
+      },
+      "activeRuntimeTriangles": 1124,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_architecture_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_architecture_atlas_normal_2k.png",
+        "asset-pack/textures/root_architecture_atlas_orm_2k.png",
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/maintenance_robot_dock.glb",
+      "sha256": "1667f27a631f98a8d086ed1955352af82cf9b52110fe47f69f4ba59ed4d6acdb",
+      "bytes": 41192,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.34,
+          0,
+          -0.36
+        ],
+        "max": [
+          0.34,
+          0.6,
+          0.36
+        ]
+      },
+      "activeRuntimeTriangles": 414,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_architecture_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_architecture_atlas_normal_2k.png",
+        "asset-pack/textures/root_architecture_atlas_orm_2k.png",
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/maintenance_tool_cart.glb",
+      "sha256": "51cb4aafcd92845a2db3cd65a509dff47a0069d11b3df47bdadadda0b701bce2",
+      "bytes": 66756,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.34,
+          0.024999999999999994,
+          -0.23500000000000001
+        ],
+        "max": [
+          0.34,
+          0.961669,
+          0.257
+        ]
+      },
+      "activeRuntimeTriangles": 884,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_architecture_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_architecture_atlas_normal_2k.png",
+        "asset-pack/textures/root_architecture_atlas_orm_2k.png",
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/pump_heat_exchanger_skid.glb",
+      "sha256": "988433284881c3fe8c8cfaa2a8e68f27967a875032c1a531ee1852d451fc0e1b",
+      "bytes": 151632,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.625,
+          0,
+          -0.47
+        ],
+        "max": [
+          0.625,
+          1.4375,
+          0.47
+        ]
+      },
+      "activeRuntimeTriangles": 2538,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_architecture_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_architecture_atlas_normal_2k.png",
+        "asset-pack/textures/root_architecture_atlas_orm_2k.png",
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/room_air_handler.glb",
+      "sha256": "5901ff15022e1bf00f7063772b3f97409451f00e896a58d3adc662471e67b1ba",
+      "bytes": 108356,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.85,
+          0.59,
+          -0.2325
+        ],
+        "max": [
+          0.85,
+          1.4875,
+          0.3245
+        ]
+      },
+      "activeRuntimeTriangles": 1796,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/site_barrier_segment.glb",
+      "sha256": "65e3304fc796116b8714ae9e4bb77bbce1ca9d7f18f965cac1db2a931d3e6065",
+      "bytes": 51944,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.84,
+          0,
+          -0.09
+        ],
+        "max": [
+          0.84,
+          1.0435599999999998,
+          0.09
+        ]
+      },
+      "activeRuntimeTriangles": 526,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_architecture_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_architecture_atlas_normal_2k.png",
+        "asset-pack/textures/root_architecture_atlas_orm_2k.png",
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png"
+      ]
+    },
+    {
+      "path": "asset-pack/assets/operations/site_information_board.glb",
+      "sha256": "c35a18ba1e30c50d8f6d726464cb37ff65ec1d2537a633d8f3c5d3ccae517859",
+      "bytes": 42972,
+      "provenanceKind": "root-generated-operations",
+      "licenseSPDX": "CC0-1.0",
+      "licenseEvidence": "Original ROOT geometry and procedural material maps; see NOTICE.md",
+      "source": "tools/asset-generator/build_operations_assets.py",
+      "generatorSHA256": "f3b126a44d4d22efd843568649e23c7dfc7761e5b967fbc05c7d8246c30ea7c2",
+      "generatorInputs": [
+        {
+          "path": "tools/asset-generator/operations_cooling.py",
+          "sha256": "7ca55ba1efd5415d799433e5af0ef6dcf3756a9465a9f902bd002798f6bafd8f"
+        }
+      ],
+      "activeRuntimeBoundsM": {
+        "min": [
+          -0.35,
+          0,
+          -0.13
+        ],
+        "max": [
+          0.35,
+          1.395,
+          0.13
+        ]
+      },
+      "activeRuntimeTriangles": 462,
+      "requiredExtensions": [],
+      "textures": [
+        "asset-pack/textures/root_architecture_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_architecture_atlas_normal_2k.png",
+        "asset-pack/textures/root_architecture_atlas_orm_2k.png",
+        "asset-pack/textures/root_floor_concrete_basecolor_2k.png",
+        "asset-pack/textures/root_floor_concrete_normal_2k.png",
+        "asset-pack/textures/root_floor_concrete_orm_2k.png",
+        "asset-pack/textures/root_hardware_atlas_basecolor_2k.png",
+        "asset-pack/textures/root_hardware_atlas_normal_2k.png",
+        "asset-pack/textures/root_hardware_atlas_orm_2k.png",
+        "asset-pack/textures/root_labels_atlas_2k.png"
+      ]
+    },
+    {
       "path": "asset-pack/assets/racks/rack_18u.glb",
       "sha256": "d1d0e45312351043e51faf63575646a5d49b56c43a96858f9be7cfbbef458f64",
       "bytes": 547136,
@@ -1122,6 +1540,102 @@
     }
   ],
   "textures": [
+    {
+      "path": "asset-pack/textures/illustrations/automation.png",
+      "sha256": "c0925f2f7fa4f38de16a743748a1da4065bf024cb8caf885e2d6cdd1c6547124",
+      "bytes": 2576426,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/award-contract.png",
+      "sha256": "d8e4698bff936e272cbdf00e29948b06d871cde09cc5d913ba2c45d906426f55",
+      "bytes": 2420655,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/award-growth.png",
+      "sha256": "39ea251ec99883966633345a56b3221249f2ab9b8fba5ab510c6ddec7bfcdeda",
+      "bytes": 2261982,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/award-resilience.png",
+      "sha256": "b611e3d6c9206e76aa7372119cb117343837247053ad9ca1d4d5f56f3ffb6f79",
+      "bytes": 2417504,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/business.png",
+      "sha256": "2f1802d591c069b30b635fa2481e85b34966915fd79dd94231fcacff722cca19",
+      "bytes": 2734729,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/construction.png",
+      "sha256": "adeb54b64434b671970cc65a1ea826b29fc8e768dda5c1117e0b89da46e46b26",
+      "bytes": 3248376,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/cooling.png",
+      "sha256": "8433683690d453607b9bf361d85d081a99748874322dfdde4bf8ebff67975a87",
+      "bytes": 3195395,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/network.png",
+      "sha256": "9d7c6e073510c2f0beb4d0d2f143b9ea8379c98087e8546aa2d1729b06f00dd0",
+      "bytes": 2389610,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/power.png",
+      "sha256": "16f024292724eb1de7d27a252229d9d68b9c9246cb8e469738772dc2043e9487",
+      "bytes": 2748617,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/reliability.png",
+      "sha256": "62c920f17bc865629e62d43ce3a43b1b18380fb45c72772c6b4b27972a765ff8",
+      "bytes": 3002270,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/science.png",
+      "sha256": "72c771bd409e5d0b994af51388177e8f53c987141a656111c20004608f7cb4a9",
+      "bytes": 2764215,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
+    {
+      "path": "asset-pack/textures/illustrations/storage.png",
+      "sha256": "08dcf7ca2b67e40ee4ac3251bc43e05da4681391287a855c1f8f3d1cb97fec2b",
+      "bytes": 2688913,
+      "provenanceKind": "root-generated-ui",
+      "licenseSPDX": "CC0-1.0",
+      "source": "asset-pack/docs/illustration-prompts.json"
+    },
     {
       "path": "asset-pack/textures/interiors/root-leaf-color.png",
       "sha256": "986c43d1ed0ea584da59d771d501258cc591bcb7d7ea6bca3b6bb41c3a0e817b",

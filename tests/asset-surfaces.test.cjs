@@ -16,7 +16,7 @@ async function model(Q, file) {
 test('every bundled GLB has finite active geometry, no degenerate/duplicate runtime faces and valid local textures', async () => {
   const { Q } = await modules(),
     report = await Q.audit();
-  assert.equal(report.length, 36);
+  assert.equal(report.length, 47);
   for (const r of report) {
     assert.equal(r.runtime.nonfinite, 0, r.file);
     assert.equal(r.runtime.degenerate, 0, r.file);

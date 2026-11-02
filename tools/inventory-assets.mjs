@@ -21,13 +21,17 @@ for (const report of reports) {
     ? 'root-original'
     : report.file.startsWith('assets/facility/')
       ? 'root-generated-facility'
-      : 'supplied-copy';
+      : report.file.startsWith('assets/operations/')
+        ? 'root-generated-operations'
+        : 'supplied-copy';
   const generator =
     kind === 'root-original'
       ? 'tools/asset-generator/build_interiors.mjs'
       : kind === 'root-generated-facility'
         ? 'tools/asset-generator/build_facility_assets.py'
-        : null;
+        : kind === 'root-generated-operations'
+          ? 'tools/asset-generator/build_operations_assets.py'
+          : null;
   assets.push({
     path: relative(file),
     sha256: report.sha256,
@@ -42,6 +46,18 @@ for (const report of reports) {
           : 'Original ROOT geometry and procedural material maps; see NOTICE.md',
     source: generator || 'User-supplied Root_Assets 1.0',
     generatorSHA256: generator ? hash(await fs.readFile(path.join(root, generator))) : null,
+    ...(kind === 'root-generated-operations'
+      ? {
+          generatorInputs: [
+            {
+              path: 'tools/asset-generator/operations_cooling.py',
+              sha256: hash(
+                await fs.readFile(path.join(root, 'tools/asset-generator/operations_cooling.py')),
+              ),
+            },
+          ],
+        }
+      : {}),
     activeRuntimeBoundsM: { min: report.boundsMinM, max: report.boundsMaxM },
     activeRuntimeTriangles: report.runtime.triangles,
     requiredExtensions: doc.extensionsRequired || [],
@@ -63,14 +79,15 @@ for (const entry of (await fs.readdir(path.join(pack, 'textures'), { recursive: 
     name = path.basename(file),
     walnut = name.startsWith('walnut-'),
     own = name.startsWith('root-'),
-    robot = /^personnel-[1-4]\.png$/.test(name);
+    robot = /^personnel-[1-4]\.png$/.test(name),
+    illustration = entry.replaceAll('\\', '/').startsWith('illustrations/');
   textures.push({
     path: relative(file),
     sha256: hash(bytes),
     bytes: bytes.length,
     provenanceKind: walnut
       ? 'external-cc0-material-texture'
-      : robot
+      : robot || illustration
         ? 'root-generated-ui'
         : own
           ? 'root-original'
@@ -78,11 +95,13 @@ for (const entry of (await fs.readdir(path.join(pack, 'textures'), { recursive: 
     licenseSPDX: 'CC0-1.0',
     source: walnut
       ? 'https://polyhaven.com/a/american_walnut_veneer'
-      : robot
-        ? 'asset-pack/docs/personnel-prompts.json'
-        : own
-          ? 'tools/asset-generator/build_interiors.mjs'
-          : 'User-supplied Root_Assets 1.0',
+      : illustration
+        ? 'asset-pack/docs/illustration-prompts.json'
+        : robot
+          ? 'asset-pack/docs/personnel-prompts.json'
+          : own
+            ? 'tools/asset-generator/build_interiors.mjs'
+            : 'User-supplied Root_Assets 1.0',
   });
 }
 const inventory = {
@@ -95,6 +114,8 @@ const inventory = {
   counts: {
     supplied: assets.filter((asset) => asset.provenanceKind === 'supplied-copy').length,
     facility: assets.filter((asset) => asset.provenanceKind === 'root-generated-facility').length,
+    operations: assets.filter((asset) => asset.provenanceKind === 'root-generated-operations')
+      .length,
     originalFurniture: assets.filter((asset) => asset.provenanceKind === 'root-original').length,
   },
   historicalManifest: 'asset-pack/docs/asset_manifest.json',

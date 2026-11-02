@@ -179,7 +179,14 @@ export function createRoomTelemetry(sceneContext) {
       if (sceneContext.scene && signature !== sceneContext.structuralSignature)
         sceneContext.rebuildRacks(racks);
       if (sceneContext.scene) sceneContext.refreshRoomLanguage(racks);
-      sceneContext.facilityInterior?.update({ model, metrics, resilience, central, construction });
+      sceneContext.facilityInterior?.update({
+        model,
+        metrics,
+        resilience,
+        central,
+        construction,
+        preventiveMaintenance: state.preventiveMaintenance,
+      });
       if (sceneContext.canvas)
         sceneContext.canvas.setAttribute(
           'aria-label',
@@ -231,13 +238,20 @@ export function createRoomTelemetry(sceneContext) {
       const activeEffects = operations.effects.map(
         (effect) => effect.label + ' · ' + sceneContext.duration(effect.remaining),
       );
-      const activeOp = resilience.operation || model.operation || central.operation || construction;
+      const activeOp =
+        resilience.operation ||
+        model.operation ||
+        central.operation ||
+        construction ||
+        (state.preventiveMaintenance?.operation
+          ? { ...state.preventiveMaintenance.operation, label: 'Vorbeugende Rackwartung' }
+          : null);
       const backupText =
         resilience.backupAge === null
           ? 'Noch keine Betriebssicherung'
           : 'Letzte Sicherung vor ' + sceneContext.duration(resilience.backupAge);
       const operationText = activeOp
-        ? sceneContext.escapeHtml(activeOp.label) +
+        ? sceneContext.escapeHtml(sceneContext.tr(activeOp.label)) +
           ' · noch ' +
           sceneContext.duration(activeOp.remaining)
         : 'Keine Maßnahme aktiv';
@@ -385,7 +399,11 @@ export function createRoomTelemetry(sceneContext) {
     sceneContext.raycaster.setFromCamera(new sceneContext.THREE.Vector2(0, 0), sceneContext.camera);
     const hits = sceneContext.exploring
       ? sceneContext.raycaster.intersectObjects(
-          [...sceneContext.pickTargets, ...(sceneContext.stationSystem?.pickTargets || [])],
+          [
+            ...sceneContext.pickTargets,
+            ...(sceneContext.facilityInterior?.picks || []),
+            ...(sceneContext.stationSystem?.pickTargets || []),
+          ],
           false,
         )
       : [];

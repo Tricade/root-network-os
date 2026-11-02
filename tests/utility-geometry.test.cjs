@@ -114,7 +114,7 @@ test('all utility cabinets connect roof glands to bounded headers leaving their 
   const layout = E.getFacilityLayout(state),
     central = E.getCentralInfrastructure(state);
   for (const [id, file] of [
-    ['cooling', 'architecture/crac_cooling_unit'],
+    ['cooling', 'operations/central_chiller_module'],
     ['ups', 'facility/ups_battery_cabinet'],
     ['distribution', 'facility/power_distribution_ats'],
   ]) {
@@ -127,7 +127,12 @@ test('all utility cabinets connect roof glands to bounded headers leaving their 
     const interior = buildFacilityInterior({
       scene,
       materials: new Proxy({}, { get: () => shared }),
-      bank: { make: (key) => (key === id ? model.clone(true) : new THREE.Group()) },
+      bank: {
+        make: (key) =>
+          key === id || (id === 'cooling' && key === 'centralChiller')
+            ? model.clone(true)
+            : new THREE.Group(),
+      },
       location: { id, name: id, floor: 1 },
       layout,
       central,

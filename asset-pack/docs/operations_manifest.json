@@ -1,0 +1,199 @@
+{
+  "package": "ROOT operations and construction assets",
+  "format": "glTF 2.0",
+  "units": "m",
+  "axis": {
+    "up": "+Y",
+    "front": "+Z"
+  },
+  "generatedBy": "tools/asset-generator/build_operations_assets.py",
+  "assets": [
+    {
+      "name": "room_air_handler",
+      "category": "room_air_distribution",
+      "dimensionsM": [
+        1.7,
+        1.49,
+        0.65
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/room_air_handler.glb",
+      "source": "source/operations/room_air_handler.gltf",
+      "buffer": "source/operations/room_air_handler.bin",
+      "bytes": 108356,
+      "meshCount": 8,
+      "nodeCount": 11
+    },
+    {
+      "name": "central_chiller_module",
+      "category": "plant_cooling",
+      "dimensionsM": [
+        1.0,
+        2.1,
+        0.96
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/central_chiller_module.glb",
+      "source": "source/operations/central_chiller_module.gltf",
+      "buffer": "source/operations/central_chiller_module.bin",
+      "bytes": 120676,
+      "meshCount": 6,
+      "nodeCount": 9
+    },
+    {
+      "name": "enclosed_pump_skid",
+      "category": "plant_cooling",
+      "dimensionsM": [
+        1.3,
+        1.58,
+        0.98
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/enclosed_pump_skid.glb",
+      "source": "source/operations/enclosed_pump_skid.gltf",
+      "buffer": "source/operations/enclosed_pump_skid.bin",
+      "bytes": 62784,
+      "meshCount": 6,
+      "nodeCount": 9
+    },
+    {
+      "name": "pump_heat_exchanger_skid",
+      "category": "plant_cooling",
+      "dimensionsM": [
+        1.25,
+        1.52,
+        0.94
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/pump_heat_exchanger_skid.glb",
+      "source": "source/operations/pump_heat_exchanger_skid.gltf",
+      "buffer": "source/operations/pump_heat_exchanger_skid.bin",
+      "bytes": 151632,
+      "meshCount": 11,
+      "nodeCount": 15
+    },
+    {
+      "name": "environment_sensor_wall",
+      "category": "environment_monitoring",
+      "dimensionsM": [
+        0.2,
+        0.28,
+        0.1
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/environment_sensor_wall.glb",
+      "source": "source/operations/environment_sensor_wall.gltf",
+      "buffer": "source/operations/environment_sensor_wall.bin",
+      "bytes": 40296,
+      "meshCount": 7,
+      "nodeCount": 10
+    },
+    {
+      "name": "maintenance_robot",
+      "category": "maintenance_robot",
+      "dimensionsM": [
+        0.48,
+        0.61,
+        0.53
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/maintenance_robot.glb",
+      "source": "source/operations/maintenance_robot.gltf",
+      "buffer": "source/operations/maintenance_robot.bin",
+      "bytes": 84368,
+      "meshCount": 12,
+      "nodeCount": 19
+    },
+    {
+      "name": "maintenance_robot_dock",
+      "category": "maintenance_robot",
+      "dimensionsM": [
+        0.7,
+        0.67,
+        0.75
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/maintenance_robot_dock.glb",
+      "source": "source/operations/maintenance_robot_dock.gltf",
+      "buffer": "source/operations/maintenance_robot_dock.bin",
+      "bytes": 41192,
+      "meshCount": 6,
+      "nodeCount": 9
+    },
+    {
+      "name": "maintenance_tool_cart",
+      "category": "maintenance_robot",
+      "dimensionsM": [
+        0.72,
+        0.98,
+        0.52
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/maintenance_tool_cart.glb",
+      "source": "source/operations/maintenance_tool_cart.gltf",
+      "buffer": "source/operations/maintenance_tool_cart.bin",
+      "bytes": 66756,
+      "meshCount": 11,
+      "nodeCount": 18
+    },
+    {
+      "name": "site_barrier_segment",
+      "category": "construction",
+      "dimensionsM": [
+        1.7,
+        1.08,
+        0.2
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/site_barrier_segment.glb",
+      "source": "source/operations/site_barrier_segment.gltf",
+      "buffer": "source/operations/site_barrier_segment.bin",
+      "bytes": 51944,
+      "meshCount": 13,
+      "nodeCount": 16
+    },
+    {
+      "name": "site_information_board",
+      "category": "construction",
+      "dimensionsM": [
+        0.76,
+        1.42,
+        0.28
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/site_information_board.glb",
+      "source": "source/operations/site_information_board.gltf",
+      "buffer": "source/operations/site_information_board.bin",
+      "bytes": 42972,
+      "meshCount": 6,
+      "nodeCount": 9
+    },
+    {
+      "name": "construction_material_pallet",
+      "category": "construction",
+      "dimensionsM": [
+        1.0,
+        0.88,
+        0.84
+      ],
+      "up": "+Y",
+      "front": "+Z",
+      "glb": "assets/operations/construction_material_pallet.glb",
+      "source": "source/operations/construction_material_pallet.gltf",
+      "buffer": "source/operations/construction_material_pallet.bin",
+      "bytes": 59388,
+      "meshCount": 7,
+      "nodeCount": 10
+    }
+  ]
+}

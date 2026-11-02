@@ -38,6 +38,13 @@ const FILES = {
   chair: 'interiors/chair',
   coffee: 'interiors/coffee',
   plant: 'interiors/plant',
+  pumpSkid: 'operations/pump_heat_exchanger_skid',
+  enclosedPump: 'operations/enclosed_pump_skid',
+  airHandler: 'operations/room_air_handler',
+  centralChiller: 'operations/central_chiller_module',
+  siteBarrier: 'operations/site_barrier_segment',
+  siteBoard: 'operations/site_information_board',
+  materialPallet: 'operations/construction_material_pallet',
 };
 const controlled = (node) =>
   /^(led_|label_|monitor_screen|rack_nameplate|rack_door_|fire_door_leaf|bunker_door_|lift_door_|ups_door_|distribution_door_|ups_telemetry_display|pdu_telemetry_display|crac_cooling_unit_cabinet_LOD0_5$)/.test(
@@ -851,7 +858,7 @@ export function buildAssetHall({ bank, scene, materials }) {
   const localCooling = new THREE.Group();
   localCooling.name = 'local-cooling-units';
   serverFixtures.add(localCooling);
-  const connections = buildSupplyFixtures(materials);
+  const connections = buildSupplyFixtures(materials, bank);
   serverFixtures.add(connections.group);
   connections.set();
   for (const x of [-3.25, 3.25]) {
@@ -865,7 +872,11 @@ export function buildAssetHall({ bank, scene, materials }) {
   return {
     group,
     get coolingFans() {
-      return serverFixtures.visible && localCooling.visible ? coolingFans : [];
+      if (!serverFixtures.visible) return [];
+      return [
+        ...(localCooling.visible ? coolingFans : []),
+        ...(connections.cooling.visible ? connections.fans : []),
+      ];
     },
     setServerRoom(value, supply = { cooling: 'local', power: 'local' }, rackCount = 0) {
       serverFixtures.visible = value;

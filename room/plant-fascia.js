@@ -9,6 +9,7 @@ export function decoratePlantUnit(
   { box, sign, instrument, tr, materials },
 ) {
   const cooling = id === 'cooling',
+    chiller = Boolean(unit.userData.centralChiller),
     ups = id === 'ups';
   const original = unit.getObjectByName(
     cooling
@@ -18,7 +19,7 @@ export function decoratePlantUnit(
         : 'pdu_telemetry_display',
   );
   if (original) original.visible = false;
-  const front = cooling ? 0.448 : ups ? 0.429 : 0.369,
+  const front = cooling ? (chiller ? 0.458 : 0.448) : ups ? 0.429 : 0.369,
     centerY = cooling ? 1.84 : ups ? 1.8 : 1.785,
     screenAt = [cooling ? -0.18 : ups ? -0.2 : -0.27, centerY, front],
     screenSize = cooling ? [0.37, 0.17] : ups ? [0.34, 0.145] : [0.44, 0.13];
@@ -30,7 +31,7 @@ export function decoratePlantUnit(
   );
   const readout = instrument(unit, screenAt, ...screenSize, true);
   readout.userData.fasciaRole = 'readout';
-  const code = cooling ? 'CRAC' : ups ? 'UPS' : 'ATS';
+  const code = cooling ? (chiller ? 'CHILLER' : 'STARTER') : ups ? 'UPS' : 'ATS';
   const identity = sign(
     unit,
     `${code} ${String(index + 1).padStart(2, '0')}${side < 0 ? 'A' : 'B'}`,

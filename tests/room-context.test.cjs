@@ -34,6 +34,8 @@ test('physical terminals scope rack purchases, customer quotes and supply contro
     icon: () => '',
     head: () => '',
     panelHeader: () => '',
+    navLink: () => '',
+    growthMarkup: () => '',
     empty: () => '',
   };
   ctx.R = createRacks(ctx);

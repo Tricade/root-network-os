@@ -28,7 +28,7 @@ test('asset GLBs and their external textures are served locally; source and save
     for (const image of json.images || [])
       if (image.uri) textures.add(new URL(image.uri, base + url).href);
   }
-  assert.equal(models, 36);
+  assert.equal(models, 47);
   for (const url of textures) {
     const response = await fetch(url);
     assert.equal(response.status, 200, url);

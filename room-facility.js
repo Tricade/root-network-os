@@ -5,6 +5,7 @@ import { metricBox } from './room-surfaces.js';
 import { facilityReadout, drawInstrument } from './room-instruments.js';
 import { buildPlantConnections } from './room/plant-connections.js';
 import { decoratePlantUnit } from './room/plant-fascia.js';
+import { createOperationsAssets } from './room/operations-assets.js';
 
 const tr = (text) => globalThis.ROOTI18N?.translate(String(text)) || String(text);
 
@@ -285,13 +286,21 @@ export function buildFacilityInterior({ bank, scene, materials, location, layout
     if (location.id !== 'control') colliders.push({ x: -1.55, z: 5.12, hx: 0.74, hz: 0.31 });
     const system = central.systems.find((item) => item.id === location.id);
     if (system) {
-      const count = system.level ? Math.min(3, system.level + 1) : 0,
+      // Cooling upgrades replace the starter cabinet, then add parallel modules.
+      // Visible modules are bounded; instruments show the real uncapped capacity.
+      const count = system.level
+          ? Math.min(3, system.id === 'cooling' ? Math.ceil(system.level / 2) : system.level + 1)
+          : 0,
         units = [];
       for (let i = 0; i < count; i++)
         for (const side of [-1, 1]) {
           const x = side * 2.35,
             z = 0.2 - i * 1.45;
-          const unit = bank.make(system.id === 'cooling' ? 'cooling' : system.id);
+          const upgradedChiller = system.id === 'cooling' && system.level >= 2;
+          const unit = bank.make(
+            system.id === 'cooling' ? (upgradedChiller ? 'centralChiller' : 'cooling') : system.id,
+          );
+          unit.userData.centralChiller = upgradedChiller;
           unit.position.set(x, 0, z);
           unit.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
           group.add(unit);
@@ -329,6 +338,16 @@ export function buildFacilityInterior({ bank, scene, materials, location, layout
       serviceKits.push(services);
     }
   }
+  const operationalAssets = createOperationsAssets({
+    THREE,
+    scene: group,
+    bank,
+    location,
+    layout,
+    central,
+    colliders,
+    pickTargets: picks,
+  });
   const local = (p, x, z) => ({
     x: Math.cos(p.turn) * (x - p.x) - Math.sin(p.turn) * (z - p.z),
     z: Math.sin(p.turn) * (x - p.x) + Math.cos(p.turn) * (z - p.z),
@@ -341,6 +360,7 @@ export function buildFacilityInterior({ bank, scene, materials, location, layout
     fans,
     plan,
     update(snapshot, now = performance.now()) {
+      operationalAssets.update(snapshot);
       const language = globalThis.ROOTI18N?.getLanguage() || 'de';
       if (now - lastInstrumentUpdate < 900 && language === lastInstrumentLanguage) return;
       lastInstrumentUpdate = now;
@@ -374,6 +394,7 @@ export function buildFacilityInterior({ bank, scene, materials, location, layout
       }
     },
     animate(delta, reduced, player = null) {
+      operationalAssets.animate(delta, reduced);
       for (const p of portals) {
         if (p.autoClose && p.open) {
           p.closeDelay = Math.max(0, p.closeDelay - delta);
@@ -416,6 +437,7 @@ export function buildFacilityInterior({ bank, scene, materials, location, layout
         : null;
     },
     dispose() {
+      operationalAssets.dispose();
       scene.remove(group);
       serviceKits.forEach((kit) => kit.dispose());
       geometries.forEach((item) => item.dispose());

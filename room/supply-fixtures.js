@@ -4,7 +4,7 @@ import { buildCableTray } from './cable-tray.js';
 
 /** Original room-side services. Routes connect firestopped entries to the room
  * coil and only the racks that exist. Local equipment remains the fallback. */
-export function buildSupplyFixtures(materials) {
+export function buildSupplyFixtures(materials, bank = null) {
   const group = new THREE.Group();
   group.name = 'central-room-connections';
   const cooling = new THREE.Group(),
@@ -13,7 +13,8 @@ export function buildSupplyFixtures(materials) {
   power.name = 'central-power-trays';
   group.add(cooling, power);
   const kit = createUtilityKit(materials),
-    feeds = [];
+    feeds = [],
+    fans = [];
   // Separate depth planes keep the return riser clear of the supply cross-run.
   for (const [i, x, y, end] of [
     [0, 3.58, 2.42, -0.32],
@@ -49,11 +50,19 @@ export function buildSupplyFixtures(materials) {
   }
   // Chilled water exchanges heat with room air here. The rectangular outlets
   // enter the raised-floor plenum, rather than pretending a water pipe is a duct.
-  kit.box(cooling, [1.7, 0.92, 0.44], [0, 1.05, -5.02], 'room-fan-coil');
-  kit.box(cooling, [1.5, 0.53, 0.022], [0, 1.02, -4.788], 'coil-return-grille', kit.gasket);
-  for (let y = 0.8; y <= 1.25; y += 0.06)
-    kit.box(cooling, [1.48, 0.018, 0.025], [0, y, -4.77], 'coil-louvre', kit.steel);
-  kit.label(cooling, 'CHW / ROOM COIL', [0, 1.395, -4.787], 0.95, 0.12);
+  const airHandler = bank?.make('airHandler');
+  if (airHandler) {
+    airHandler.position.set(0, 0, -5.02);
+    cooling.add(airHandler);
+    airHandler.traverse((node) => {
+      if (/^room_air_fan_\d+$/.test(node.name)) fans.push(node);
+    });
+  } else {
+    kit.box(cooling, [1.7, 0.86, 0.44], [0, 1.02, -5.02], 'room-fan-coil');
+  }
+  // Name the actual function: this cabinet circulates air through a water coil.
+  // The compressors and refrigeration plant live in the central cooling room.
+  kit.label(cooling, 'AIR HANDLER / CHW', [0.12, 1.385, -4.776], 0.99, 0.075);
   for (const x of [-0.49, 0.49]) {
     kit.box(cooling, [0.34, 0.61, 0.3], [x, 0.3, -5.02], 'floor-plenum-outlet');
     kit.box(cooling, [0.44, 0.055, 0.4], [x, 0.0275, -5.02], 'sealed-floor-boot', kit.gasket);
@@ -139,6 +148,7 @@ export function buildSupplyFixtures(materials) {
     group,
     cooling,
     power,
+    fans,
     set(supply = { cooling: 'local', power: 'local' }, rackCount = 0) {
       cooling.visible = supply.cooling !== 'local';
       power.visible = supply.power !== 'local';
