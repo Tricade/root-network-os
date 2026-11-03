@@ -13,7 +13,7 @@ docker compose up -d --no-build --wait
 
 Open [http://127.0.0.1:18473](http://127.0.0.1:18473). `docker compose ps` shows readiness; `docker compose logs root` shows startup errors. Keep that directory/project name when upgrading: Compose uses it to identify your existing save volume.
 
-The image is `ghcr.io/tricade/root-network-os:latest`. Set `ROOT_IMAGE_TAG=1.7.0` in a `.env` file to pin this release instead. Version tags omit the leading `v` used by Git tags. There is no updater inside the container.
+The image is `ghcr.io/tricade/root-network-os:latest`. Set `ROOT_IMAGE_TAG=1.7.1` in a `.env` file to pin this release instead. Version tags omit the leading `v` used by Git tags. There is no updater inside the container.
 
 To build from a checkout instead of downloading an image:
 
@@ -74,10 +74,10 @@ docker compose config --quiet
 
 The smoke uses disposable, uniquely named resources. It tests every served runtime file, non-root/read-only execution, health, saving, stale revisions, foreign-origin rejection, a save upload during SIGTERM, container replacement and the previous-write backup. Normal `npm run check` covers origin validation and the existing browser/desktop service paths. CI builds and executes each architecture on a matching native runner; lint or image compilation alone is not a runtime pass.
 
-Verified baseline: Node **24.22.1**, Docker Engine **29.9.2**, Compose **5.6.1**, Buildx **0.38.1**. The official `node:24.22.1-bookworm-slim` multi-platform index is pinned by SHA-256 in the Dockerfile; Dependabot monitors it. Before changing versions, check the matching official sources:
+The container runs Node **26.13.0**. Builds use Docker Engine **29.9.2**, Compose **5.6.1** and Buildx **0.38.1**. The official `node:26.13.0-bookworm-slim` multi-platform index is pinned by SHA-256 in the Dockerfile; Dependabot monitors it. Before changing versions, check the matching official sources:
 
-- [Node 24.22.1 HTTP shutdown semantics](https://github.com/nodejs/node/blob/v24.22.1/doc/api/http.md#serverclosecallback): active requests drain before exit; the CLI allows 20 seconds, Compose 25 seconds.
-- [Official Node image source](https://github.com/nodejs/docker-node/tree/80f02a542da739e6a662451d1db66456a0dea253/24/bookworm-slim) and [Docker 29 release notes](https://docs.docker.com/engine/release-notes/29/).
+- [Node 26.13.0 HTTP shutdown semantics](https://github.com/nodejs/node/blob/v26.13.0/doc/api/http.md#serverclosecallback): active requests drain before exit; the CLI allows 20 seconds, Compose 25 seconds.
+- [Official Node image source](https://hub.docker.com/_/node) and [Docker 29 release notes](https://docs.docker.com/engine/release-notes/29/).
 - [Compose 5.6.1](https://github.com/docker/compose/tree/v5.6.1) and [Compose interpolation](https://docs.docker.com/reference/compose-file/interpolation/), including nested defaults for the published port.
 - [Dockerfile USER, COPY and HEALTHCHECK](https://docs.docker.com/reference/dockerfile/) and [native GitHub runner architectures](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
 - [GHCR publishing and anonymous pulls](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry). Release CI publishes with the repository token, never a stored personal registry password. The first package publication needs its visibility set to public in GitHub package settings; subsequent tags inherit it.

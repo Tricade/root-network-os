@@ -58,8 +58,8 @@ async function main() {
     else if (option === '--python') python = value;
     else throw new Error(`Unknown option ${option}`);
   }
-  if (Number(process.versions.node.split('.')[0]) !== 24)
-    throw new Error('This tool is verified with Node.js 24.');
+  if (![24, 26].includes(Number(process.versions.node.split('.')[0])))
+    throw new Error('Use Node.js 24 or 26 to build ROOT assets.');
   // Resolve symlinked parents before checking containment, including absent output paths.
   let parent = out;
   const suffix = [];

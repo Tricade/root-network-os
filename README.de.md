@@ -1,5 +1,5 @@
 [![Checks](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Tricade/root-network-os/actions/workflows/ci.yml)
-[![Vorschau 1.7.0](https://img.shields.io/badge/Preview-1.7.0-8ab4f8)](package.json)
+[![Vorschau 1.7.1](https://img.shields.io/badge/Preview-1.7.1-8ab4f8)](package.json)
 [![Lizenz: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![KI-Transparenz](https://img.shields.io/badge/AI-transparency_notice-6f42c1)](AI-DISCLOSURE.md)
 [![Auf Ko-fi unterstützen](https://img.shields.io/badge/Ko--fi-Support-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/tricade)
@@ -32,7 +32,7 @@ Dir gefällt ROOT? **Gib dem Repository einen ⭐ [Stern auf GitHub](https://git
 </p>
 
 <p align="center">
-  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Lokal im Browser · Weboberfläche und Ego-Ansicht · Deutsch und Englisch · Vorschau 1.7.0 · Entwicklung mit KI-Unterstützung" width="1200"></a>
+  <a href="AI-DISCLOSURE.md"><img src="screenshots/readme/facts.svg" alt="Lokal im Browser · Weboberfläche und Ego-Ansicht · Deutsch und Englisch · Vorschau 1.7.1 · Entwicklung mit KI-Unterstützung" width="1200"></a>
 </p>
 
 ## Vom ersten Rack zum Cyberbunker
@@ -222,7 +222,7 @@ Danach [127.0.0.1:18473](http://127.0.0.1:18473/) öffnen. Weboberfläche und 3D
 
 ### Lokal im Browser
 
-Benötigt wird **Node.js 24**, geprüft mit **24.22.1**. Repository klonen oder herunterladen und im Ordner starten:
+Benötigt wird **Node.js 24 oder 26**. Die CI prüft **24.22.1** und **26.13.0** unter Windows und Linux. Repository klonen oder herunterladen und im Ordner starten:
 
 ```sh
 node server.cjs
@@ -251,7 +251,7 @@ Danach **[127.0.0.1:18473](http://127.0.0.1:18473/)** öffnen. Unter Windows kan
 <details>
 <summary><strong>Vorschaustatus, technische Grenzen und Prüfungen</strong></summary>
 
-ROOT ist eine laufend entwickelte **Vorschau 1.7.0**. Balancing, Übersetzung, Barrierefreiheit und 3D-Darstellung freuen sich über Beiträge. Der Ausbau endet nicht nach sechs Racks. Die Datenprüfung akzeptiert derzeit bis zu 10.000 Racks, 10.000 Server und 1.000.000 Sektoren sowie 100 Stufen zentraler Anlagen. Nur der ausgewählte Raum wird gerendert. Eine erfolgreiche Datenprüfung am Maximum belegt keine gute Echtzeit-Performance bei dieser Größe.
+ROOT ist eine laufend entwickelte **Vorschau 1.7.1**. Balancing, Übersetzung, Barrierefreiheit und 3D-Darstellung freuen sich über Beiträge. Der Ausbau endet nicht nach sechs Racks. Die Datenprüfung akzeptiert derzeit bis zu 10.000 Racks, 10.000 Server und 1.000.000 Sektoren sowie 100 Stufen zentraler Anlagen. Nur der ausgewählte Raum wird gerendert. Eine erfolgreiche Datenprüfung am Maximum belegt keine gute Echtzeit-Performance bei dieser Größe.
 
 [Integrationsprüfung](docs/verification-construction.md), [Laufzeit-Hinweise](docs/runtime-1.4.md) und [Asset-Prüfungen](docs/asset-audit.md) dokumentieren Nachweise und Grenzen. Die Desktop-Paketprüfungen ergänzen die früheren Nachweise der Version 1.4; siehe [Prüfumfang und Grenzen](docs/desktop.md).
 

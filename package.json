@@ -1,10 +1,10 @@
 {
   "name": "root-network-os",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">=24 <25"
+    "node": ">=24 <25 || >=26 <27"
   },
   "description": "Local infrastructure simulation with a walkable underground data center",
   "main": "desktop/main.cjs",

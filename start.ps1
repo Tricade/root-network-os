@@ -61,8 +61,8 @@ if (Test-PortOpen) {
 $node = Get-Command node.exe -ErrorAction SilentlyContinue
 $nodePath = if ($node) { $node.Source } else { $null }
 if (-not $nodePath) {
-    Write-Host 'ROOT braucht Node.js v24.22.1. node.exe wurde im PATH nicht gefunden.' -ForegroundColor Red
-    Write-Host 'Installiere Node.js v24.22.1 oder stelle sicher, dass node.exe im PATH liegt.'
+    Write-Host 'ROOT braucht Node.js 24 oder 26. node.exe wurde im PATH nicht gefunden.' -ForegroundColor Red
+    Write-Host 'Installiere eine unterstützte Node.js-Version und füge node.exe zum PATH hinzu.'
     exit 1
 }
 if (-not (Test-Path -LiteralPath $serverPath -PathType Leaf)) {

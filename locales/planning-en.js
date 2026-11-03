@@ -228,6 +228,8 @@
       ['Geplante Maßnahmen', 'Scheduled tasks'],
       ['Nächsten Forschungszweig wählen', 'Choose the next research branch'],
       ['Als Nächstes', 'Coming up'],
+      ['Wartung beginnt in', 'Maintenance starts in'],
+      ['Wartung endet in', 'Maintenance ends in'],
       ['Keine terminierten Vorgänge', 'No scheduled items'],
       ['weitere Vorgänge', 'more items'],
       ['Noch keine aktiven Dienste', 'No active services yet'],
