@@ -2,6 +2,34 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const E = require('../engine.js');
 const model = import('../ui/dashboard-model.js');
+test('dashboard follows the advertised start, outage deadline and completion of the selected rack', async () => {
+  const { dashboardModel } = await model;
+  const s = E.createState(83);
+  s.credits = 10000;
+  assert.ok(E.act(s, 'buyRack').ok);
+  const rack = s.facility.racks[1];
+  rack.name = 'Nord & West';
+  const payload = { rackId: rack.id, components: ['cooling', 'power'], announce: true };
+  const quote = E.quoteHardware(s, 'upgradeRackBatch', payload);
+  const work = () => dashboardModel(E, s).upcoming.filter((row) => row.rackId);
+  assert.ok(E.act(s, 'upgradeRackBatch', payload).ok);
+  assert.deepEqual(work(), [
+    {
+      rackId: rack.id,
+      label: rack.name,
+      phase: 'Wartung beginnt in',
+      remaining: quote.noticeLead,
+      route: 'network',
+    },
+  ]);
+  E.advance(s, quote.noticeLead);
+  assert.equal(work()[0].phase, 'Wartung endet in');
+  assert.equal(work()[0].remaining, quote.duration);
+  E.advance(s, quote.duration);
+  assert.deepEqual(work(), []);
+  assert.ok(E.act(s, 'upgradeRackBatch', { ...payload, announce: false }).ok);
+  assert.equal(work()[0].phase, 'Wartung endet in');
+});
 test('dashboard and physical instruments agree with actual business and agent assignments', async () => {
   const { dashboardModel } = await model,
     { stationRows, STATION_CONFIGS } = await import('../room/station-content.js');

@@ -4,6 +4,7 @@ import { createDashboardAttention } from './dashboard-attention.js';
 /** Business health comes before the optional room tour in both presentations. */
 export function createDashboardUI(ctx) {
   const attention = createDashboardAttention(ctx);
+  const timelineLayouts = new WeakMap();
   let upcomingCount = 3;
   const getDashboardModel = () => dashboardModel(ctx.E, ctx.state);
   function commandOverview() {
@@ -15,10 +16,14 @@ export function createDashboardUI(ctx) {
     return `<span>${ctx.icon('timer')}${ctx.tr('Als Nächstes')}</span>${
       next
         .slice(0, upcomingCount)
-        .map(
-          ({ label, remaining: time, route, section, count }) =>
-            `<button class="text-button" ${section ? `data-attention-route="${route}" data-ops-section="${section}"` : `data-nav="${route}"`}><strong>${count ? count + ' · ' : ''}${ctx.esc(ctx.tr(label))}</strong><span>${ctx.duration(time)}</span></button>`,
-        )
+        .map(({ label, remaining: time, route, section, count, rackId, phase }) => {
+          const target = rackId
+            ? `data-facility-open="rack:${ctx.esc(rackId)}"`
+            : section
+              ? `data-attention-route="${route}" data-ops-section="${section}"`
+              : `data-nav="${route}"`;
+          return `<button class="text-button" ${target}><strong>${count ? count + ' · ' : ''}${ctx.esc(rackId ? label : ctx.tr(label))}</strong><span>${phase ? ctx.esc(ctx.tr(phase)) + ' ' : ''}<span data-upcoming-time>${ctx.duration(time)}</span></span></button>`;
+        })
         .join('') || `<span>${ctx.tr('Keine terminierten Vorgänge')}</span>`
     }${next.length > upcomingCount ? `<button class="text-button" data-upcoming-more>+${next.length - upcomingCount} ${ctx.tr('weitere Vorgänge')}</button>` : ''}${upcomingCount > 3 ? `<button class="text-button" data-upcoming-less>${ctx.tr('Weniger anzeigen')}</button>` : ''}`;
   }
@@ -61,12 +66,32 @@ export function createDashboardUI(ctx) {
       }
     });
     attention.updateAttention(model);
-    const upcomingPanel = ctx.$('[data-dashboard-upcoming]');
-    if (upcomingPanel) {
-      const content = upcoming(model);
-      if (upcomingPanel.innerHTML !== content && !upcomingPanel.contains(document.activeElement))
-        upcomingPanel.innerHTML = content;
-    }
+    const rows = model.upcoming.slice(0, upcomingCount);
+    // A countdown must tick in both dashboards without replacing a focused button every second.
+    const layout = JSON.stringify([
+      ctx.tr('Als Nächstes'),
+      upcomingCount,
+      model.upcoming.length,
+      rows.map((row) => [row.label, row.phase, row.route, row.section, row.count, row.rackId]),
+    ]);
+    ctx.$$('[data-dashboard-upcoming]').forEach((panel) => {
+      if (timelineLayouts.get(panel) !== layout) {
+        const focusRack = panel.contains(document.activeElement)
+          ? document.activeElement?.dataset.facilityOpen
+          : null;
+        panel.innerHTML = upcoming(model);
+        timelineLayouts.set(panel, layout);
+        if (focusRack)
+          [...panel.querySelectorAll('[data-facility-open]')]
+            .find((button) => button.dataset.facilityOpen === focusRack)
+            ?.focus({ preventScroll: true });
+      } else {
+        panel.querySelectorAll('[data-upcoming-time]').forEach((element, i) => {
+          const value = ctx.duration(rows[i].remaining);
+          if (element.textContent !== value) element.textContent = value;
+        });
+      }
+    });
     ctx.$$('[data-net-income]').forEach((el) => {
       el.classList.toggle('positive', model.net >= 0);
       el.classList.toggle('negative', model.net < 0);

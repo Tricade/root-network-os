@@ -143,6 +143,20 @@ export function dashboardModel(
       severity: 'normal',
     });
   const upcoming = [];
+  const rackWork = state.facility.operation;
+  if (rackWork?.kind === 'rack-batch') {
+    const rack = state.facility.racks.find((item) => item.id === rackWork.rackId);
+    if (rack) {
+      const announced = rackWork.noticeRemaining > 0;
+      upcoming.push({
+        label: rack.name,
+        rackId: rack.id,
+        phase: announced ? 'Wartung beginnt in' : 'Wartung endet in',
+        remaining: announced ? rackWork.noticeRemaining : rackWork.remaining,
+        route: 'network',
+      });
+    }
+  }
   if (project)
     upcoming.push({ label: project.name, remaining: project.remaining, route: 'research' });
   for (const order of state.operations.orders)
