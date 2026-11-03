@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">=24 <25"
+    "node": ">=24 <25 || >=26 <27"
   },
   "description": "Local infrastructure simulation with a walkable underground data center",
   "main": "desktop/main.cjs",

@@ -222,7 +222,7 @@ Danach [127.0.0.1:18473](http://127.0.0.1:18473/) öffnen. Weboberfläche und 3D
 
 ### Lokal im Browser
 
-Benötigt wird **Node.js 24**, geprüft mit **24.22.1**. Repository klonen oder herunterladen und im Ordner starten:
+Benötigt wird **Node.js 24 oder 26**. Die CI prüft **24.22.1** und **26.13.0** unter Windows und Linux. Repository klonen oder herunterladen und im Ordner starten:
 
 ```sh
 node server.cjs

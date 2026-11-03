@@ -14,7 +14,7 @@ For a substantial mechanic, migration or architecture change, discuss the intend
 
 ## Start a development instance
 
-Use Node.js 24 (verified with 24.22.1). Browser mode needs no package installation or compilation. Install the pinned dependencies for tests, formatting, lint and desktop development.
+Use Node.js 24.22.1 or 26.13.0 for the test suite. Desktop packaging uses 24.22.1. Browser mode needs no package installation or compilation. Install the pinned dependencies for tests, formatting, lint and desktop development.
 
 Fork `Tricade/root-network-os` on GitHub, then clone your fork. Replace `YOUR_ACCOUNT` below with your public GitHub handle. Existing contributors can use their current checkout after updating it without discarding local work.
 

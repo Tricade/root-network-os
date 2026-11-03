@@ -14,10 +14,15 @@ jobs:
   desktop:
     uses: ./.github/workflows/desktop-build.yml
   tests:
+    name: ${{ matrix.check }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - { os: ubuntu-latest, node: '24.22.1', check: 'tests (ubuntu-latest)' }
+          - { os: windows-latest, node: '24.22.1', check: 'tests (windows-latest)' }
+          - { os: ubuntu-latest, node: '26.13.0', check: 'tests Node 26 (ubuntu-latest)' }
+          - { os: windows-latest, node: '26.13.0', check: 'tests Node 26 (windows-latest)' }
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
@@ -26,7 +31,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '24.22.1'
+          node-version: ${{ matrix.node }}
           package-manager-cache: false
       - run: npm ci --ignore-scripts
       - run: npm audit --audit-level=moderate

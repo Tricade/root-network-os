@@ -222,7 +222,7 @@ Open [127.0.0.1:18473](http://127.0.0.1:18473/). The complete UI and 3D view run
 
 ### Local browser mode
 
-**Node.js 24** is required; **24.22.1** is the verified version. Clone or download the repository, then run from its directory:
+Use **Node.js 24 or 26**. CI exercises **24.22.1** and **26.13.0** on Windows and Linux. Clone or download the repository, then run from its directory:
 
 ```sh
 node server.cjs

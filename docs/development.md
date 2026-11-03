@@ -1,6 +1,6 @@
 # Development map
 
-ROOT runs directly from source with Node.js 24. The server has no third-party npm dependencies; Three.js 0.186.1 and glTF assets are bundled for the browser. See [CONTRIBUTING.md](../CONTRIBUTING.md) for an isolated instance and the test command.
+ROOT runs directly from source with Node.js 24 and 26. The server has no third-party npm dependencies; Three.js 0.186.1 and glTF assets are bundled for the browser. See [CONTRIBUTING.md](../CONTRIBUTING.md) for an isolated instance and the test command.
 
 | Area                   | Files                                                                | Responsibility                                                                                                 |
 | ---------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |

@@ -17,7 +17,7 @@ Committed runtime models live in `asset-pack/assets/`; their editable `.gltf`/`.
 
 ## Build environment
 
-Verified locally: **Node.js 24.22.1**, **Python 3.12.14**, **NumPy 2.5.4** and **Pillow 13.0.0**. Three.js **0.186.1** is vendored. The Python requirements pin NumPy and Pillow; the wrapper requires Python 3.12 for the checked Python targets.
+Supported hosts: **Node.js 24 and 26**. Generator baseline: **Node.js 24.22.1**, **Python 3.12.14**, **NumPy 2.5.4** and **Pillow 13.0.0**. Three.js **0.186.1** is vendored. The Python requirements pin NumPy and Pillow; the wrapper requires Python 3.12 for the checked Python targets.
 
 Version references: [Node 24.22.1 process API](https://github.com/nodejs/node/blob/v24.22.1/doc/api/child_process.md), [Python 3.12.14](https://www.python.org/downloads/release/python-31214/), [NumPy 2.5.4](https://github.com/numpy/numpy/releases/tag/v2.5.4), [Pillow 13.0.0](https://github.com/python-pillow/Pillow/releases/tag/13.0.0). Subprocesses are launched with argument arrays, without a shell. Generator output is resolved before containment checks; a nonempty destination is refused.
 

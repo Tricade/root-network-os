@@ -4,7 +4,7 @@ The application uses Node.js built-ins and vendored browser modules. Browser mod
 
 | Component           | Checked version  | Scope                                             |
 | ------------------- | ---------------- | ------------------------------------------------- |
-| Node.js             | 24.22.1          | Server, Node tests and furniture generator        |
+| Node.js             | 24.22.1, 26.13.0 | Server and tests on Windows/Linux; Docker uses 26 |
 | Three.js            | 0.186.1          | Local browser rendering and geometry tools        |
 | CPython             | 3.12.14          | Optional base/facility generation                 |
 | NumPy               | 2.5.4            | Optional procedural geometry/textures             |
@@ -14,6 +14,8 @@ The application uses Node.js built-ins and vendored browser modules. Browser mod
 | Prettier            | 3.9.10           | Development-only formatting                       |
 
 Development dependencies are pinned in `package-lock.json` and installed with `npm ci --ignore-scripts`. Build/lint tools are not loaded by browser mode. Packaged desktop mode loads the separately declared updater runtime dependencies. Node 24.22.1 meets ESLint 10.14.0's `^20.19.0 || ^22.13.0 || >=24` requirement. Flat configuration follows the [exact ESLint 10.14.0 documentation](https://github.com/eslint/eslint/blob/v10.14.0/docs/src/use/configure/configuration-files.md); formatting follows the [Prettier 3.9.10 configuration documentation](https://github.com/prettier/prettier/blob/3.9.10/docs/configuration.md). CommonJS/native-module compatibility is checked against [Node 24.22.1 modules](https://github.com/nodejs/node/blob/v24.22.1/doc/api/modules.md). Lint and parser success alone are not browser compatibility evidence.
+
+The Docker image pins [Node 26.13.0 LTS](https://nodejs.org/en/blog/release/v26.13.0) by digest. The source server and test suite support both major versions. Desktop packaging uses [Node 24.22.1](https://nodejs.org/en/blog/release/v24.22.1) alongside Electron’s embedded runtime.
 
 ## Three.js source
 

@@ -1,6 +1,6 @@
 # Windows launcher
 
-`ROOT starten.cmd` selects PowerShell 7 when available, with Windows PowerShell 5.1 as fallback. `start.ps1` resolves the application directory from its own location and finds `node.exe` on PATH. Install Node.js 24 before starting; no machine-specific installation path is assumed.
+`ROOT starten.cmd` selects PowerShell 7 when available, with Windows PowerShell 5.1 as fallback. `start.ps1` resolves the application directory from its own location and finds `node.exe` on PATH. Install Node.js 24 or 26 before starting; no machine-specific installation path is assumed.
 
 The launcher targets loopback port 18473 and the local `data/` directory. A matching ROOT 1.4 health response reuses the listener; a conflicting or older listener produces a message. Otherwise it starts the server in a hidden process, redirects logs into `data/`, waits for a bounded health response and opens the local page. `-NoBrowser` suppresses browser opening.
 
