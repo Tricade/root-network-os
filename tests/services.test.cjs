@@ -88,7 +88,7 @@ test('legacy v3 migration keeps assets, balances and contractual promises', () =
   delete s.business;
   s.credits = 14000000;
   const copy = E.normalizeState(s);
-  assert.equal(copy.version, 9);
+  assert.equal(copy.version, 10);
   assert.equal(copy.credits, s.credits);
   assert.deepEqual(copy.jobs, s.jobs);
   assert.deepEqual(copy.servers, s.servers);

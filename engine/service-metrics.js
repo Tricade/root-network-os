@@ -7,19 +7,12 @@
   'use strict';
   return function (ctx) {
     const { clamp, RESOURCES, fraction, zeroResources } = ctx;
-    function serviceMetrics(s, base, hardware, customers) {
-      const research = ctx.researchEffects(s);
+    function serviceMetrics(s, base, hardware, customers, research) {
       const services = ctx.serviceSnapshot(s, hardware, customers);
       const active = s.agents.filter((a) => ctx.agentProductive(s, a, customers.assignments));
       const engineers = active
         .filter((a) => a.role === 'engineer')
         .reduce((sum, a) => sum + a.level * ctx.agentEffects(a).care, 0);
-      const analysts = active
-        .filter((a) => a.role === 'analyst')
-        .reduce((sum, a) => sum + a.level * ctx.agentEffects(a).research, 0);
-      const researchFocus = active
-        .filter((a) => a.focus === 'research')
-        .reduce((sum, a) => sum + a.level * ctx.agentEffects(a).research, 0);
       const temperature =
         services.rooms.reduce((sum, r) => sum + r.temperature * r.racks, 0) /
         Math.max(1, s.facility.racks.length);
@@ -119,12 +112,6 @@
           total ? ((workPerSecond * weights[i]) / total) * readiness[i] : 0,
         ]),
       );
-      const researchPerSecond = base.onlineServers
-        ? research.research *
-          (0.008 + analysts * 0.026 + researchFocus * 0.012) *
-          (1 + (0.6 * (s.upgrades.synthesis || 0)) / ((s.upgrades.synthesis || 0) + 12)) *
-          base.hardwareFactor
-        : 0;
       return {
         ...base,
         heat,
@@ -133,7 +120,6 @@
         upkeep,
         incomePerSecond: recoveryAllowance > 0 ? 0.08 : rawIncome,
         workPerSecond,
-        researchPerSecond,
         jobRates,
         serviceIncome: services.gross,
         serviceModel: services,

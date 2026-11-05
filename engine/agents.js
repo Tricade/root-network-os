@@ -11,10 +11,14 @@
     const cashReason = (...args) => context.cashReason(...args);
     // Above the bounded maximum passive research forgone during this short
     // assignment, so developing an analyst cannot make research missions worse.
-    const missionResearch = (a) =>
-      Math.ceil(
-        8 + a.level * (a.role === 'analyst' ? 18 : 9) + (a.focus === 'research' ? 6 * a.level : 0),
-      );
+    function missionResearch(a, terms = context.RESEARCH_TERMS) {
+      if (terms === 1)
+        return (
+          8 + a.level * (a.role === 'analyst' ? 18 : 9) + (a.focus === 'research' ? 6 * a.level : 0)
+        );
+      const expertise = context.researchExpertise(a.level, a.role, a.focus);
+      return Math.ceil(6 + 36 * context.researchStaffShare(expertise));
+    }
 
     function getAgentOperations(s) {
       const customers = context.customerReadModel(s);
@@ -147,7 +151,7 @@
       if (assignment.kind === 'diagnose') s.resilience.agentEffects.diagnoseRemaining = 1200;
       else if (assignment.kind === 'optimize') s.resilience.agentEffects.optimizeRemaining = 900;
       else if (assignment.kind === 'research') {
-        const reward = missionResearch(agent);
+        const reward = missionResearch(agent, context.readResearchTerms(assignment.terms));
         s.research = Math.min(1e15, s.research + reward);
         addLog(
           s,

@@ -107,11 +107,14 @@
           if (total !== expected) throw new Error('Unplausible Einsatzdauer.');
           if (num(x.cooldownUntil, 'agent.cooldownUntil', 0, 1e15) > s.time)
             throw new Error('Agent kann während einer Abklingzeit nicht im Einsatz sein.');
+          if (a.terms !== undefined && a.kind !== 'research')
+            throw new Error('Ungültiger Agenteneinsatz.');
           assignment = {
             kind: a.kind,
             label: str(a.label, 'agent.assignment.label', 48),
             remaining: num(a.remaining, 'agent.assignment.remaining', 0, total),
             total,
+            ...(a.terms === undefined ? {} : { terms: context.readResearchTerms(a.terms) }),
           };
         }
         return {

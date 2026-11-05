@@ -146,7 +146,7 @@ test('save validator rejects forged costs, target levels, consent and overlappin
   }
   const legacy = fixture();
   legacy.version = 8;
-  assert.equal(E.normalizeState(legacy).version, 9);
+  assert.equal(E.normalizeState(legacy).version, 10);
 });
 test('queue projects batch targets, honors budget and starts a single shared outage', () => {
   const s = fixture(),

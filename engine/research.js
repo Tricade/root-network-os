@@ -6,6 +6,41 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function (ctx) {
+    const RESEARCH_TERMS = 2;
+
+    function readResearchTerms(value) {
+      // Older paid work has no marker and keeps its original quote.
+      const terms = value === undefined ? 1 : value;
+      if (terms !== 1 && terms !== RESEARCH_TERMS)
+        throw new Error('Ungültige Forschungsbedingungen.');
+      return terms;
+    }
+
+    function researchExpertise(level, role, focus) {
+      return level * ((role === 'analyst' ? 0.7 : 0) + (focus === 'research' ? 0.3 : 0));
+    }
+
+    function researchStaffShare(expertise) {
+      return expertise / (expertise + 5);
+    }
+
+    function synthesisFactor(level) {
+      return 1 + (0.6 * level) / (level + 12);
+    }
+
+    function passiveResearchRate(s, activeAgents, hardwareFactor, researchFactor) {
+      if (!hardwareFactor || ctx.globalIncident(s)) return 0;
+      const expertise = activeAgents.reduce(
+        (sum, a) =>
+          sum + researchExpertise(a.level, a.role, a.focus) * ctx.agentEffects(a).research,
+        0,
+      );
+      // The starter analyst is useful immediately. More levels or specialists
+      // share the same lab, so they add less output as the team grows.
+      const base = 0.004 + 0.048 * researchStaffShare(expertise);
+      return base * synthesisFactor(s.upgrades.synthesis || 0) * researchFactor * hardwareFactor;
+    }
+
     function researchDefinition(id) {
       return (
         ctx.TECHNOLOGIES.find((n) => n.id === id) ||
@@ -13,11 +48,22 @@
         null
       );
     }
-    function researchPrice(s, id, level = s.upgrades[id] || 0, sector = s.sector) {
+    function researchPrice(
+      s,
+      id,
+      level = s.upgrades[id] || 0,
+      sector = s.sector,
+      terms = RESEARCH_TERMS,
+    ) {
       const unique = ctx.TECHNOLOGIES.find((n) => n.id === id);
-      if (unique) return unique.cost;
+      if (unique) return terms === 1 ? unique.legacyCost : unique.cost;
       const def = ctx.catalog.research.find((n) => n.id === id);
-      return def ? ctx.cost({ sector, upgrades: { [id]: level } }, 'research', id) : Infinity;
+      if (!def) return Infinity;
+      const raw =
+        terms === 1
+          ? def.legacyBaseCost * Math.pow(1.48, level) * (1 + (sector - 1) * 0.12)
+          : def.baseCost * Math.pow(1.62, level);
+      return Math.ceil(Math.min(1e300, raw));
     }
     function quoteResearch(s, id) {
       const def = researchDefinition(id);
@@ -98,6 +144,7 @@
         remaining: q.duration,
         cost: q.cost,
         sector: s.sector,
+        terms: RESEARCH_TERMS,
       };
       ctx.addLog(s, 'system', `Forschungsprojekt gestartet: ${researchDefinition(p.id).name}.`);
       return { ok: true, message: 'Forschungsprojekt gestartet. Wirkung folgt nach Abschluss.' };
@@ -137,6 +184,12 @@
       };
     }
     return {
+      RESEARCH_TERMS,
+      readResearchTerms,
+      researchExpertise,
+      researchStaffShare,
+      synthesisFactor,
+      passiveResearchRate,
       researchDefinition,
       researchPrice,
       quoteResearch,

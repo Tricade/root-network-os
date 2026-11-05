@@ -42,7 +42,7 @@ Twenty original raster illustrations supply project, research, achievement, deci
 
 ## State and verification
 
-Schema 9 stores priorities, customer growth, maintenance and capital plans. Old saves migrate with conservative defaults. Tests cover payment, resource conservation, constrained execution, failure and cancellation paths, offline equivalence and save validation. See [research rules](research.md), [development boundaries](development.md) and [verification scope](verification-planning.md).
+The save stores priorities, customer growth, maintenance and capital plans. Old saves migrate with conservative defaults. Tests cover payment, resource conservation, constrained execution, failure and cancellation paths, offline equivalence and save validation. See [research rules](research.md), [development boundaries](development.md) and [verification scope](verification-planning.md).
 
 ## Shared rack maintenance
 
@@ -50,4 +50,4 @@ Select power, cooling and/or switch when reviewing a rack upgrade. One to three 
 
 Customer notice is **optional and off by default**. A simulated mail to active customers in the rack’s room costs `ceil(20 + 5 × notified contracts + 8% × upgrade cost)`. The rack stays online for 120 seconds before work. Only the satisfaction loss caused by that planned outage is reduced by 50%; unrelated shortages, actual delivery, SLA deficits and cancellation rules are unchanged. Notice cannot be bought without an active customer. The paid price, recipients and timing survive reload and offline progression.
 
-The Maintenance communications research (sector 4, 450 RP, two hours) reduces the extra fee by 25% and the notice period to 60 seconds. Normal maintenance stays available without research or notice. Older saves migrate to schema 9; cached older clients must reload before writing so they cannot discard a paid maintenance window.
+The Maintenance communications research (sector 4, 2,250 RP, two hours) reduces the extra fee by 25% and the notice period to 60 seconds. Normal maintenance stays available without research or notice. Older saves migrate to schema 10. Reload a cached older client before making changes.

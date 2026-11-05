@@ -51,6 +51,7 @@
           label: option.label,
           remaining: option.duration,
           total: option.duration,
+          ...(option.key === 'research' ? { terms: context.RESEARCH_TERMS } : {}),
         };
         addLog(
           s,

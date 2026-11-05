@@ -38,7 +38,8 @@
       ...ctx.BUSINESS_RESEARCH,
       ...ctx.COMPUTE_RESEARCH,
     };
-    const costs = [0, 200, 500, 1200, 2600, 5000, 10000];
+    const legacyCosts = [0, 200, 500, 1200, 2600, 5000, 10000];
+    const costs = [0, 350, 1300, 3600, 9600, 19200, 48000];
     const seconds = [0, 1800, 7200, 14400, 28800, 43200, 86400];
     const sectors = [0, 2, 3, 4, 6, 8, 10];
     const EXPANSION_TECHNOLOGIES = Object.entries(rows).flatMap(([tree, list]) =>
@@ -55,6 +56,7 @@
             ? 'Spezialisierung mit Zielkonflikt. Pro Zweig ist eine aktiv; ein Wechsel kostet erneut Punkte und Laborzeit.'
             : 'Verbessert bestehende Betriebsabläufe. Der Zusatznutzen nimmt mit dem Forschungsstand ab; Hardware und Versorgung bleiben erforderlich.',
         cost: costs[tier],
+        legacyCost: legacyCosts[tier],
         duration: seconds[tier],
         sector: sectors[tier],
         ...(tier === 6 ? { doctrine: tree } : {}),

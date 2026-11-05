@@ -42,7 +42,7 @@
         reward: Math.round(
           def.pay * factor * scale * (kind === 'ai' ? 1 + 0.12 * (gpuDemand - 1) : 1),
         ),
-        science: Math.max(1, Math.round(def.science * factor * scale)),
+        science: Math.max(1, Math.round(def.science * Math.sqrt(factor) * scale)),
         rep: Math.max(1, Math.round(def.rep * factor)),
         load: Math.round(def.load * factor * scale * 10) / 10,
       };

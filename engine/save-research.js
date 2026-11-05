@@ -45,7 +45,8 @@
         )
           bad();
         const sector = ctx.checkedNumber(p.sector, def.sector || 1, s.sector, true);
-        const cost = ctx.researchPrice(s, p.id, level, sector);
+        const terms = ctx.readResearchTerms(p.terms);
+        const cost = ctx.researchPrice(s, p.id, level, sector, terms);
         if (p.cost !== cost) bad();
         s.lab.project = {
           id: p.id,
@@ -55,6 +56,7 @@
           remaining: ctx.checkedNumber(p.remaining, Number.MIN_VALUE, total),
           cost,
           sector,
+          ...(p.terms === undefined ? {} : { terms }),
         };
       }
       s.version = 7;

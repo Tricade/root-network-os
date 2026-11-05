@@ -24,3 +24,14 @@ A 600-second worker run matched direct simulation in both state and report. Auto
 One simulated minute in the bounded performance probe took 13 ms with 24 servers/eight contracts, and 87 ms with 240 servers/56 contracts; equivalent empty-customer probes took 12 and 64 ms. These measurements are hardware-dependent and do not prove acceptable performance at the maximum save limits. Only the selected physical room is rendered. Customer summaries reuse shared resource and assignment reads, rather than copying the entire portfolio for each display.
 
 Run `node tools/balance/bench.cjs` for the broader reproducible fixture suite. It can take substantially longer than the bounded probes above. Run `npm run check` and the native Electron smoke test for the maintained regression checks. Tests that are skipped, timed out or not executed are not passing evidence.
+
+## Research economy comparison
+
+On 2026-11-05, Node 24.22.1 ran identical fictional starting states on v1.7.1 and the rebalanced schema 10. Figures show additional research points, including completed jobs. Each interval starts from a separate copy of the fixture.
+
+| Scenario                                            | 1 h before | 1 h after | 12 h before | 12 h after |
+| --------------------------------------------------- | ---------: | --------: | ----------: | ---------: |
+| Fresh network, seed 8701                            |      170.6 |      48.2 |     1,471.1 |      387.5 |
+| Fitted 24-server fleet, seed 1141, level-10 analyst |    2,243.8 |     504.6 |    27,661.3 |    6,515.8 |
+
+The fresh-network test starts a 25-point lab project within 15 minutes. The fitted fleet completes 68 jobs in the first hour in both runs. Twelve hours is the existing cap for one offline catch-up. The regression tests also cover the passive-rate bound and the migration of booked prices and rewards.
