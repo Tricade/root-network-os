@@ -11,15 +11,16 @@
       research: { name: 'Forschungsprojekt', duration: 3600 },
       tuning: { name: 'Kapazitätsanalyse', duration: 7200 },
     };
-    function projectReward(kind, level, role, focus, synthesis) {
+    function projectReward(kind, level, role, focus, synthesis, terms = ctx.RESEARCH_TERMS) {
       const duration = PROJECTS[kind].duration;
-      const foregone =
-        (role === 'analyst' ? level * 0.026 : 0) + (focus === 'research' ? level * 0.012 : 0);
+      const expertise = ctx.researchExpertise(level, role, focus);
+      const rate =
+        terms === 1
+          ? 0.03 +
+            ((role === 'analyst' ? level * 0.026 : 0) + (focus === 'research' ? level * 0.012 : 0))
+          : 0.012 + 0.048 * ctx.researchStaffShare(expertise);
       return Math.ceil(
-        duration *
-          (0.03 + foregone) *
-          (1 + (0.6 * synthesis) / (synthesis + 12)) *
-          (kind === 'research' ? 1.5 : 1.15),
+        duration * rate * ctx.synthesisFactor(synthesis) * (kind === 'research' ? 1.5 : 1.15),
       );
     }
     function projectQuote(s, p) {
@@ -71,6 +72,7 @@
         role: a.role,
         focus: a.focus,
         synthesis: s.upgrades.synthesis || 0,
+        terms: ctx.RESEARCH_TERMS,
         research: q.research,
         reputation: q.reputation,
       });

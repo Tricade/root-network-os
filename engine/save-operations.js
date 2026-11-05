@@ -82,8 +82,9 @@
           throw new Error('Ungültiges Agentenprojekt.');
         busy.add(a.id);
         const synthesis = n(v.synthesis, 0, ctx.MAX_RESEARCH_LEVEL, true),
+          terms = ctx.readResearchTerms(v.terms),
           cost = Math.ceil(180 * Math.sqrt(a.level) * (def.duration / 1800));
-        const research = ctx.projectReward(v.kind, a.level, a.role, a.focus, synthesis),
+        const research = ctx.projectReward(v.kind, a.level, a.role, a.focus, synthesis, terms),
           reputation = v.kind === 'audit' ? Math.ceil(15 * Math.sqrt(a.level)) : 0;
         if (v.cost !== cost || v.research !== research || v.reputation !== reputation)
           throw new Error('Veränderte Projektzusage.');
@@ -97,6 +98,7 @@
           role: a.role,
           focus: a.focus,
           synthesis,
+          ...(v.terms === undefined ? {} : { terms }),
           research,
           reputation,
         };

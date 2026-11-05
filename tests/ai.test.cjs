@@ -66,7 +66,7 @@ test('v1/v2 saves still migrate all pre-existing servers, racks, jobs, and backu
   ]) {
     const input = require('./fixtures/' + file);
     const migrated = normalizeState(input);
-    assert.equal(migrated.version, 9, file);
+    assert.equal(migrated.version, 11, file);
     assert.equal(migrated.servers.length, input.servers.length, `${file}: no server lost`);
     assert.deepEqual(
       migrated.servers.map((server) => server.type),

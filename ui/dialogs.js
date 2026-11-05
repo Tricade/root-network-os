@@ -14,7 +14,12 @@ export function createDialogsUI(ctx) {
     const m = ctx.E.getMetrics(ctx.state),
       goal = Math.min(m.serverLimit, 2 + ctx.state.sector),
       goalJobs = ctx.state.sector * 3;
-    return `<p class="modal-intro">Erschließe Sektor ${ctx.state.sector + 1}. Dein bestehendes Netzwerk bleibt vollständig erhalten. Neue Verträge wachsen mit deinem Sektor; die nächsten Ausbauschritte werden anspruchsvoller.</p><div class="breakdown"><div class="status-row"><span>Server im Betrieb</span><strong class="${ctx.state.servers.length >= goal ? 'positive' : ''}">${ctx.state.servers.length} / ${goal}</strong></div><div class="status-row"><span>Aufträge insgesamt abgeschlossen</span><strong class="${ctx.state.counters.jobs >= goalJobs ? 'positive' : ''}">${ctx.state.counters.jobs} / ${goalJobs}</strong></div><div class="status-row"><span>Erschließungskosten</span><strong>${ctx.fmt(m.sectorCost)} CR</strong></div><div class="status-row"><span>Danach: Server / Agenten</span><strong>${ctx.E.getFacilityLayout({ ...ctx.state, sector: ctx.state.sector + 1 }).serverLimit} / ${Math.min(12, 3 + (ctx.state.sector + 1) * 2)} Plätze</strong></div></div>${ctx.actionButton('expandSector', `${ctx.icon('expand')}Sektor ${ctx.state.sector + 1} erschließen · ${ctx.fmt(m.sectorCost)} CR`, {}, 'primary block')}<p class="policy-explainer">Auch nach dem Ausbau aller Plätze kannst du dein Netzwerk über Stufen, Forschung und weitere Sektoren weiterentwickeln.</p>`;
+    const budgetWarning = ctx.E.backupBudgetWarning(
+      ctx.state,
+      ctx.state.sector + 1,
+      ctx.state.servers.length,
+    );
+    return `<p class="modal-intro">Erschließe Sektor ${ctx.state.sector + 1}. Dein bestehendes Netzwerk bleibt vollständig erhalten. Neue Verträge wachsen mit deinem Sektor; die nächsten Ausbauschritte werden anspruchsvoller.</p><div class="breakdown"><div class="status-row"><span>Server im Betrieb</span><strong class="${m.onlineServers >= goal ? 'positive' : ''}">${m.onlineServers} / ${goal}</strong></div><div class="status-row"><span>Aufträge insgesamt abgeschlossen</span><strong class="${ctx.state.counters.jobs >= goalJobs ? 'positive' : ''}">${ctx.state.counters.jobs} / ${goalJobs}</strong></div><div class="status-row"><span>Erschließungskosten</span><strong>${ctx.fmt(m.sectorCost)} CR</strong></div><div class="status-row"><span>Danach: Server / Agenten</span><strong>${ctx.E.getFacilityLayout({ ...ctx.state, sector: ctx.state.sector + 1 }).serverLimit} / ${Math.min(12, 3 + (ctx.state.sector + 1) * 2)} Plätze</strong></div></div>${budgetWarning ? `<p class="modal-alert">${ctx.esc(ctx.tr(budgetWarning))}</p>` : ''}${ctx.actionButton('expandSector', `${ctx.icon('expand')}Sektor ${ctx.state.sector + 1} erschließen · ${ctx.fmt(m.sectorCost)} CR`, {}, 'primary block')}<p class="policy-explainer">Auch nach dem Ausbau aller Plätze kannst du dein Netzwerk über Stufen, Forschung und weitere Sektoren weiterentwickeln.</p>`;
   }
 
   function helpModal() {
@@ -113,6 +118,7 @@ export function createDialogsUI(ctx) {
       'incident-confirm': 'Folgen deiner Entscheidung',
       'agent-task': 'Agent gezielt einsetzen',
       'agent-upgrade': 'Agent-Upgrade prüfen',
+      'agent-specialty': 'Agent spezialisieren',
       'personnel-confirm': 'Personalentscheidung prüfen',
       'hardware-shop': 'Hardware einbauen',
       'hardware-move': 'Umsetzen / Umpatchen',
@@ -128,6 +134,7 @@ export function createDialogsUI(ctx) {
     else if (type === 'changelog') content = ctx.changelogModal();
     else if (type === 'notifications') content = ctx.notificationModal();
     else if (type === 'agent-upgrade') content = ctx.agentUpgradeModal(extra);
+    else if (type === 'agent-specialty') content = ctx.agentSpecialtyModal(extra);
     else if (type === 'research-confirm') content = ctx.researchConfirm(extra);
     else if (type === 'business-confirm') content = ctx.businessConfirm(extra);
     else if (type === 'operations-confirm') content = ctx.operationsConfirm(extra);

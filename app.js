@@ -508,6 +508,7 @@ import { createRoom } from './room.js';
           'resolveIncident',
           'dispatchAgent',
           'upgradeAgent',
+          'specializeAgent',
           'hireCandidate',
           'dismissAgent',
         ].includes(action)

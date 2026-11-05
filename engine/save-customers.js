@@ -64,7 +64,7 @@
           !roomIds.has(v.roomId) ||
           !ctx.CUSTOMER_TERMS.includes(v.term) ||
           !['active', 'setup'].includes(v.stage) ||
-          !['', 'setup', 'support', 'retention'].includes(v.work) ||
+          !['', 'setup', 'support', 'retention', 'growth'].includes(v.work) ||
           (v.stage === 'setup' ? v.work !== 'setup' : v.work === 'setup') ||
           !['', 'outage', 'question', 'observing'].includes(v.issue) ||
           !['', 'sla', 'budget', 'consolidation', 'competitor'].includes(v.departure)
@@ -75,9 +75,12 @@
         roomCount.set(v.roomId, count);
         const workRemaining = num(v.workRemaining, 0, 1200),
           workTotal = num(v.workTotal, 0, 1200);
+        const growthUnits =
+          v.work === 'growth' ? num(v.growthUnits, 1, Math.min(10, 1e6 - c.units), true) : 0;
         if (
           Boolean(v.work) !== Boolean(workRemaining) ||
           (v.work && ![600, 1200].includes(workTotal)) ||
+          (growthUnits ? workTotal !== 600 : v.growthUnits !== undefined) ||
           workRemaining > workTotal ||
           (!v.work && (workTotal || v.agentId !== null)) ||
           Boolean(v.notice) !== Boolean(v.departure)
@@ -110,6 +113,7 @@
           departure: v.departure,
           reviewAt: num(v.reviewAt, 0, s.time + 21600),
           work: v.work,
+          ...(growthUnits ? { growthUnits } : {}),
           workRemaining,
           workTotal,
           agentId: v.agentId,

@@ -92,7 +92,7 @@ export function createAttentionCards(ctx) {
           `<span data-attention-contract-time="${ctx.esc(c.id)}">${ctx.duration(c.notice || c.remaining || c.term)}</span>`,
         ],
       ])}
-      ${c.work ? `<p>${text(c.work === 'setup' ? 'Einrichtung' : 'Betreuung')} · ${agent ? ctx.esc(agent.name) : text('Wartet auf einen freien Agenten')}</p>` : ''}
+      ${c.work ? `<p>${text(c.work === 'setup' ? 'Einrichtung' : c.work === 'growth' ? 'Kundenerweiterung' : 'Betreuung')} · ${agent ? ctx.esc(agent.name) : text('Wartet auf einen freien Agenten')}</p>` : ''}
       ${
         c.work && !c.agentId
           ? `<label class="field-label">${text('Agent auswählen')}<select class="select" data-customer-agent="${ctx.esc(c.id)}"><option value="">${text('Verfügbarer Agent')}</option>${ctx

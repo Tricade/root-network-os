@@ -47,3 +47,9 @@ Illustration hover changes only the frame color; SVGs do not receive pointer eve
 **Review upgrade** opens a measured before/after comparison before any payment. It shows actual project and research rates, incident risk, server wear, the unit's hourly cost, standard customer-work time, management potential and research-assignment reward. The current environment and all caps are included; a maxed workforce bonus can mean higher wages without more current project work. The comparison is a snapshot at opening, not a promise of future utilization.
 
 Wages grow with level to the power of 0.65. Customer work reaches its level-based speed cap at 1.5×; room leadership remains capped at 20%, and the fleet's ordinary workforce multiplier at 25%. Roles, focus and traits affect the result. Current paid customer work, missions and long projects lock development and focus changes. A completed purchase closes the old quote before another purchase is possible.
+
+## Specializations and customer deadlines
+
+At level 14, an available agent can purchase one specialization for 40% of the quoted next level price. Customer service improves provisioning, support and retention. Engineers can specialize in preventive rack maintenance preparation. Project review adds throughput while the agent contributes to regular operations, up to 15 percentage points for the team. Bonuses grow with diminishing returns above level 14. A new specialization replaces the old one, and changing it uses the current price.
+
+Automatic staffing assigns free agents to queued SLA support or retention first, then to paid work with delivery deadlines and ordinary setup. The fastest available agent is assigned first. In-progress assignments continue with their current agent. Project offer selection estimates each candidate's time using the same shared resource and priority rules as active work.

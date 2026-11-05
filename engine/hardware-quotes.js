@@ -6,11 +6,10 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function createDomain(context) {
-    const { catalog, RACKS_PER_ROOM, CENTRAL_SYSTEMS, own } = context;
+    const { catalog, CENTRAL_SYSTEMS, own } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
     const cashReason = (...args) => context.cashReason(...args);
     const centralQuote = (...args) => context.centralQuote(...args);
-    const constructionQuote = (...args) => context.constructionQuote(...args);
     const cost = (...args) => context.cost(...args);
     const fitServer = (...args) => context.fitServer(...args);
     const getFacilityLayout = (...args) => context.getFacilityLayout(...args);
@@ -24,10 +23,8 @@
 
     function quoteHardware(s, action, payload = {}) {
       payload = payload && typeof payload === 'object' && !Array.isArray(payload) ? payload : {};
-      if (action === 'buildServiceRoom')
-        return constructionQuote(s, 'service', 1, payload.roomType);
-      if (action === 'buildRoom' || action === 'buildFloor')
-        return constructionQuote(s, action === 'buildRoom' ? 'room' : 'floor', payload.floor);
+      const construction = context.quoteConstructionAction(s, action, payload);
+      if (construction) return construction;
       const quote = (
         label,
         description,
@@ -68,13 +65,13 @@
         const rooms = getFacilityLayout(s).rooms,
           room = payload.roomId
             ? rooms.find((room) => room.id === payload.roomId)
-            : rooms.find((room) => room.rackCount < RACKS_PER_ROOM);
+            : rooms.find((room) => room.rackCount < room.rackCapacity);
         const reason =
           s.facility.racks.length >= rackLimit(s)
             ? 'Die Standortgrenze für Racks ist erreicht.'
             : !room
               ? 'Kein freier ausgebauter Rackplatz. Baue zuerst einen Serverraum.'
-              : room.rackCount >= RACKS_PER_ROOM
+              : room.rackCount >= room.rackCapacity
                 ? 'Dieser Serverraum ist voll. Wähle einen anderen Raum oder baue zusätzliche Fläche.'
                 : locked || context.roomState(s, room.id)?.conversion
                   ? 'Während einer Krise oder laufenden Infrastrukturmaßnahme nicht verfügbar.'
@@ -131,6 +128,8 @@
                 : [];
             })()
           : [];
+        const backupWarning = context.backupBudgetWarning(s, s.sector, s.servers.length + 1);
+        if (backupWarning) warnings.push(backupWarning);
         return quote(
           'Server einsetzen',
           `${price} Credits; Einbau in ${rack ? rack.name + ' U' + ((placement && placement.unit) || '?') : 'einen freien Rackplatz'} an Port ${(placement && placement.port) || '?'}.`,

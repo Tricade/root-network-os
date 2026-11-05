@@ -61,6 +61,11 @@ export function createWorkforceUI(ctx) {
         .filter((a) => a.id === selected)
         .map((a) => {
           const op = ops.agents.find((x) => x.id === a.id);
+          const specialty = ctx.E.agentSpecialties[a.specialty];
+          const training =
+            a.level >= ctx.E.agentSpecialtyLevel
+              ? `<button class="button block" data-modal="agent-specialty" data-id="${a.id}">${ctx.tr('Spezialisierung prüfen')}${specialty ? ' · ' + ctx.esc(ctx.tr(specialty.name)) : ''}</button>`
+              : `<small>${ctx.tr('Spezialisierungen sind ab Stufe 14 verfügbar.')}</small>`;
           return `<section class="agent-card ${op.assignment ? 'on-assignment' : ''}"><div class="agent-card-top">${ctx.avatar(a)}<span class="tag ${a.role === 'analyst' ? 'blue' : a.role === 'engineer' ? 'amber' : 'green'}">STUFE ${a.level}</span></div><h3>${ctx.esc(a.name)}</h3><p class="role-desc">${ctx.E.catalog.roles[a.role].name} · ${ctx.E.catalog.roles[a.role].description}</p>${ctx.personnelPerks(a)}<div class="candidate-wage"><span>Betriebskosten / Stunde</span><strong data-personnel-wage="${a.id}"></strong></div><div class="agent-assignment"><span class="assignment-label">${ctx.icon(op.assignment ? 'timer' : 'pulse')}${op.assignment ? 'SONDEREINSATZ' : 'EINSATZSTATUS'}</span><strong data-agent-status="${a.id}"></strong>${op.assignment ? `<div class="progress-track"><div class="progress-fill blue" data-agent-progress="${a.id}"></div></div>` : ''}<button class="button block ${op.assignment ? 'ghost' : 'primary'}" data-modal="agent-task" data-id="${a.id}">${ctx.icon('jobs')}${op.assignment ? 'Einsatz ansehen' : 'Einsatz planen'}</button></div><div class="agent-controls"><label class="field-label" for="focus-${a.id}">Schwerpunkt im Normalbetrieb</label><select id="focus-${a.id}" class="select" data-change="agent-focus" data-id="${a.id}">${Object.entries(
             ctx.focusNames,
           )
@@ -69,7 +74,7 @@ export function createWorkforceUI(ctx) {
             )
             .join(
               '',
-            )}</select><button class="button block" data-modal="agent-upgrade" data-id="${a.id}">${ctx.icon('plus')}Upgrade prüfen · ${ctx.fmt(ctx.E.cost(ctx.state, 'agentUpgrade', a.id))} CR</button><button class="text-button personnel-dismiss" data-personnel="dismiss" data-id="${a.id}">Agent ausmustern</button></div></section>`;
+            )}</select><button class="button block" data-modal="agent-upgrade" data-id="${a.id}">${ctx.icon('plus')}Upgrade prüfen · ${ctx.fmt(ctx.E.cost(ctx.state, 'agentUpgrade', a.id))} CR</button>${training}<button class="text-button personnel-dismiss" data-personnel="dismiss" data-id="${a.id}">Agent ausmustern</button></div></section>`;
         })
         .join(
           '',

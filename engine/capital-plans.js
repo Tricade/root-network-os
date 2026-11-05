@@ -31,17 +31,12 @@
         },
       };
       const building = projected.facility.building;
-      const complete = (kind, floor, roomType) => {
-        if (kind === 'floor') building.floors++;
-        if (kind === 'room') {
-          const roomId = `room-${building.rooms.length + 1}`;
-          building.rooms.push({ id: roomId, floor });
-          projected.business.rooms.push(ctx.roomDefaults(roomId));
-        }
-        if (kind === 'service' && !building.specialRooms.includes(roomType))
-          building.specialRooms.push(roomType);
+      const complete = (project) => {
+        ctx.addBuiltSpace(building, project);
+        if (['room', 'room-stage'].includes(project.kind))
+          projected.business.rooms.push(ctx.roomDefaults(project.roomId));
       };
-      if (b.project) complete(b.project.kind, b.project.floor, b.project.roomType);
+      if (b.project) complete(b.project);
       const upgradeRack = (payload, targetLevel) => {
         const rack = projected.facility.racks.find((r) => r.id === payload.rackId);
         if (rack)
@@ -62,9 +57,8 @@
         projected.facility.central[s.facility.centralOperation.system] =
           s.facility.centralOperation.targetLevel;
       for (const item of preceding.slice(0, 12)) {
-        if (item.action === 'buildFloor') complete('floor');
-        if (item.action === 'buildRoom') complete('room', item.payload.floor);
-        if (item.action === 'buildServiceRoom') complete('service', 1, item.payload.roomType);
+        const construction = ctx.quoteConstructionAction(projected, item.action, item.payload);
+        if (construction) complete(construction);
         if (item.action === 'upgradeCentral') projected.facility.central[item.payload.system]++;
         if (item.action === 'upgradeRack') upgradeRack(item.payload);
         if (item.action === 'upgradeRackBatch')
@@ -81,6 +75,9 @@
           b = projected.facility.building;
         if (item.action === 'buildFloor' && b.floors >= ctx.MAX_FLOORS) return false;
         if (item.action === 'buildRoom' && b.rooms.length >= ctx.MAX_ROOMS) return false;
+        if (item.action === 'buildRoomStage' && b.rooms.length !== 1) return false;
+        if (item.action === 'fitOutRoom' && !b.rooms.some((r) => r.id === p.roomId && r.rackSlots))
+          return false;
         if (p.rackId && !s.facility.racks.some((r) => r.id === p.rackId)) return false;
         if (p.roomId && !b.rooms.some((r) => r.id === p.roomId)) return false;
         if (

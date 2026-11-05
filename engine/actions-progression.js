@@ -65,7 +65,7 @@
             ? ['balanced', 'performance', 'eco'].includes(value)
             : key === 'priority'
               ? ['balanced', 'income', 'research'].includes(value)
-              : key === 'autocontract' || key === 'autorepair' || key === 'autobackup'
+              : ['autocontract', 'autorepair', 'autobackup', 'autoReroute'].includes(key)
                 ? typeof value === 'boolean'
                 : key === 'repairBudget'
                   ? [0, 100, 300, 1000].includes(value)

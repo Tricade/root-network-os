@@ -319,7 +319,7 @@ export function createOperationsUI(ctx) {
       projects: `${o.projects.length} ${ctx.tr('Aktive Projekte')}`,
     };
     ctx.$$('[data-ops-summary]').forEach((el) => (el.textContent = summary[el.dataset.opsSummary]));
-    put('backup-budget', ctx.fmt(ctx.E.getResilience(ctx.state).backup.cost * 4) + ' CR');
+    put('backup-budget', ctx.fmt(ctx.E.backupQuote(ctx.state).cost * 4) + ' CR');
 
     put(
       'stock',

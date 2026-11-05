@@ -31,7 +31,7 @@ function serviceResourceUse(state, roomId) {
   return { row, used };
 }
 
-test('customer growth escrows a real quote, starts ordinary setup when capacity exists, and survives schema-8 save roundtrip', () => {
+test('customer growth reserves capacity on the existing contract and survives a paid save roundtrip', () => {
   const s = E.createState(34);
   const source = s.customers.contracts[0];
   source.units = 1;
@@ -65,15 +65,16 @@ test('customer growth escrows a real quote, starts ordinary setup when capacity 
     true,
   );
   assert.equal(s.credits, beforeCredits - setup.cost);
-  assert.equal(E.getGrowth(s).reservedBudget, setup.cost);
+  assert.equal(E.getGrowth(s).reservedBudget, 0);
 
   E.advance(s, 1);
   const provisioning = s.customerGrowth.requests.find((request) => request.id === offer.id);
   assert.equal(provisioning.status, 'provisioning');
   assert.equal(provisioning.escrow, 0, 'escrow is reconciled with the ordinary setup quote');
-  const child = s.customers.contracts.find((contract) => contract.id === provisioning.contractId);
-  assert.equal(child.stage, 'setup');
-  assert.equal(child.work, 'setup');
+  assert.equal(provisioning.contractId, source.id);
+  assert.equal(source.stage, 'active');
+  assert.equal(source.work, 'growth');
+  assert.equal(source.units, 1);
   assert.equal(s.business.rooms[0].groups.find((group) => group.kind === offer.kind).pending, 1);
 
   const loaded = roundTrip(s);
@@ -83,6 +84,112 @@ test('customer growth escrows a real quote, starts ordinary setup when capacity 
     loaded.business.rooms[0].groups.find((group) => group.kind === offer.kind).pending,
     1,
   );
+  loaded.resilience.graceUntil = 1e9;
+  E.advance(loaded, 600);
+  assert.equal(loaded.customers.contracts.length, 1);
+  assert.equal(loaded.customers.contracts[0].units, 2);
+  assert.equal(loaded.customers.contracts[0].work, '');
+  assert.equal(loaded.customerGrowth.requests.length, 0);
+  assert.equal(loaded.business.rooms[0].groups[0].pending, 0);
+});
+
+test('a full room with free resources can expand a contract while an unstaffed expansion stays queued', () => {
+  let s = require('../tools/balance/scenarios.cjs').fleet(18, 34);
+  const original = s.customers.contracts[0];
+  s.customers.contracts = Array.from({ length: 16 }, () => ({
+    ...original,
+    id: 'customer-' + s.nextId++,
+    units: 1,
+  }));
+  const source = s.customers.contracts[0];
+  for (const group of s.business.rooms[0].groups) group.units = group.kind === source.kind ? 16 : 0;
+  s.customers.autoAssign = false;
+  s.resilience.graceUntil = 1e9;
+  s.customerGrowth.usedOrigins.push(source.id);
+  s.customerGrowth.requests.push({
+    id: 'growth-' + s.nextId++,
+    sourceId: source.id,
+    client: source.client,
+    roomId: source.roomId,
+    kind: source.kind,
+    units: 1,
+    term: source.term,
+    createdAt: s.time,
+    expiresAt: s.time + 86400,
+    status: 'offered',
+    promisedAt: 0,
+    windowSeconds: 0,
+    deadlineAt: 0,
+    budgetCeiling: 0,
+    escrow: 0,
+    nextAttemptAt: 0,
+    contractId: null,
+    latePenaltyApplied: false,
+  });
+  const offer = E.getGrowth(s).requests[0];
+  assert.ok(offer);
+  const payload = { id: offer.id, windowSeconds: 3600, budgetCeiling: offer.quote.setupCost };
+  assert.ok(E.act(s, 'promiseCustomerGrowth', payload).ok);
+  s = roundTrip(s);
+  E.advance(s, 60);
+  const contract = s.customers.contracts.find((c) => c.id === offer.sourceId);
+  assert.equal(contract.agentId, null);
+  assert.equal(contract.units, 1);
+  assert.equal(contract.workRemaining, 600);
+  assert.ok(E.act(s, 'assignCustomerAgent', { id: contract.id, agentId: s.agents[0].id }).ok);
+  const originalTerm = contract.remaining;
+  E.advance(s, 600);
+  assert.equal(s.customers.contracts.length, 16);
+  assert.equal(contract.units, 2);
+  assert.equal(contract.remaining, originalTerm - 600);
+  assert.equal(
+    s.customerGrowth.requests.some((r) => r.id === offer.id),
+    false,
+  );
+  assert.equal(s.business.rooms[0].groups[0].pending, 0);
+});
+
+test('a previously paid split expansion finishes as booked when loading schema 10', () => {
+  const s = E.createState(34);
+  const source = s.customers.contracts[0];
+  source.units = s.business.rooms[0].groups[0].units = 1;
+  s.resilience.graceUntil = 1e9;
+  s.customerGrowth.nextCheckAt = 0;
+  E.advance(s, 1);
+  const request = s.customerGrowth.requests[0];
+  assert.ok(request);
+  const child = {
+    ...source,
+    id: 'customer-' + s.nextId++,
+    stage: 'setup',
+    work: 'setup',
+    workTotal: 600,
+    workRemaining: 50,
+    agentId: s.agents[0].id,
+  };
+  s.customers.contracts.push(child);
+  s.business.rooms[0].groups[0].pending = 1;
+  s.business.rooms[0].groups[0].onboarding = 50;
+  s.customerGrowth.linkedContracts.push(child.id);
+  Object.assign(request, {
+    status: 'provisioning',
+    contractId: child.id,
+    promisedAt: s.time,
+    windowSeconds: 3600,
+    deadlineAt: s.time + 3600,
+    budgetCeiling: 300,
+  });
+  s.version = 10;
+  delete s.policies.autoReroute;
+  const loaded = roundTrip(s);
+  assert.equal(loaded.version, 11);
+  assert.equal(loaded.policies.autoReroute, false);
+  assert.equal(loaded.credits, s.credits);
+  E.advance(loaded, 50);
+  assert.equal(loaded.customers.contracts.length, 2);
+  assert.equal(loaded.customers.contracts[1].id, child.id);
+  assert.equal(loaded.customers.contracts[1].stage, 'active');
+  assert.equal(loaded.customerGrowth.requests.length, 0);
 });
 
 test('service priority is neutral without a shortage and preserves resource limits during an actual node failure', () => {
@@ -280,7 +387,7 @@ test('schema 7 migration opts into schema 8 defaults; two idle days remain finit
   delete old.preventiveMaintenance;
   delete old.servicePriorities;
   const migrated = roundTrip(old);
-  assert.equal(migrated.version, 9);
+  assert.equal(migrated.version, 11);
   assert.equal(migrated.preventiveMaintenance.policy.automatic, false);
   assert.deepEqual(migrated.servicePriorities, {});
 

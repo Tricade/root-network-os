@@ -18,8 +18,8 @@
 
     function applyInfrastructure(s, action, payload, m) {
       const fail = (message) => ({ ok: false, message });
-      if (['buildRoom', 'buildFloor', 'buildServiceRoom'].includes(action))
-        return context.startConstruction(s, action, payload);
+      const construction = context.startConstruction(s, action, payload);
+      if (construction) return construction;
       if (action === 'upgradeCentral') {
         const q = quoteHardware(s, 'upgradeCentral', payload);
         if (!q.enabled) return fail(q.reason || 'Der zentrale Ausbau ist derzeit nicht verfügbar.');

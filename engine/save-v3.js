@@ -61,7 +61,9 @@
         throw new Error('Ungültige Rackanlage.');
       const legacySpace = facility.building === undefined;
       const building = context.normalizeBuildingSpace(facility, s.sector);
-      const roomIds = new Set(building.rooms.map((room) => room.id)),
+      const roomLimits = new Map(
+          building.rooms.map((room) => [room.id, context.roomRackSlots(room)]),
+        ),
         rackCounts = new Map();
       let central = { ...CENTRAL_DEFAULTS };
       if (facility.central !== undefined) {
@@ -104,11 +106,11 @@
           const roomId = legacySpace
             ? building.rooms[Math.floor(index / RACKS_PER_ROOM)].id
             : rack.roomId;
-          if (!roomIds.has(roomId))
+          if (!roomLimits.has(roomId))
             throw new Error('Rack verweist auf einen nicht gebauten Serverraum.');
           rackCounts.set(roomId, (rackCounts.get(roomId) || 0) + 1);
-          if (rackCounts.get(roomId) > RACKS_PER_ROOM)
-            throw new Error('Serverraum enthält mehr als sechs Racks.');
+          if (rackCounts.get(roomId) > roomLimits.get(roomId))
+            throw new Error('Serverraum enthält mehr Racks als ausgebaute Rackplätze.');
           return {
             id,
             name: str(rack.name, 'rack.name', 36),

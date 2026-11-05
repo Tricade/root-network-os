@@ -166,19 +166,14 @@
           : (0.32 + serverIncome + ops * 0.12 + context.reputationIncome(s.reputation)) *
               incomeMult -
             upkeep;
-      const analysts = activeAgents
-        .filter((a) => a.role === 'analyst')
-        .reduce((v, a) => v + a.level * context.agentEffects(a).research, 0);
       const contained = Boolean(s.resilience && s.resilience.incident);
-      const researchPerSecond =
-        (onlineServers > 0 && !contained ? 1 : 0) *
-        hardwareFactor *
-        (0.008 +
-          analysts * 0.026 +
-          activeAgents
-            .filter((a) => a.focus === 'research')
-            .reduce((v, a) => v + a.level * 0.012 * context.agentEffects(a).research, 0)) *
-        Math.pow(1.15, Math.min(MAX_RESEARCH_LEVEL, upgrades.synthesis || 0));
+      const research = context.researchEffects(s);
+      const researchPerSecond = context.passiveResearchRate(
+        s,
+        activeAgents,
+        hardwareFactor,
+        research.research,
+      );
       const workBase = activeAgents.reduce(
         (v, a) =>
           v +
@@ -303,7 +298,7 @@
         expansionReady:
           !incidentActive &&
           s.credits >= sectorCost &&
-          s.servers.length >= Math.min(serverLimit, 2 + s.sector) &&
+          onlineServers >= Math.min(serverLimit, 2 + s.sector) &&
           s.counters.jobs >= s.sector * 3,
         jobRates,
         activeLoad,
@@ -326,7 +321,9 @@
         gpuLoad: gpu.load,
         jobBlockedReasons: gpu.blocked,
       };
-      return s.business ? context.serviceMetrics(s, metrics, hardware, customers) : metrics;
+      return s.business
+        ? context.serviceMetrics(s, metrics, hardware, customers, research)
+        : metrics;
     }
     return { getMetrics };
   };

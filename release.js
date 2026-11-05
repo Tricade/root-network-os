@@ -5,15 +5,23 @@
   if (root) root.ROOTRelease = release;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   return Object.freeze({
-    version: '1.7.1',
+    version: '1.8.0',
     notes: [
       [
-        'In der Leitstelle zeigt „Als Nächstes“ das betroffene Rack und die Zeit bis zum Wartungsbeginn oder Wartungsende. Ein Klick öffnet den passenden Schrank auch in der 3D-Konsole.',
-        'Coming up shows the affected rack and the time until maintenance starts or ends. Select the entry to open that cabinet from the dashboard or the 3D console.',
+        'Forschungspunkte wachsen langsamer. Einstiegsprojekte bleiben günstig, höhere Stufen brauchen mehr Planung. Guthaben und bezahlte Vorhaben werden übernommen.',
+        'Research points grow more slowly. Starter projects stay affordable, while later tiers take more planning. Existing balances and paid commitments carry over.',
       ],
       [
-        'Die Docker-Ausgabe verwendet Node.js 26.13.0 LTS. Der lokale Webserver unterstützt Node.js 24 und 26.',
-        'The Docker edition uses Node.js 26.13.0 LTS. The local web server supports Node.js 24 and 26.',
+        'Kunden können bestehende Verträge erweitern. Freie Agenten übernehmen zuerst bezahlte Einsätze mit drohender SLA-Frist. Ab Stufe 14 stehen Spezialisierungen zur Wahl.',
+        'Customers can expand existing contracts. Available agents prioritize paid work with approaching SLA deadlines. Specializations unlock at level 14.',
+      ],
+      [
+        'Unter Betrieb & Schutz kannst du eine automatische Stromumschaltung innerhalb deines Reparaturbudgets erlauben. Der erste zusätzliche Serverraum lässt sich in zwei Abschnitten ausbauen.',
+        'Enable automatic power rerouting within your repair budget in Operations & Resilience. The first additional server room can be built in two phases.',
+      ],
+      [
+        'Beim Sektorausbau zählen erreichbare Server. Die Kundenautomatik überspringt im Offline-Nachlauf Anfragen, die außerhalb des Budgets liegen.',
+        'Sector expansion counts reachable servers. During offline catch-up, automatic sales skip enquiries outside the available budget.',
       ],
     ],
   });

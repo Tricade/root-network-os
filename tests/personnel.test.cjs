@@ -160,7 +160,7 @@ test('legacy migration preserves skills, names, prices and has no immediate sick
       assert.equal(a.profile.weakness, null);
       assert.equal(profile(s, a.id).absent, false);
     }
-    assert.equal(s.version, 9);
+    assert.equal(s.version, 11);
     assert.deepEqual(E.normalizeState(s), s);
   }
 });

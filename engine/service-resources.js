@@ -203,6 +203,44 @@
       }
       return fraction(demand, available) >= 0.98;
     }
-    return { roomResources, groupDemand, serviceSnapshot, jobResources, jobsFit };
+    function allocateProjectWork(jobs, free, workPerSecond, priority) {
+      const needs = jobs.map(jobResources),
+        demand = zeroResources();
+      for (const resources of needs) for (const key of RESOURCES) demand[key] += resources[key];
+      // Resource shortages slow only the projects that need the constrained resource.
+      const readiness = needs.map((resources) =>
+        Math.min(
+          1,
+          ...RESOURCES.filter((key) => resources[key] > 0).map(
+            (key) => free[key] / Math.max(demand[key], 0.001),
+          ),
+        ),
+      );
+      const weights = jobs.map(
+        (job, index) =>
+          readiness[index] *
+          (priority === 'income'
+            ? job.reward / job.totalWork
+            : priority === 'research'
+              ? job.science / job.totalWork
+              : 1),
+      );
+      const total = weights.reduce((sum, weight) => sum + weight, 0);
+      const jobRates = Object.fromEntries(
+        jobs.map((job, index) => [
+          job.id,
+          total ? ((workPerSecond * weights[index]) / total) * readiness[index] : 0,
+        ]),
+      );
+      return { demand, readiness, jobRates };
+    }
+    return {
+      roomResources,
+      groupDemand,
+      serviceSnapshot,
+      jobResources,
+      jobsFit,
+      allocateProjectWork,
+    };
   };
 });

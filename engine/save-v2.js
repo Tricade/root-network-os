@@ -107,18 +107,32 @@
           if (total !== expected) throw new Error('Unplausible Einsatzdauer.');
           if (num(x.cooldownUntil, 'agent.cooldownUntil', 0, 1e15) > s.time)
             throw new Error('Agent kann während einer Abklingzeit nicht im Einsatz sein.');
+          if (a.terms !== undefined && a.kind !== 'research')
+            throw new Error('Ungültiger Agenteneinsatz.');
           assignment = {
             kind: a.kind,
             label: str(a.label, 'agent.assignment.label', 48),
             remaining: num(a.remaining, 'agent.assignment.remaining', 0, total),
             total,
+            ...(a.terms === undefined ? {} : { terms: context.readResearchTerms(a.terms) }),
           };
+        }
+        const level = Math.floor(num(x.level, 'agent.level', 1, 10000));
+        if (x.specialty !== undefined) {
+          const specialty = context.AGENT_SPECIALTIES[x.specialty];
+          if (
+            !Object.hasOwn(context.AGENT_SPECIALTIES, x.specialty) ||
+            level < context.AGENT_SPECIALTY_LEVEL ||
+            (specialty.role && specialty.role !== x.role)
+          )
+            throw new Error('Ungültige Agentenspezialisierung.');
         }
         return {
           id: idCheck(x.id, 'agent.id', seen),
           name: str(x.name, 'agent.name', 24),
           role: x.role,
-          level: Math.floor(num(x.level, 'agent.level', 1, 10000)),
+          level,
+          ...(x.specialty === undefined ? {} : { specialty: x.specialty }),
           focus: x.focus,
           trait: str(x.trait || '', 'agent.trait', 40),
           assignment,
@@ -200,6 +214,7 @@
         typeof p.autocontract !== 'boolean' ||
         typeof p.autorepair !== 'boolean' ||
         typeof p.autobackup !== 'boolean' ||
+        (p.autoReroute !== undefined && typeof p.autoReroute !== 'boolean') ||
         ![0, 100, 300, 1000].includes(p.repairBudget) ||
         ![0, 250, 1000, 5000].includes(p.reserve)
       )
@@ -210,6 +225,7 @@
         autocontract: p.autocontract,
         autorepair: p.autorepair,
         autobackup: p.autobackup,
+        autoReroute: p.autoReroute ?? false,
         repairBudget: p.repairBudget,
         reserve: p.reserve,
       };

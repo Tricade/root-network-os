@@ -14,6 +14,18 @@ const {
   act,
 } = require(path.join(__dirname, '..', 'engine.js'));
 
+test('sector expansion counts reachable servers and rejects disconnected hardware', () => {
+  const s = createState(32);
+  s.credits = 1e6;
+  for (let i = 0; i < 2; i++) assert.ok(act(s, 'buyServer', { type: 'edge' }).ok);
+  s.counters.jobs = 3;
+  assert.equal(getMetrics(s).expansionReady, true);
+  assert.ok(act(s, 'setServerPower', { id: s.servers[0].id, on: false }).ok);
+  assert.equal(s.servers.length, 3);
+  assert.equal(act(s, 'expandSector').ok, false);
+  assert.equal(s.sector, 1);
+});
+
 function racks(count) {
   return Array.from({ length: count }, (_, index) => ({
     id: `rack-${index + 1}`,
@@ -31,7 +43,7 @@ test('existing v3 saves normalize without changing the source or their rack assi
   const restored = normalizeState(original);
 
   assert.deepEqual(original, before, 'normalization does not mutate the saved object');
-  assert.equal(restored.version, 9);
+  assert.equal(restored.version, 11);
   assert.deepEqual(restored.facility.racks, original.facility.racks);
   assert.equal(restored.servers[0].rackId, original.servers[0].rackId);
   assert.equal(restored.sector, original.sector);

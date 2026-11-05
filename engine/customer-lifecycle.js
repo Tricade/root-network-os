@@ -10,20 +10,68 @@
     function assignCustomerWork(s) {
       if (!s.customers.autoAssign) return;
       const assignments = ctx.customerReadModel(s).assignments;
-      const free = s.agents.filter((a) => ctx.agentProductive(s, a, assignments));
-      // Queued paid setups take priority. Each agent can own just one assignment.
+      const free = s.agents
+        .filter((a) => ctx.agentProductive(s, a, assignments))
+        .map((agent) => ({ agent, speed: ctx.customerWorkSpeed(s, agent) }))
+        .sort((a, b) => b.speed - a.speed);
+      if (!free.length) return;
+      const deadlines = new Map(
+        (s.customerGrowth?.requests || [])
+          .filter((r) => r.status === 'provisioning')
+          .map((r) => [r.contractId, r.deadlineAt - s.time]),
+      );
+      const deadline = (c) =>
+        Math.min(c.departure === 'sla' ? c.notice : Infinity, deadlines.get(c.id) ?? Infinity);
+      const priority = (c) =>
+        c.departure === 'sla' && ['support', 'retention'].includes(c.work)
+          ? 0
+          : deadlines.has(c.id)
+            ? 1
+            : c.work === 'setup'
+              ? 2
+              : 3;
+      // Keep in-flight assignments and prioritize paid work with an actual deadline.
       for (const c of s.customers.contracts
         .filter((c) => c.work && !c.agentId)
-        .sort((a, b) => (a.stage === 'setup' ? -1 : 0) - (b.stage === 'setup' ? -1 : 0))) {
+        .sort((a, b) => priority(a) - priority(b) || deadline(a) - deadline(b))) {
         if (!free.length) break;
-        if (c.work && !c.agentId) c.agentId = free.shift().id;
+        c.agentId = free.shift().agent.id;
       }
+    }
+    function autoAcceptCustomer(s, book) {
+      const funds = Math.min(
+        book.budget - book.spent,
+        s.credits - ctx.maintenancePolicy(s).reserve,
+      );
+      if (funds <= 0) return;
+      const leads = book.leads.filter(
+        (lead) => ctx.serviceSetupCost(lead.kind, lead.units) <= funds,
+      );
+      if (!leads.length) return;
+      const counts = new Map();
+      for (const c of book.contracts) counts.set(c.roomId, (counts.get(c.roomId) || 0) + 1);
+      const rooms = s.business.rooms.filter(
+        (r) => (counts.get(r.roomId) || 0) < ctx.CUSTOMER_ROOM_LIMIT,
+      );
+      if (!rooms.length) return;
+      const snapshot = ctx.serviceSnapshot(s);
+      for (const lead of leads)
+        for (const room of rooms) {
+          const p = { id: lead.id, roomId: room.roomId };
+          const q = ctx.customerQuote(s, 'acceptCustomerLead', p, snapshot);
+          if (q.enabled && ctx.applyCustomers(s, 'acceptCustomerLead', p)?.ok) {
+            book.spent += q.cost;
+            return;
+          }
+        }
     }
     function finishCustomerWork(s, c, supplied) {
       if (c.work === 'setup') {
         c.stage = 'active';
         c.reviewAt = s.time + 21600;
         customerLog(s, 'success', `${c.client}: Dienst eingerichtet. Der Vertrag läuft jetzt.`);
+      } else if (c.work === 'growth') {
+        ctx.finishGrowthWork(s, c);
       } else if (c.work === 'support') {
         c.issue = supplied < 0.95 ? 'observing' : '';
         c.satisfaction = Math.min(100, c.satisfaction + 5);
@@ -84,22 +132,7 @@
       }
       if (s.time >= book.nextCheck) {
         book.nextCheck = s.time + 60;
-        if (book.autoAccept) {
-          outer: for (const lead of book.leads)
-            for (const room of s.business.rooms) {
-              const p = { id: lead.id, roomId: room.roomId },
-                q = ctx.customerQuote(s, 'acceptCustomerLead', p);
-              if (
-                q.enabled &&
-                book.spent + q.cost <= book.budget &&
-                s.credits - q.cost >= ctx.maintenancePolicy(s).reserve
-              ) {
-                ctx.applyCustomers(s, 'acceptCustomerLead', p);
-                book.spent += q.cost;
-                break outer;
-              }
-            }
-        }
+        if (book.autoAccept) autoAcceptCustomer(s, book);
         assignCustomerWork(s);
       }
       const ended = new Set();
@@ -111,13 +144,14 @@
         if (c.work && c.agentId) {
           const agent = s.agents.find((a) => a.id === c.agentId);
           const needs = ctx.SERVICES[c.kind].needs;
+          const provisioning = c.work === 'setup' || c.work === 'growth';
           const ready =
             room &&
             !room.changing &&
-            (c.stage !== 'setup' ||
+            (!provisioning ||
               Object.keys(needs).every((key) => room.available[key] >= room.reserved[key]));
           if (agent && ctx.agentAvailable(s, agent) && ready) {
-            if (c.stage === 'setup') ledgerChanged = true;
+            if (provisioning) ledgerChanged = true;
             const speed = ctx.customerWorkSpeed(s, agent);
             c.workRemaining = Math.max(0, c.workRemaining - dt * speed);
             if (!c.workRemaining) finishCustomerWork(s, c, supplied);

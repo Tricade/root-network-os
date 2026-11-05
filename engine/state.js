@@ -144,6 +144,7 @@
           autorepair: true,
           priority: 'balanced',
           autobackup: true,
+          autoReroute: false,
           repairBudget: 300,
           reserve: 250,
         },
@@ -198,7 +199,7 @@
       context.migrateCustomers(s);
       context.migrateResearch(s);
       context.migratePlanning(s);
-      s.version = 9;
+      s.version = 11;
       s.offers.push(makeJob(s), makeJob(s));
       addLog(s, 'system', 'ROOT ist bereit. Dein erster Überwachungsauftrag läuft.');
       updateAchievementUnlocks(s);

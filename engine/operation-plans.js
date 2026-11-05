@@ -20,6 +20,8 @@
         };
       if (action === 'createBackup') return {};
       if (action === 'buildFloor') return {};
+      if (action === 'buildRoomStage' && p.floor === 1) return { floor: 1 };
+      if (action === 'fitOutRoom' && p.roomId === 'room-2') return { roomId: p.roomId };
       if (
         action === 'buildRoom' &&
         Number.isSafeInteger(p.floor) &&
@@ -51,7 +53,7 @@
       return null;
     }
     function planQuote(s, item) {
-      if (item.action === 'createBackup') return ctx.getResilience(s).backup;
+      if (item.action === 'createBackup') return ctx.backupQuote(s);
       if (item.action === 'convertRoomSupply') return ctx.supplyQuote(s, item.payload);
       return ctx.quoteHardware(s, item.action, item.payload);
     }
@@ -168,12 +170,16 @@
         item.reason = 'Geschützte Reserve oder Sparziel würden unterschritten.';
         return;
       }
+      // The start action checks that its projected result leaves the rest of the plan valid.
+      o.queue.shift();
       const result = ctx.act(s, item.action, item.payload);
       if (result.ok) {
         o.planSpent += q.cost;
-        o.queue.shift();
         ctx.addLog(s, 'system', 'Geplante Maßnahme gestartet.');
-      } else item.reason = result.message;
+      } else {
+        item.reason = result.message;
+        o.queue.unshift(item);
+      }
     }
     return { planPayload, planQuote, applyPlan, advancePlan };
   };

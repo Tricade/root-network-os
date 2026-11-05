@@ -9,7 +9,6 @@
     const { finite } = context;
     // Late domain calls avoid circular module imports; no simulation state is stored here.
     const addLog = (s, severity, message) => context.addLog(s, severity, message, 'maintenance');
-    const getResilience = (...args) => context.getResilience(...args);
     const repairQuotes = (...args) => context.repairQuotes(...args);
     const workSnapshot = (...args) => context.workSnapshot(...args);
 
@@ -92,14 +91,55 @@
       }
     }
 
-    function quoteWithinAutoPolicy(s, option) {
+    function autoBudgetReason(s, option, kind) {
       const policy = context.maintenancePolicy(s);
-      return (
-        option.enabled &&
-        s.resilience.budgetSpent + option.cost <= policy.repair &&
-        s.credits - option.cost >= policy.reserve &&
-        s.resilience.parts >= option.parts
-      );
+      const spent = kind === 'backup' ? s.operations.backupSpent : s.resilience.budgetSpent;
+      if (option.cost > policy[kind]) return 'Das Stundenbudget deckt die nächste Maßnahme nicht.';
+      if (spent + option.cost > policy[kind])
+        return 'Das Stundenbudget ist für diese Maßnahme ausgeschöpft.';
+      if (s.credits - option.cost < policy.reserve)
+        return 'Die geschützte Geldreserve blockiert die Automatik.';
+      return '';
+    }
+
+    function quoteWithinAutoPolicy(s, option) {
+      return option.enabled && !autoBudgetReason(s, option, 'repair');
+    }
+
+    function automaticRepairTarget(s) {
+      let target = null;
+      for (const server of s.servers)
+        if (
+          server.status === 'failed' &&
+          server.fault === 'Hardwarefehler' &&
+          (!target || server.condition < target.condition)
+        )
+          target = server;
+      return target;
+    }
+
+    function startAutomaticReroute(s) {
+      const r = s.resilience,
+        incident = r.incident;
+      if (
+        !s.policies.autoReroute ||
+        incident?.kind !== 'power' ||
+        incident.resolution ||
+        r.operation ||
+        s.facility.operation ||
+        s.facility.centralOperation
+      )
+        return false;
+      const option = context.incidentQuotes(s).find((o) => o.key === 'reroute');
+      if (!option || !quoteWithinAutoPolicy(s, option)) return false;
+      const result = context.applyRecovery(s, 'resolveIncident', {
+        id: incident.id,
+        choice: option.key,
+      });
+      if (!result?.ok) return false;
+      r.budgetSpent += option.cost;
+      addLog(s, 'system', 'Notfallplan hat die sichere Stromumschaltung gestartet.');
+      return true;
     }
 
     function startAutomaticRepair(s) {
@@ -111,9 +151,7 @@
         s.facility.centralOperation
       )
         return false;
-      const server = s.servers
-        .filter((x) => x.status === 'failed' && x.fault === 'Hardwarefehler')
-        .sort((a, b) => a.condition - b.condition)[0];
+      const server = automaticRepairTarget(s);
       if (!server) return false;
       const option = repairQuotes(s, server).find((x) => x.key === 'patch');
       if (!option || !quoteWithinAutoPolicy(s, option)) return false;
@@ -152,13 +190,8 @@
         s.facility.centralOperation
       )
         return false;
-      const option = getResilience(s).backup;
-      const policy = context.maintenancePolicy(s);
-      if (
-        !option.enabled ||
-        s.credits - option.cost < policy.reserve ||
-        s.operations.backupSpent + option.cost > policy.backup
-      ) {
+      const option = context.backupQuote(s);
+      if (!option.enabled || autoBudgetReason(s, option, 'backup')) {
         s.resilience.autoBackupNextAt = s.time + 300;
         return false;
       }
@@ -184,7 +217,10 @@
       startOperation,
       finishOperation,
       applyWorkLosses,
+      autoBudgetReason,
+      automaticRepairTarget,
       quoteWithinAutoPolicy,
+      startAutomaticReroute,
       startAutomaticRepair,
       startAutomaticBackup,
     };

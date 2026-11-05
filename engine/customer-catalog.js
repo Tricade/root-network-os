@@ -138,8 +138,10 @@
         const g = ledger.get(key);
         if (c.stage === 'active') {
           g.units += c.units;
-        } else {
-          g.pending += c.units;
+        }
+        const pending = c.stage === 'setup' ? c.units : c.growthUnits || 0;
+        if (pending) {
+          g.pending += pending;
           g.onboarding = Math.max(g.onboarding, c.workRemaining);
         }
       }

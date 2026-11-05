@@ -12,7 +12,7 @@ The dashboard shows one actionable pending item at a time, with previous/next co
 
 Established active customers can request more capacity. Eligibility is reviewed every six simulated hours with a bounded chance, and at most twelve requests are retained. A request grows the source service by roughly 15%, bounded to one through ten units, and expires after 24 hours.
 
-Accept with a **1, 4 or 12 hour** delivery promise and an explicit budget ceiling. The authorized amount is held in escrow; the protected reserve must remain available. Real room resources and a productive agent are still required for setup. The added units earn nothing until provisioning completes, while the existing contract continues earning for its delivered units. Unused escrow is returned. Missing the promise damages reputation and satisfaction rather than awarding free capacity; source cancellation and expiry are handled explicitly.
+Accept with a **1, 4 or 12 hour** delivery promise and a budget ceiling. The quote checks room team capacity, hardware, and the protected reserve. The actual setup fee is charged and resources are reserved at acceptance. A staffed provisioning job adds the units to the existing contract when it completes, preserving its remaining term and using the same contract slot. The added units start earning at completion. A missed deadline lowers reputation and satisfaction once. Previously paid split setups finish under their original terms. Earlier promises waiting for capacity can still use their escrow or receive the original refund at expiry.
 
 ## Priorities during shortages
 
@@ -42,7 +42,7 @@ Twenty original raster illustrations supply project, research, achievement, deci
 
 ## State and verification
 
-Schema 9 stores priorities, customer growth, maintenance and capital plans. Old saves migrate with conservative defaults. Tests cover payment, resource conservation, constrained execution, failure and cancellation paths, offline equivalence and save validation. See [research rules](research.md), [development boundaries](development.md) and [verification scope](verification-planning.md).
+The save stores priorities, customer growth, maintenance and capital plans. Old saves migrate with conservative defaults. Tests cover payment, resource conservation, constrained execution, failure and cancellation paths, offline equivalence and save validation. See [research rules](research.md), [development boundaries](development.md) and [verification scope](verification-planning.md).
 
 ## Shared rack maintenance
 
@@ -50,4 +50,8 @@ Select power, cooling and/or switch when reviewing a rack upgrade. One to three 
 
 Customer notice is **optional and off by default**. A simulated mail to active customers in the rack’s room costs `ceil(20 + 5 × notified contracts + 8% × upgrade cost)`. The rack stays online for 120 seconds before work. Only the satisfaction loss caused by that planned outage is reduced by 50%; unrelated shortages, actual delivery, SLA deficits and cancellation rules are unchanged. Notice cannot be bought without an active customer. The paid price, recipients and timing survive reload and offline progression.
 
-The Maintenance communications research (sector 4, 450 RP, two hours) reduces the extra fee by 25% and the notice period to 60 seconds. Normal maintenance stays available without research or notice. Older saves migrate to schema 9; cached older clients must reload before writing so they cannot discard a paid maintenance window.
+The Maintenance communications research (sector 4, 2,250 RP, two hours) reduces the extra fee by 25% and the notice period to 60 seconds. Normal maintenance stays available without research or notice. Older saves migrate to schema 11. Reload a cached older client before making changes.
+
+## Power outage response plan
+
+The optional switch under Operations & Resilience authorizes the normal safe power reroute. It starts when the quote can be covered by the current hourly repair budget and the protected reserve. The fee counts once against that budget. Cooling and data incidents still use the player's recovery choice. Budget rows show current spending and when the next automatic action is blocked. Server and sector quotes warn when the planned expansion would make an automatic backup unaffordable.

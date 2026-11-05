@@ -153,7 +153,7 @@
         ),
         parts = Math.ceil(servers.length / 3),
         effort = 180 + servers.length * 90,
-        speed = agent ? 1 + Math.min(1.5, Math.sqrt(Math.max(0, agent.level - 1)) * 0.2) : 1,
+        speed = agent ? context.maintenanceWorkSpeed(agent) : 1,
         duration = Math.ceil(effort / speed),
         downtime = Math.min(180, 30 + servers.length * 10),
         reserve = context.maintenancePolicy(s).reserve,

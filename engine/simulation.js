@@ -221,7 +221,8 @@
             else openMajorIncident(s);
           }
         }
-        if (!r.incident) {
+        if (r.incident) context.startAutomaticReroute(s);
+        else {
           if (!r.operation) startAutomaticRepair(s);
           if (!r.operation) startAutomaticBackup(s);
         }

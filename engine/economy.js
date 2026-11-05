@@ -36,17 +36,10 @@
           ? Math.ceil(catalog.roles[x.role].baseCost * 0.48 * Math.pow(x.level, 1.82) * sectorScale)
           : Infinity;
       }
-      if (kind === 'research') {
-        const u = catalog.research.find((v) => v.id === id);
-        return u
-          ? Math.ceil(
-              Math.min(
-                1e300,
-                u.baseCost * Math.pow(1.48, s.upgrades[id] || 0) * (1 + (s.sector - 1) * 0.12),
-              ),
-            )
+      if (kind === 'research')
+        return catalog.research.some((entry) => entry.id === id)
+          ? context.researchPrice(s, id)
           : Infinity;
-      }
       if (kind === 'sector') return Math.ceil(1800 * Math.pow(s.sector, 1.62));
       return Infinity;
     }

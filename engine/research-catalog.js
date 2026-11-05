@@ -226,6 +226,12 @@
       requires: ['business-desk', 'automation-maintenance'],
       effects: { noticeCost: 0.75, noticeLead: 0.5 },
     });
+    for (const node of TECHNOLOGIES) {
+      node.legacyCost = node.cost;
+      // Preserve the four entry projects. Advanced foundations require a
+      // research budget as well as the higher sector and longer lab time.
+      if (node.sector > 1) node.cost *= Math.min(6, node.sector + 1);
+    }
     RESEARCH_TREES.push(...ctx.EXPANSION_TREES);
     TECHNOLOGIES.push(...ctx.EXPANSION_TECHNOLOGIES);
     const REPEATABLE_GATES = {

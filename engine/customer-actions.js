@@ -7,7 +7,7 @@
   'use strict';
   return function (ctx) {
     const customerLog = (s, severity, message) => ctx.addLog(s, severity, message, 'customers');
-    function customerQuote(s, action, p = {}) {
+    function customerQuote(s, action, p = {}, sharedSnapshot = null) {
       let reason = '',
         cost = 0,
         duration = 0,
@@ -17,11 +17,12 @@
         const lead = s.customers.leads.find((l) => l.id === p.id && l.expiresAt > s.time);
         if (!lead) reason = 'Diese Kundenanfrage ist nicht mehr verfügbar.';
         else {
-          const q = ctx.serviceQuote(s, 'contractService', {
-            roomId: p.roomId,
-            kind: lead.kind,
-            units: lead.units,
-          });
+          const q = ctx.serviceQuote(
+            s,
+            'contractService',
+            { roomId: p.roomId, kind: lead.kind, units: lead.units },
+            sharedSnapshot,
+          );
           reason = q.reason;
           cost = q.cost;
           duration = q.duration;

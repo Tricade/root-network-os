@@ -61,9 +61,9 @@ test('legacy achievement catalogs migrate on read but stale writers cannot erase
   });
 });
 
-test('schema 5, 6, 7 and 8 load as schema 9 without losing progress; old writers cannot erase customers or paid research', async (t) => {
+test('schemas 5–10 load as schema 11 without losing progress; old writers cannot erase customers or paid research', async (t) => {
   const E = require('../engine.js');
-  for (const version of [5, 6, 7, 8])
+  for (const version of [5, 6, 7, 8, 9, 10])
     await withServer(t, async ({ base, dataDir }) => {
       const old = E.createState(700 + version);
       old.version = version;
@@ -80,7 +80,7 @@ test('schema 5, 6, 7 and 8 load as schema 9 without losing progress; old writers
       const original = JSON.stringify(old, null, 2) + '\n';
       await fs.writeFile(path.join(dataDir, 'save.json'), original);
       const loaded = (await (await fetch(base + '/api/save')).json()).save;
-      assert.equal(loaded.version, 9);
+      assert.equal(loaded.version, 11);
       assert.equal(loaded.agents[0].level, 7);
       assert.equal(loaded.upgrades.routing, 9);
       assert.equal(loaded.credits, 123456);
@@ -120,7 +120,7 @@ test('health endpoint, loopback-only static allowlist, and API boundaries', asyn
     assert.equal(health.status, 200);
     assert.deepEqual(await health.json(), {
       app: 'ROOT',
-      version: 9,
+      version: 11,
       release: require('../package.json').version,
     });
     for (const file of [
@@ -247,8 +247,8 @@ test('save round-trip persists data and preserves the previous save as backup', 
     }
     const stored = JSON.parse(await fs.readFile(path.join(dataDir, 'save.json'), 'utf8'));
     const backup = JSON.parse(await fs.readFile(path.join(dataDir, 'save.backup.json'), 'utf8'));
-    assert.equal(stored.version, 9);
-    assert.equal(backup.version, 9);
+    assert.equal(stored.version, 11);
+    assert.equal(backup.version, 11);
     if (second.marker) assert.equal(stored.marker, 'fixture');
     assert.ok(await (await fetch(`${base}/api/save`)).json());
   });
@@ -266,7 +266,7 @@ test('schema 4 upgrades in memory, survives a v5 write as exact backup and stale
     await fs.writeFile(path.join(dataDir, 'save.json'), original);
     const response = await fetch(base + '/api/save');
     const upgraded = (await response.json()).save;
-    assert.equal(upgraded.version, 9);
+    assert.equal(upgraded.version, 11);
     assert.equal(upgraded.agents[0].level, 3);
     assert.ok(upgraded.agents.every((a) => a.profile.weakness === null));
     assert.equal(await fs.readFile(path.join(dataDir, 'save.json'), 'utf8'), original);
@@ -342,7 +342,7 @@ test('GET migrates a v1 source in memory and retains its bytes until the explici
     const response = await fetch(`${base}/api/save`);
     assert.equal(response.status, 200);
     const migrated = (await response.json()).save;
-    assert.equal(migrated.version, 9);
+    assert.equal(migrated.version, 11);
     assert.equal(migrated.credits, legacy.credits);
     assert.equal(migrated.research, legacy.research);
     assert.equal(migrated.servers[0].id, legacy.servers[0].id);
@@ -372,13 +372,13 @@ test('GET migrates a v1 source in memory and retains its bytes until the explici
       body: JSON.stringify(migrated),
     });
     assert.equal(saved.status, 200);
-    assert.equal(JSON.parse(await fs.readFile(source, 'utf8')).version, 9);
+    assert.equal(JSON.parse(await fs.readFile(source, 'utf8')).version, 11);
     assert.deepEqual(
       JSON.parse(await fs.readFile(path.join(dataDir, 'save.backup.json'), 'utf8')),
       legacy,
     );
-    assert.equal((await (await fetch(`${base}/api/save`)).json()).save.version, 9);
-    assert.equal(engine.normalizeState(migrated).version, 9);
+    assert.equal((await (await fetch(`${base}/api/save`)).json()).save.version, 11);
+    assert.equal(engine.normalizeState(migrated).version, 11);
   });
 });
 
@@ -396,7 +396,7 @@ test('GET migrates a v2 source in memory and retains its bytes until the explici
     const response = await fetch(`${base}/api/save`);
     assert.equal(response.status, 200);
     const migrated = (await response.json()).save;
-    assert.equal(migrated.version, 9);
+    assert.equal(migrated.version, 11);
     assert.equal(migrated.networkName, legacy.networkName);
     assert.equal(migrated.credits, legacy.credits);
     assert.equal(migrated.servers[0].id, legacy.servers[0].id);
@@ -412,20 +412,20 @@ test('GET migrates a v2 source in memory and retains its bytes until the explici
       body: JSON.stringify(migrated),
     });
     assert.equal(saved.status, 200);
-    assert.equal(JSON.parse(await fs.readFile(source, 'utf8')).version, 9);
+    assert.equal(JSON.parse(await fs.readFile(source, 'utf8')).version, 11);
     assert.deepEqual(
       JSON.parse(await fs.readFile(path.join(dataDir, 'save.backup.json'), 'utf8')),
       legacy,
     );
-    assert.equal((await (await fetch(`${base}/api/save`)).json()).save.version, 9);
-    assert.equal(engine.normalizeState(migrated).version, 9);
+    assert.equal((await (await fetch(`${base}/api/save`)).json()).save.version, 11);
+    assert.equal(engine.normalizeState(migrated).version, 11);
   });
 });
 
 test('v3 save round-trip preserves resilience settings, condition and protected backup research', async (t) => {
   const engine = require('../engine.js');
   const fixture = engine.createState(2026);
-  assert.equal(fixture.version, 9);
+  assert.equal(fixture.version, 11);
   fixture.servers[0].condition = 73;
   fixture.servers[0].status = 'online';
   fixture.servers[0].fault = null;

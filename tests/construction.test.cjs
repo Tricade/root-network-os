@@ -16,6 +16,56 @@ function ready(seed = 920) {
 const quote = (state, action, payload = {}) => E.quoteHardware(state, action, payload);
 const roundtrip = (state) => E.normalizeState(JSON.parse(JSON.stringify(state)));
 
+test('the first staged room opens two paid rack slots, then four more after fitting out', () => {
+  let state = ready();
+  const start = { floor: 1 },
+    room = { roomId: 'room-2' };
+  const first = quote(state, 'buildRoomStage', start);
+  assert.equal(first.cost, 6000000);
+  const balance = state.credits;
+  assert.ok(E.act(state, 'buildRoomStage', start).ok);
+  assert.equal(state.credits, balance - first.cost);
+  assert.equal(quote(state, 'buyRack', room).enabled, false);
+  state = roundtrip(state);
+  E.advance(state, first.duration);
+  assert.equal(E.getFacilityLayout(state).rooms[1].rackCapacity, 2);
+  assert.ok(E.act(state, 'buyRack', room).ok);
+  assert.ok(E.act(state, 'buyRack', room).ok);
+  assert.equal(E.act(state, 'buyRack', room).ok, false);
+  const second = quote(state, 'fitOutRoom', room);
+  assert.equal(first.cost + second.cost, 20000000);
+  assert.ok(E.act(state, 'fitOutRoom', room).ok);
+  assert.equal(E.act(state, 'buyRack', room).ok, false);
+  state = roundtrip(state);
+  E.advance(state, second.duration);
+  assert.equal(E.getFacilityLayout(state).rooms[1].rackCapacity, 6);
+  assert.ok(E.act(state, 'buyRack', room).ok);
+  assert.equal(E.getMetrics(state).onlineServers, 1);
+});
+
+test('a paid stage and its scheduled fit-out survive reload and block conflicting full construction', () => {
+  let state = ready();
+  state.operations.limits.plan = 20000000;
+  const stage = { action: 'buildRoomStage', payload: { floor: 1 }, ceiling: 6000000 };
+  const finish = { action: 'fitOutRoom', payload: { roomId: 'room-2' }, ceiling: 14000000 };
+  assert.equal(E.act(state, 'queueOperation', finish).ok, false);
+  assert.ok(E.act(state, 'queueOperation', stage).ok);
+  assert.ok(E.act(state, 'queueOperation', finish).ok);
+  assert.equal(E.act(state, 'buildRoom', { floor: 1 }).ok, false);
+  E.advance(state, 1);
+  assert.equal(state.facility.building.project.kind, 'room-stage');
+  assert.deepEqual(
+    state.operations.queue.map((entry) => entry.action),
+    ['fitOutRoom'],
+  );
+  state = roundtrip(state);
+  E.advance(state, 2000);
+  assert.equal(state.facility.building.project, null);
+  assert.equal(state.operations.queue.length, 0);
+  assert.equal(E.getFacilityLayout(state).rooms[1].rackCapacity, 6);
+  assert.equal(state.operations.planSpent, 20000000);
+});
+
 test('fresh bunker owns only one server room and one floor; sector upgrades grant no free space', () => {
   const state = E.createState();
   for (const sector of [1, 8, 100, 1000000]) {
