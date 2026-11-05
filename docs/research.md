@@ -55,7 +55,7 @@ These are limits for the new atlas nodes, not final network-wide percentages. St
 
 ## Save and extension boundary
 
-Schema 10 carries over the research balance and completed technologies. Paid lab projects, agent missions and assignments use their booked terms, including their original price or reward. The validator checks the active project’s cost, target level and remaining time against those terms. Duplicate specializations, invalid IDs, unmet dependencies and fabricated project payments are rejected. The current catalog is loaded in the same order by Node, browser and worker.
+Schema 11 carries over the research balance and completed technologies. Paid lab projects, agent missions and assignments use their booked terms, including their original price or reward. The validator checks the active project’s cost, target level and remaining time against those terms. Duplicate specializations, invalid IDs, unmet dependencies and fabricated project payments are rejected. The current catalog is loaded in the same order by Node, browser and worker.
 
 Three domain catalogs supply the atlas. `research-expansion.js` defines its tiers and bounds the combined effects. UI layout and camera controls live in separate modules. Add translations, reachable dependency paths, effect-bound tests and save round-trips when extending the atlas. The current eight-district layout must also be reconsidered if adding further branches.
 

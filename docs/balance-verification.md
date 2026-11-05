@@ -35,3 +35,9 @@ On 2026-11-05, Node 24.22.1 ran identical fictional starting states on v1.7.1 an
 | Fitted 24-server fleet, seed 1141, level-10 analyst |    2,243.8 |     504.6 |    27,661.3 |    6,515.8 |
 
 The fresh-network test starts a 25-point lab project within 15 minutes. The fitted fleet completes 68 jobs in the first hour in both runs. Twelve hours is the existing cap for one offline catch-up. The regression tests also cover the passive-rate bound and the migration of booked prices and rewards.
+
+## Operations and scaling comparison
+
+In a 120-second simulation of the fictional 960-server fleet (seed 1141, 54 rooms), automatic customer acceptance was enabled with a zero hourly budget. The research-balance branch made 324 customer capacity quotes and 572 service snapshots. The operations update makes zero customer quotes and 127 service snapshots. The new counts match a run with automatic acceptance disabled. The quote count measures avoided work, independent of wall-clock timing.
+
+The two staged construction steps were run both in one live advance and in 23-second catch-up chunks. Both runs charged 20 million CR across two starts, finished with six rack slots in the new room, and produced identical saved state and completion messages.

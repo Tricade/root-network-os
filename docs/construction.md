@@ -13,6 +13,8 @@ A new installation owns one basement, one server room and its access corridor. C
 | UPS room                |  30,000,000 CR |       30 minutes | Plant space on Basement 1, available from Sector 6     |
 | Power distribution room |  35,000,000 CR |       30 minutes | Plant space on Basement 1, available from Sector 8     |
 
+The first additional server room on Basement 1 can be built in two phases. The first costs 6 million CR and takes 15 minutes. On completion the room can be entered and fitted with two racks. A second 15-minute project costs 14 million CR and opens four more slots while existing racks run. The full 20-million-CR build remains available, and either phase can be scheduled in the capital plan. Sector upgrades require reachable servers for their server count.
+
 The control room includes its operations furnishings. Utility rooms provide space; install and upgrade the central systems separately. Racks and servers are also purchased separately. Building a basement does not grant its four server rooms.
 
 With `n` existing server rooms and target floor `d`, the next room costs `ceil(20e6 * n^1.35 * (1 + 0.15*(d-1)))`, capped at 50 trillion credits. With `f` existing floors, the next floor costs `ceil(500e6 * f^2.6)`, capped at 200 trillion. Room durations grow to at most two hours; floors to six hours. These amounts represent excavation, structure, waterproofing and utilities, rather than a hardware purchase.

@@ -1,6 +1,6 @@
 # Customers, connected utilities and operating plans
 
-Current development uses save schema **10**. The research ledger keeps existing balances and booked terms through the migration. Older clients must reload before writing. The first write in the new format preserves the previous raw save as a backup.
+Current development uses save schema **11**. The research ledger keeps existing balances and booked terms through the migration. Older clients must reload before writing. The first write in the new format preserves the previous raw save as a backup.
 
 ## Income follows delivered work
 
