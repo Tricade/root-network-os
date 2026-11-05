@@ -5,6 +5,36 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate) {
   return {
     pairs: [
+      ['Agent spezialisieren', 'Specialize agent'],
+      ['Spezialisierung prüfen', 'Review specialization'],
+      ['Spezialisierung bestätigen', 'Confirm specialization'],
+      ['Spezialisierung aktiviert.', 'Specialization activated.'],
+      ['Spezialisierungen sind ab Stufe 14 verfügbar.', 'Specializations unlock at level 14.'],
+      ['Unbekannte Spezialisierung.', 'Unknown specialization.'],
+      ['Diese Spezialisierung ist bereits aktiv.', 'This specialization is already active.'],
+      [
+        'Diese Spezialisierung benötigt einen Techniker.',
+        'This specialization requires an engineer.',
+      ],
+      ['Kundendienst', 'Customer service'],
+      ['Projektabnahme', 'Project review'],
+      ['Wartungsvorbereitung für einen Server', 'Maintenance preparation for one server'],
+      [
+        'Schnellere Einrichtung, Betreuung und Rückgewinnung von Kunden.',
+        'Faster provisioning, support and customer retention.',
+      ],
+      [
+        'Schnellere Vorbereitung bei vorbeugender Rackwartung.',
+        'Faster preparation for preventive rack maintenance.',
+      ],
+      [
+        'Mehr Auftragsdurchsatz im Normalbetrieb. Der Teambonus ist auf 15 % begrenzt.',
+        'Higher job throughput while on regular duty. The team bonus is capped at 15%.',
+      ],
+      [
+        'Wähle eine Spezialisierung. Weitere Stufen steigern den Bonus mit abnehmendem Zuwachs. Ein Wechsel kostet erneut Credits.',
+        'Choose one specialization. Further levels increase its bonus with diminishing returns. Changing it costs credits.',
+      ],
       ['Automatik aktivieren', 'Enable automation'],
       ['Automatik an', 'Automation on'],
       [
@@ -134,6 +164,10 @@
       ],
     ],
     patterns: [
+      [
+        /^(.*): Spezialisierung „(.*)“ aktiviert\.$/,
+        (_, name, path) => `${name}: specialization “${translate(path)}” activated.`,
+      ],
       [/^im Normalbetrieb \/ (\d+) Plätze$/, 'on regular duties / $1 slots'],
       [/^(\d+) Belohnungen verfügbar$/, '$1 rewards available'],
       [/^(.+) ablehnen$/, (whole, title) => translate(title) + ' · Decline'],

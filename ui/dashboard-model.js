@@ -17,7 +17,7 @@ export function dashboardModel(
   const growth = state.customerGrowth?.requests || [];
   const preventive = state.preventiveMaintenance;
   const actions = [];
-  if (protection.incident)
+  if (protection.incident && !protection.operation)
     actions.push({
       id: 'incident',
       route: 'resilience',

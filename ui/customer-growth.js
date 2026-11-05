@@ -1,4 +1,4 @@
-/** Customer expansion promises: offers, escrow and linked setup work. */
+/** Customer expansion promises: offers and staffed capacity commitments. */
 export function createCustomerGrowthUI(ctx) {
   const formValues = new Map();
   const windows = [
@@ -37,7 +37,7 @@ export function createCustomerGrowthUI(ctx) {
     if (!requests.length)
       return `<div class="helper-card growth-empty"><strong>${ctx.tr('Kundenwachstum')}</strong><p>${ctx.tr('Zufriedene Bestandskunden können später Erweiterungen anfragen. Zusagen brauchen Kapazität und Einrichtung.')}</p></div>`;
     return `<section class="panel section-spacer customer-growth"><div class="panel-header"><div><h2>${ctx.tr('Kundenwachstum')}</h2><p>${ctx.tr('Bestehende Kunden fragen gelegentlich nach einer Erweiterung. Liefertermine sind Zusagen; Kapazität, Einrichtung und Erlös bleiben an den normalen Kundenprozess gebunden.')}</p></div><span class="tag">${ctx.fmt(offers.length)} ${ctx.tr('offen')}</span></div><div class="panel-body">
-      <p class="policy-explainer">${ctx.tr('Reservierte Budgets')} <strong data-growth-reserved>${ctx.fmt(g.reservedBudget)} CR</strong>. ${ctx.tr('Die Kaution wird bei der Zusage zurückgehalten, beim Start der Einrichtung mit den normalen Kosten verrechnet und bei Ablauf ohne Bereitstellung erstattet. Umsatz entsteht erst nach abgeschlossener Einrichtung und für tatsächlich gelieferte Leistung.')}</p>
+      <p class="policy-explainer">${ctx.tr('Reservierte Budgets')} <strong data-growth-reserved>${ctx.fmt(g.reservedBudget)} CR</strong>. ${ctx.tr('Neue Zusagen reservieren die Kapazität sofort. Nach der Einrichtung wachsen die Einheiten des bestehenden Vertrags.')}</p>
       ${
         offers.length
           ? `<div class="business-grid">${offers
@@ -47,7 +47,7 @@ export function createCustomerGrowthUI(ctx) {
                   budgetCeiling: r.quote?.setupCost || 0,
                 };
                 const q = requestQuote(r, values);
-                return `<article class="panel customer-growth-card" data-growth-card="${ctx.esc(r.id)}"><span class="tag blue">${ctx.tr('ERWEITERUNGSANFRAGE')}</span><h3>${ctx.esc(r.client)}</h3><p>${ctx.esc(ctx.tr(ctx.E.catalog.services?.[r.kind]?.name || { hosting: 'Hosting', archive: 'Archiv', database: 'Datenbank', inference: 'KI-Inferenz' }[r.kind] || r.kind))} · ${ctx.fmt(r.units)} ${ctx.tr('Einheiten')} · ${ctx.tr(`Raum ${Number(String(r.roomId).replace('room-', ''))}`)}</p><p>${ctx.tr('Zusätzlicher Bedarf')}: ${ctx.esc(resources(r.quote?.resources))}</p><p>${ctx.tr('Einrichtung')}: ${ctx.fmt(r.quote?.setupCost || 0)} CR · ${ctx.duration(600)} ${ctx.tr('Agentenzeit')}</p><p>${ctx.tr('Angebot verfällt in')} <strong data-growth-expiry="${ctx.esc(r.id)}"></strong></p><div class="business-controls"><label class="field-label">${ctx.tr('Lieferfenster')}<select class="select" data-growth-field="windowSeconds" data-growth-id="${ctx.esc(r.id)}">${windows.map(([n, label]) => `<option value="${n}" ${Number(values.windowSeconds) === n ? 'selected' : ''}>${ctx.tr(label)}</option>`).join('')}</select></label><label class="field-label">${ctx.tr('Budgetobergrenze (CR)')}<input class="input" type="number" min="${r.quote?.setupCost || 1}" max="1000000000000" step="1" value="${ctx.esc(values.budgetCeiling)}" data-growth-field="budgetCeiling" data-growth-id="${ctx.esc(r.id)}"></label></div><p class="protection-reason" data-growth-reason="${ctx.esc(r.id)}">${ctx.esc(ctx.tr(q.reason || 'Budget wird bis zum Beginn der Einrichtung zurückgehalten.'))}</p><div class="card-actions"><button class="button primary" data-growth="promise" data-id="${ctx.esc(r.id)}" ${q.enabled ? '' : 'disabled'}>${ctx.tr('Liefertermin prüfen')}</button><button class="button" data-growth="decline" data-id="${ctx.esc(r.id)}">${ctx.tr('Ablehnen')}</button></div></article>`;
+                return `<article class="panel customer-growth-card" data-growth-card="${ctx.esc(r.id)}"><span class="tag blue">${ctx.tr('ERWEITERUNGSANFRAGE')}</span><h3>${ctx.esc(r.client)}</h3><p>${ctx.esc(ctx.tr(ctx.E.catalog.services?.[r.kind]?.name || { hosting: 'Hosting', archive: 'Archiv', database: 'Datenbank', inference: 'KI-Inferenz' }[r.kind] || r.kind))} · ${ctx.fmt(r.units)} ${ctx.tr('Einheiten')} · ${ctx.tr(`Raum ${Number(String(r.roomId).replace('room-', ''))}`)}</p><p>${ctx.tr('Zusätzlicher Bedarf')}: ${ctx.esc(resources(r.quote?.resources))}</p><p>${ctx.tr('Einrichtung')}: ${ctx.fmt(r.quote?.setupCost || 0)} CR · ${ctx.duration(600)} ${ctx.tr('Agentenzeit')}</p><p>${ctx.tr('Angebot verfällt in')} <strong data-growth-expiry="${ctx.esc(r.id)}"></strong></p><div class="business-controls"><label class="field-label">${ctx.tr('Lieferfenster')}<select class="select" data-growth-field="windowSeconds" data-growth-id="${ctx.esc(r.id)}">${windows.map(([n, label]) => `<option value="${n}" ${Number(values.windowSeconds) === n ? 'selected' : ''}>${ctx.tr(label)}</option>`).join('')}</select></label><label class="field-label">${ctx.tr('Budgetobergrenze (CR)')}<input class="input" type="number" min="${r.quote?.setupCost || 1}" max="1000000000000" step="1" value="${ctx.esc(values.budgetCeiling)}" data-growth-field="budgetCeiling" data-growth-id="${ctx.esc(r.id)}"></label></div><p class="protection-reason" data-growth-reason="${ctx.esc(r.id)}">${ctx.esc(ctx.tr(q.reason || 'Kapazität und Einrichtung werden bei der Zusage gebucht.'))}</p><div class="card-actions"><button class="button primary" data-growth="promise" data-id="${ctx.esc(r.id)}" ${q.enabled ? '' : 'disabled'}>${ctx.tr('Liefertermin prüfen')}</button><button class="button" data-growth="decline" data-id="${ctx.esc(r.id)}">${ctx.tr('Ablehnen')}</button></div></article>`;
               })
               .join('')}</div>`
           : `<p class="policy-explainer">${ctx.tr('Zurzeit liegen keine Erweiterungsanfragen vor.')}</p>`
@@ -67,11 +67,11 @@ export function createCustomerGrowthUI(ctx) {
                   : 0;
                 const label =
                   r.status === 'provisioning'
-                    ? contract?.stage === 'setup'
+                    ? contract?.agentId
                       ? 'Einrichtung läuft'
-                      : 'Vertrag bereitgestellt'
+                      : 'Wartet auf einen Agenten'
                     : 'Wartet auf freie Kapazität';
-                return `<article class="panel customer-growth-card" data-growth-live="${ctx.esc(r.id)}"><span class="tag ${r.status === 'provisioning' ? 'blue' : 'amber'}">${ctx.tr(label)}</span><h3>${ctx.esc(r.client)}</h3><p>${ctx.tr('Liefertermin')}: <strong data-growth-deadline="${ctx.esc(r.id)}">${ctx.duration(remaining)}</strong> · ${ctx.fmt(r.units)} ${ctx.tr('Einheiten')}</p><p>${ctx.tr('Zurückgehaltene Kaution')}: <strong data-growth-escrow="${ctx.esc(r.id)}">${ctx.fmt(r.escrow)} CR</strong></p>${work ? `<p data-growth-work="${ctx.esc(r.id)}">${ctx.tr('Einrichtung')}: ${ctx.duration(work.remaining)}</p><div class="progress-track"><div class="progress-fill blue" data-growth-progress="${ctx.esc(r.id)}" style="width:${progress * 100}%"></div></div>` : `<p>${ctx.tr('Einrichtung startet, sobald die normale Kundenkapazität und ein Agent verfügbar sind.')}</p>`}<small>${ctx.tr('Kein Erlös vor Einrichtung; spätere Zahlung richtet sich nach gelieferter Leistung.')}</small></article>`;
+                return `<article class="panel customer-growth-card" data-growth-live="${ctx.esc(r.id)}"><span class="tag ${r.status === 'provisioning' ? 'blue' : 'amber'}">${ctx.tr(label)}</span><h3>${ctx.esc(r.client)}</h3><p>${ctx.tr('Liefertermin')}: <strong data-growth-deadline="${ctx.esc(r.id)}">${ctx.duration(remaining)}</strong> · ${ctx.fmt(r.units)} ${ctx.tr('Einheiten')}</p>${r.escrow ? `<p>${ctx.tr('Zurückgehaltene Kaution')}: <strong data-growth-escrow="${ctx.esc(r.id)}">${ctx.fmt(r.escrow)} CR</strong></p>` : ''}${work ? `<p data-growth-work="${ctx.esc(r.id)}">${ctx.tr('Einrichtung')}: ${ctx.duration(work.remaining)}</p><div class="progress-track"><div class="progress-fill blue" data-growth-progress="${ctx.esc(r.id)}" style="width:${progress * 100}%"></div></div>` : `<p>${ctx.tr('Einrichtung startet, sobald die normale Kundenkapazität und ein Agent verfügbar sind.')}</p>`}<small>${ctx.tr('Zusätzlicher Erlös entsteht nach der Einrichtung aus gelieferter Leistung.')}</small></article>`;
               })
               .join('')}</div>`
           : ''
@@ -121,7 +121,7 @@ export function createCustomerGrowthUI(ctx) {
         const reason = card.querySelector(`[data-growth-reason="${CSS.escape(id)}"]`);
         if (reason)
           reason.textContent = ctx.tr(
-            q.reason || 'Budget wird bis zum Beginn der Einrichtung zurückgehalten.',
+            q.reason || 'Kapazität und Einrichtung werden bei der Zusage gebucht.',
           );
         const button = card.querySelector('[data-growth="promise"]');
         if (button) button.disabled = !q.enabled;
@@ -132,7 +132,7 @@ export function createCustomerGrowthUI(ctx) {
   function growthConfirm(extra) {
     const q = ctx.E.quoteGrowth(ctx.state, extra.action, extra.payload);
     const r = growth().requests.find((item) => item.id === extra.payload.id);
-    return `<p class="modal-intro">${ctx.esc(r?.client || '')}</p><div class="status-row"><span>${ctx.tr('Bereitstellung')}</span><strong>${ctx.duration(q.duration || 0)}</strong></div><div class="status-row"><span>${ctx.tr('Einrichtungskosten')}</span><strong>${ctx.fmt(q.setupCost || 0)} CR</strong></div><div class="status-row"><span>${ctx.tr('Zurückgehaltene Kaution')}</span><strong>${ctx.fmt(q.reservedBudget || 0)} CR</strong></div><p>${ctx.tr('Ressourcenbedarf')}: ${ctx.esc(resources(q.resources))}</p><p>${ctx.tr('Die Kaution wird erst bei Start der Einrichtung mit dem tatsächlichen Normalpreis verrechnet. Bei Ablauf ohne Bereitstellung wird sie erstattet. Es gibt keinen Umsatz vor abgeschlossener Einrichtung; danach zählt nur gelieferte Leistung. Ein verspäteter Termin kann einmalig Ansehen kosten.')}</p>${q.reason ? `<p class="modal-alert">${ctx.esc(ctx.tr(q.reason))}</p>` : ''}<button class="button primary block" data-growth-confirm ${q.enabled ? '' : 'disabled'}>${ctx.tr('Liefertermin verbindlich zusagen')}</button>`;
+    return `<p class="modal-intro">${ctx.esc(r?.client || '')}</p><div class="status-row"><span>${ctx.tr('Bereitstellung')}</span><strong>${ctx.duration(q.duration || 0)}</strong></div><div class="status-row"><span>${ctx.tr('Einrichtungskosten')}</span><strong>${ctx.fmt(q.setupCost || 0)} CR</strong></div><div class="status-row"><span>${ctx.tr('Budgetobergrenze')}</span><strong>${ctx.fmt(extra.payload.budgetCeiling)} CR</strong></div><p>${ctx.tr('Ressourcenbedarf')}: ${ctx.esc(resources(q.resources))}</p><p>${ctx.tr('Bei der Zusage werden Einrichtungskosten fällig und die zusätzlichen Ressourcen reserviert. Ein Agent richtet die Erweiterung ein. Ein verpasster Liefertermin kostet Ansehen und Zufriedenheit.')}</p>${q.reason ? `<p class="modal-alert">${ctx.esc(ctx.tr(q.reason))}</p>` : ''}<button class="button primary block" data-growth-confirm ${q.enabled ? '' : 'disabled'}>${ctx.tr('Liefertermin verbindlich zusagen')}</button>`;
   }
   function growthSignature() {
     const g = ctx.state.customerGrowth;
@@ -150,6 +150,16 @@ export function createCustomerGrowthUI(ctx) {
       .$$('.view-content [data-growth-reserved]')
       .forEach((el) => (el.textContent = `${ctx.fmt(g.reservedBudget)} CR`));
     g.requests.forEach((r) => {
+      if (r.status === 'offered') {
+        const q = formValues.has(r.id) ? requestQuote(r) : r.quote;
+        const reason = ctx.$(`[data-growth-reason="${CSS.escape(r.id)}"]`);
+        const button = ctx.$(`[data-growth="promise"][data-id="${CSS.escape(r.id)}"]`);
+        if (reason)
+          reason.textContent = ctx.tr(
+            q.reason || 'Kapazität und Einrichtung werden bei der Zusage gebucht.',
+          );
+        if (button) button.disabled = !q.enabled;
+      }
       const expiry = ctx.$(`[data-growth-expiry="${CSS.escape(r.id)}"]`);
       if (expiry) expiry.textContent = ctx.duration(Math.max(0, r.expiresAt - ctx.state.time));
       const deadline = ctx.$(`[data-growth-deadline="${CSS.escape(r.id)}"]`);

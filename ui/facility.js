@@ -39,22 +39,26 @@ export function createFacilityUI(ctx) {
     const plots = Array.from({ length: layout.roomsPerFloor }, (_, i) => {
       const room = rooms[i];
       if (room)
-        return `<article class="building-plot owned">${roomArt('server', 'ready')}<span class="tag">Gebaut</span><h3>Raum ${room.number}</h3><p>${room.rackCount} / 6 Racks · ${room.serverCount} Server</p>
-        <div class="building-rack-slots" aria-hidden="true">${Array.from({ length: 6 }, (_, n) => `<i class="${n < room.rackCount ? 'filled' : ''}"></i>`).join('')}</div>
+        return `<article class="building-plot owned">${roomArt('server', 'ready')}<span class="tag">${room.rackSlots ? 'Teilausbau' : 'Gebaut'}</span><h3>Raum ${room.number}</h3><p>${room.rackCount} / ${room.rackCapacity} Racks · ${room.serverCount} Server</p>
+        <div class="building-rack-slots" aria-hidden="true">${Array.from({ length: room.rackCapacity }, (_, n) => `<i class="${n < room.rackCount ? 'filled' : ''}"></i>`).join('')}</div>
         <button class="button small" data-facility-visit="${room.id}" data-facility-floor="${room.floor}">Raum betreten${icon('arrow')}</button>
         <button class="text-button" data-facility-node="room:${room.id}">Raum auswählen</button><button class="text-button" data-building-hardware="${room.id}">Hardware verwalten</button></article>`;
       const inBuild =
         i === rooms.length &&
-        building.project?.kind === 'room' &&
+        ['room', 'room-stage'].includes(building.project?.kind) &&
         building.project.floor === selectedFloor;
       return `<article class="building-plot ${inBuild ? 'under-construction' : 'vacant'}">${roomArt('server', inBuild ? 'building' : 'planned')}<span class="tag">${inBuild ? 'Im Bau' : 'Unbebaut'}</span><h3>Bauplatz ${i + 1}</h3><p>${inBuild ? 'Der neue Serverraum wird erschlossen.' : 'Unterirdische Fläche für einen weiteren Serverraum.'}</p></article>`;
     }).join('');
     return `<section class="panel section-spacer building-plan"><div class="panel-body">
-      <div class="building-section-heading"><div><h2>Raumplan</h2><p>Räume und Untergeschosse werden separat gebaut. Ein leerer Raum bietet sechs Rackplätze.</p></div>
+      <div class="building-section-heading"><div><h2>Raumplan</h2><p>Räume und Untergeschosse werden separat gebaut. Ein voll ausgebauter Raum bietet sechs Rackplätze.</p></div>
       <label>Untergeschoss<select class="select" data-building-floor>${building.floors.map((item) => `<option value="${item.number}" ${item.number === selectedFloor ? 'selected' : ''}>${item.number} · ${item.roomCount} / 4 Räume</option>`).join('')}</select></label>
       <button class="button small" data-facility-visit="hall" data-facility-floor="${selectedFloor}">Flur betreten${icon('arrow')}</button></div>
       <div class="building-plots">${plots}</div>
-      ${floor.roomCount < 4 ? quoteButton('buildRoom', { floor: selectedFloor }, floor.buyRoom, 'Serverraum planen') : '<p class="building-capacity-note">Vier Serverräume auf dieser Etage gebaut. Weitere Flächen benötigen ein neues Untergeschoss.</p>'}
+      <div class="business-grid">
+      ${floor.stageRoom ? quoteButton('buildRoomStage', { floor: selectedFloor }, floor.stageRoom, 'Ersten Bauabschnitt prüfen') : ''}
+      ${floor.roomCount < 4 ? quoteButton('buildRoom', { floor: selectedFloor }, floor.buyRoom, floor.stageRoom ? 'Vollausbau prüfen' : 'Serverraum planen') : '<p class="building-capacity-note">Vier Serverräume auf dieser Etage gebaut. Weitere Flächen benötigen ein neues Untergeschoss.</p>'}
+      ${building.fitOutRoom?.floor === selectedFloor ? quoteButton('fitOutRoom', { roomId: building.fitOutRoom.roomId }, building.fitOutRoom, 'Zweiten Bauabschnitt prüfen') : ''}
+      </div>
     </div></section>`;
   }
 

@@ -161,34 +161,56 @@
     }
 
     function autoContract(s) {
-      if (!s.policies.autocontract || context.globalIncident(s)) return 0;
+      if (
+        !s.policies.autocontract ||
+        !s.offers.length ||
+        s.jobs.length >= Math.min(context.MAX.jobs, s.agents.length + 1) ||
+        context.globalIncident(s)
+      )
+        return 0;
+      const assignments = context.customerReadModel(s).assignments;
+      const staffed =
+        s.agents.filter((agent) => context.agentProductive(s, agent, assignments)).length + 1;
+      if (s.jobs.length >= staffed) return 0;
       let accepted = 0,
         metrics = getMetrics(s);
-      const target = Math.min(
-        metrics.jobLimit,
-        Math.max(1, s.agents.filter((agent) => !agent.assignment).length + 1),
-      );
+      const target = Math.min(metrics.jobLimit, staffed);
       while (s.jobs.length < target && s.offers.length) {
-        metrics = getMetrics(s);
-        const candidates = s.offers.filter((j) =>
-          s.business
-            ? context.jobsFit(s, j, metrics.admissionResources)
-            : metrics.usedCapacity + j.load <= metrics.capacity * 0.98 &&
-              (j.kind !== 'ai' ||
-                (j.gpuDemand || 1) <= metrics.gpuCapacity - metrics.gpuUsed + 1e-9),
-        );
-        if (!candidates.length) break;
-        const score = (j) =>
-          s.policies.priority === 'income'
-            ? j.reward / j.totalWork
-            : s.policies.priority === 'research'
-              ? j.science / j.totalWork
-              : 1 / j.totalWork;
-        candidates.sort((a, b) => score(b) - score(a));
-        const picked = candidates[0];
+        let picked = null,
+          best = -Infinity;
+        for (const job of s.offers) {
+          const fits = s.business
+            ? context.jobsFit(s, job, metrics.admissionResources)
+            : metrics.usedCapacity + job.load <= metrics.capacity * 0.98 &&
+              (job.kind !== 'ai' ||
+                (job.gpuDemand || 1) <= metrics.gpuCapacity - metrics.gpuUsed + 1e-9);
+          if (!fits) continue;
+          const rate = s.business
+            ? context.allocateProjectWork(
+                [...s.jobs, job],
+                metrics.freeResources,
+                metrics.workPerSecond,
+                s.policies.priority,
+              ).jobRates[job.id]
+            : metrics.workPerSecond / (s.jobs.length + 1);
+          if (rate <= 0) continue;
+          const value =
+            s.policies.priority === 'income'
+              ? job.reward
+              : s.policies.priority === 'research'
+                ? job.science
+                : 1;
+          const score = (value * rate) / Math.max(1, job.totalWork - job.work);
+          if (score > best) {
+            picked = job;
+            best = score;
+          }
+        }
+        if (!picked) break;
         s.offers = s.offers.filter((j) => j.id !== picked.id);
         s.jobs.push(picked);
         accepted++;
+        if (!s.business && s.jobs.length < target && s.offers.length) metrics = getMetrics(s);
       }
       return accepted;
     }

@@ -2,6 +2,8 @@
 export function createCapitalPlanUI(ctx) {
   const names = {
     buildRoom: 'Serverraum bauen',
+    buildRoomStage: 'Serverraum mit zwei Rackplätzen bauen',
+    fitOutRoom: 'Serverraum fertig ausbauen',
     buildFloor: 'Untergeschoss bauen',
     buildServiceRoom: 'Technikraum bauen',
     upgradeCentral: 'Zentralanlage ausbauen',
@@ -36,6 +38,8 @@ export function createCapitalPlanUI(ctx) {
   function item() {
     const payload = {};
     if (draft.action === 'buildRoom') payload.floor = Number(draft.floor);
+    if (draft.action === 'buildRoomStage') payload.floor = 1;
+    if (draft.action === 'fitOutRoom') payload.roomId = 'room-2';
     if (draft.action === 'buildServiceRoom') payload.roomType = draft.roomType;
     if (draft.action === 'upgradeCentral') payload.system = draft.system;
     if (draft.action === 'upgradeRack')

@@ -5,6 +5,69 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate) {
   return {
     pairs: [
+      [
+        'Das Raumteam hat zu wenige freie Betreuungseinheiten.',
+        'The room team has too little service capacity available.',
+      ],
+      ['Die Hardware hat zu wenig freie Kapazität.', 'There is too little free hardware capacity.'],
+      ['Die Dienstgrenze dieses Raums ist erreicht.', 'This room has reached its service limit.'],
+      [
+        'Für diesen Kunden läuft bereits ein Agenteneinsatz.',
+        'An agent assignment for this customer is already in progress.',
+      ],
+      [
+        'Erweiterung zugesagt. Kapazität und Einrichtung sind gebucht.',
+        'Expansion promised. Capacity and provisioning are booked.',
+      ],
+      ['Kundenerweiterung', 'Customer expansion'],
+      [
+        'Kapazität und Einrichtung werden bei der Zusage gebucht.',
+        'Capacity and provisioning are booked when you commit.',
+      ],
+      [
+        'Neue Zusagen reservieren die Kapazität sofort. Nach der Einrichtung wachsen die Einheiten des bestehenden Vertrags.',
+        'New commitments reserve capacity immediately. Provisioning then adds units to the existing contract.',
+      ],
+      [
+        'Zusätzlicher Erlös entsteht nach der Einrichtung aus gelieferter Leistung.',
+        'The additional units earn revenue for delivered service after provisioning.',
+      ],
+      [
+        'Bei der Zusage werden Einrichtungskosten fällig und die zusätzlichen Ressourcen reserviert. Ein Agent richtet die Erweiterung ein. Ein verpasster Liefertermin kostet Ansehen und Zufriedenheit.',
+        'Accepting charges the setup fee and reserves the additional resources. An agent provisions the expansion. Missing the deadline reduces reputation and satisfaction.',
+      ],
+      ['Wartet auf einen Agenten', 'Waiting for an agent'],
+      ['Notfallplan für Stromausfälle', 'Power outage response plan'],
+      [
+        'Startet die sichere Stromumschaltung innerhalb des Reparaturbudgets und der geschützten Geldreserve.',
+        'Starts a safe power reroute within the repair budget and protected cash reserve.',
+      ],
+      [
+        'Notfallplan hat die sichere Stromumschaltung gestartet.',
+        'The response plan started a safe power reroute.',
+      ],
+      [
+        'Das Stundenbudget deckt die nächste Maßnahme nicht.',
+        'The hourly budget cannot cover the next operation.',
+      ],
+      [
+        'Das Backupbudget deckt nach dem Ausbau keine automatische Sicherung.',
+        'After expansion, the backup budget will not cover an automatic backup.',
+      ],
+      ['Backupbudget / Stunde', 'Backup budget / hour'],
+      ['Reparaturbudget / Stunde', 'Repair budget / hour'],
+      [
+        'Das Stundenbudget ist für diese Maßnahme ausgeschöpft.',
+        'The hourly budget has too little left for this operation.',
+      ],
+      [
+        'Die geschützte Geldreserve blockiert die Automatik.',
+        'The protected cash reserve blocks automation.',
+      ],
+      [
+        'Kleinere Reparaturen mit verfügbaren Ersatzteilen.',
+        'Minor repairs use available spare parts.',
+      ],
       ['Störungen & Versorgung', 'Incidents & supply'],
       ['Hardware-Ausbau', 'Hardware upgrades'],
       ['Baufortschritt', 'Construction'],
@@ -693,6 +756,10 @@
       ['Fenster bis', 'Window ends'],
     ],
     patterns: [
+      [
+        /^(.*): Kapazität für die Erweiterung des bestehenden Vertrags gebucht\.$/,
+        (_, client) => `${client}: capacity booked to expand the existing contract.`,
+      ],
       [
         /^Wartung angekündigt: (.+); (\d+) Kunden informiert; Beginn in (\d+) Sekunden\.$/,
         (_, rack, n, secs) =>

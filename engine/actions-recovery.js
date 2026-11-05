@@ -52,7 +52,7 @@
         return { ok: true, message: `${option.label} gestartet.` };
       }
       if (action === 'createBackup') {
-        const option = getResilience(s).backup;
+        const option = context.backupQuote(s);
         if (!option.enabled)
           return fail(option.reason || 'Eine Betriebssicherung ist derzeit nicht verfügbar.');
         s.credits -= option.cost;

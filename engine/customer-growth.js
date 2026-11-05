@@ -55,6 +55,7 @@
           const source = sourceFor(s, request);
           if (!source || source.stage !== 'active' || source.notice > 0)
             reason = 'Der Ursprungskunde kann diese Erweiterung nicht mehr zusagen.';
+          else if (source.work) reason = 'Für diesen Kunden läuft bereits ein Agenteneinsatz.';
           else if (!WINDOWS.includes(payload.windowSeconds))
             reason = 'Wähle ein Lieferfenster von 1, 4 oder 12 Stunden.';
           else if (payload.windowSeconds >= sourceDeadlineRemaining(source))
@@ -69,16 +70,17 @@
             resources = q.resources || {};
             if (!Number.isSafeInteger(setupCost) || setupCost <= 0)
               reason = 'Der Einrichtungspreis konnte nicht berechnet werden.';
+            else if (!q.enabled) reason = q.reason;
             else if (
               !Number.isSafeInteger(payload.budgetCeiling) ||
               payload.budgetCeiling < setupCost ||
               payload.budgetCeiling > MAX_BUDGET
             )
               reason = 'Die Budgetfreigabe muss mindestens den Einrichtungspreis abdecken.';
-            else if (s.credits - payload.budgetCeiling < (ctx.maintenancePolicy(s).reserve || 0))
+            else if (s.credits - setupCost < (ctx.maintenancePolicy(s).reserve || 0))
               reason = 'Die Budgetfreigabe würde die geschützte Geldreserve unterschreiten.';
             else {
-              cost = payload.budgetCeiling;
+              cost = setupCost;
               duration = payload.windowSeconds;
             }
           }
@@ -91,7 +93,6 @@
         setupCost,
         duration,
         resources,
-        reservedBudget: action === 'promiseCustomerGrowth' ? cost : 0,
       };
     }
 
@@ -105,24 +106,14 @@
         customerLog(s, 'system', `${request.client}: Erweiterungsanfrage abgelehnt.`);
         return { ok: true, message: 'Erweiterungsanfrage abgelehnt.' };
       }
-      s.credits -= q.cost;
       Object.assign(request, {
-        status: 'promised',
         promisedAt: s.time,
         windowSeconds: payload.windowSeconds,
         deadlineAt: s.time + payload.windowSeconds,
         budgetCeiling: payload.budgetCeiling,
-        escrow: payload.budgetCeiling,
-        nextAttemptAt: s.time,
-        contractId: null,
-        latePenaltyApplied: false,
       });
-      customerLog(
-        s,
-        'system',
-        `${request.client}: Erweiterung bis zum vereinbarten Liefertermin zugesagt; ${q.cost} Credits sind reserviert.`,
-      );
-      return { ok: true, message: 'Liefertermin und Budgetfreigabe zugesagt.' };
+      startGrowthWork(s, request, sourceFor(s, request), q.setupCost);
+      return { ok: true, message: 'Erweiterung zugesagt. Kapazität und Einrichtung sind gebucht.' };
     }
 
     function addRequest(s, source) {
@@ -188,51 +179,53 @@
         removeRequest(s, request, true);
         return;
       }
+      // A promise from an older save may still be waiting for capacity.
+      if (source.work) {
+        request.nextAttemptAt = s.time + 60;
+        return;
+      }
       const quoteState = { ...s, credits: s.credits + request.escrow };
       const q = ctx.serviceQuote(quoteState, 'contractService', {
         roomId: request.roomId,
         kind: request.kind,
         units: request.units,
       });
-      const roomContracts = s.customers.contracts.filter((c) => c.roomId === request.roomId).length;
-      if (
-        !q.enabled ||
-        q.cost > request.budgetCeiling ||
-        roomContracts >= ctx.CUSTOMER_ROOM_LIMIT
-      ) {
+      if (!q.enabled || q.cost > request.budgetCeiling) {
         request.nextAttemptAt = s.time + 60;
         return;
       }
-      const contract = ctx.makeCustomer(s, request.roomId, request.kind, request.units, true),
-        group = s.business.rooms
-          .find((r) => r.roomId === request.roomId)
-          ?.groups.find((g) => g.kind === request.kind);
-      if (!group) {
-        request.nextAttemptAt = s.time + 60;
-        return;
-      }
-      Object.assign(contract, {
-        client: request.client,
-        term: request.term,
-        remaining: request.term,
-        premium: group.nextPremium,
-        renew: group.renew,
+      startGrowthWork(s, request, source, q.cost);
+    }
+
+    function startGrowthWork(s, request, source, cost) {
+      Object.assign(source, {
+        growthUnits: request.units,
+        work: 'growth',
+        workRemaining: 600,
+        workTotal: 600,
+        agentId: null,
       });
-      s.credits += request.escrow - q.cost;
+      s.credits += request.escrow - cost;
       request.escrow = 0;
       request.status = 'provisioning';
-      request.contractId = contract.id;
+      request.contractId = source.id;
       request.nextAttemptAt = 0;
-      s.customers.contracts.push(contract);
-      s.customers.won = Math.min(1e9, s.customers.won + 1);
-      s.customerGrowth.linkedContracts.push(contract.id);
       ctx.syncCustomerGroups(s);
       ctx.assignCustomerWork(s);
       customerLog(
         s,
         'system',
-        `${request.client}: Erweiterung wird mit der normalen Kundenprovisionierung eingerichtet.`,
+        `${request.client}: Kapazität für die Erweiterung des bestehenden Vertrags gebucht.`,
       );
+    }
+
+    function finishGrowthWork(s, source) {
+      const request = s.customerGrowth.requests.find((r) => r.contractId === source.id);
+      source.units += source.growthUnits;
+      delete source.growthUnits;
+      if (s.time > request.deadlineAt) applyLatePenalty(s, request);
+      else customerLog(s, 'success', `${request.client}: Erweiterung rechtzeitig bereitgestellt.`);
+      removeRequest(s, request);
     }
 
     function advanceGrowth(s, dt) {
@@ -286,6 +279,12 @@
           continue;
         }
         if (request.status === 'provisioning') {
+          if (request.contractId === request.sourceId) {
+            if (!source) removeRequest(s, request);
+            else if (s.time >= request.deadlineAt) applyLatePenalty(s, request);
+            continue;
+          }
+          // Preserve an already paid split contract from the legacy system.
           const contract = live.get(request.contractId);
           if (!contract) {
             g.linkedContracts = g.linkedContracts.filter((id) => id !== request.contractId);
@@ -455,7 +454,7 @@
           typeof latePenaltyApplied !== 'boolean'
         )
           bad();
-        const setupCost = Math.round(ctx.SERVICES[value.kind].fee * 1800) * value.units;
+        const setupCost = ctx.serviceSetupCost(value.kind, value.units);
         if (budgetCeiling < setupCost) bad();
         let contractId = null,
           nextAttemptAt = 0;
@@ -473,18 +472,23 @@
         } else {
           contractId = id(value.contractId, 'customer', new Set());
           const contract = contracts.get(contractId);
+          const merged = value.sourceId === contractId;
           if (
-            value.sourceId === contractId ||
             provisioningContracts.has(contractId) ||
             escrow !== 0 ||
-            !linkedContracts.has(contractId) ||
             !contract ||
             contract.roomId !== value.roomId ||
             contract.kind !== value.kind ||
-            contract.units !== value.units ||
             contract.client !== value.client ||
             contract.term !== value.term ||
-            !['active', 'setup'].includes(contract.stage)
+            (merged
+              ? contract.stage !== 'active' ||
+                contract.work !== 'growth' ||
+                contract.growthUnits !== value.units ||
+                value.nextAttemptAt !== 0
+              : !linkedContracts.has(contractId) ||
+                contract.units !== value.units ||
+                !['active', 'setup'].includes(contract.stage))
           )
             bad();
           provisioningContracts.add(contractId);
@@ -501,6 +505,10 @@
           latePenaltyApplied,
         };
       });
+      if (
+        s.customers.contracts.some((c) => c.work === 'growth' && !provisioningContracts.has(c.id))
+      )
+        bad();
       if (requests.some((r) => r.status !== 'provisioning' && !usedOrigins.has(r.sourceId))) bad();
       return {
         version: 1,
@@ -513,21 +521,14 @@
 
     function getGrowth(s) {
       const state = s.customerGrowth;
-      const requests = state.requests.map((request) => {
-        const price = ctx.serviceQuote(s, 'contractService', {
-          roomId: request.roomId,
-          kind: request.kind,
-          units: request.units,
-        });
-        return {
-          ...request,
-          quote: quoteGrowth(s, 'promiseCustomerGrowth', {
-            id: request.id,
-            windowSeconds: 3600,
-            budgetCeiling: request.status === 'offered' ? price.cost : request.budgetCeiling,
-          }),
-        };
-      });
+      const requests = state.requests.map((request) => ({
+        ...request,
+        quote: quoteGrowth(s, 'promiseCustomerGrowth', {
+          id: request.id,
+          windowSeconds: 3600,
+          budgetCeiling: ctx.serviceSetupCost(request.kind, request.units),
+        }),
+      }));
       return {
         ...state,
         requests,
@@ -545,6 +546,7 @@
       quoteGrowth,
       growthQuote: quoteGrowth,
       applyGrowth,
+      finishGrowthWork,
       advanceGrowth,
       normalizeGrowth,
       getGrowth,

@@ -122,6 +122,11 @@ export function createTelemetryUI(ctx) {
       parts: ctx.fmt(r.parts),
       repairSpent: ctx.fmt(r.spent),
       repairBudget: ctx.fmt(r.budget),
+      backupSpent: ctx.fmt(r.backupSpent),
+      backupBudget: ctx.fmt(r.backupBudget),
+      automaticBackupReason: r.automaticBackupReason,
+      automaticRepairReason: r.automaticRepairReason,
+      automaticRerouteReason: r.automaticRerouteReason,
       reserve: ctx.fmt(r.reserve),
       operationEta: r.operation ? ctx.duration(r.operation.remaining) : '',
       operationPercent: r.operation

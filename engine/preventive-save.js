@@ -5,7 +5,7 @@
   if (root) (root.RootEngineModules ||= {})['preventive-save'] = create;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  return function () {
+  return function (ctx) {
     const DAY = 86400,
       MINUTE = 60;
     function readPreventiveMaintenance(input, s) {
@@ -124,9 +124,7 @@
         operation = { ...v, serverIds: [...v.serverIds] };
         const engineer = s.agents.find((a) => a.id === v.agentId),
           effort = 180 + 90 * v.serverIds.length;
-        const duration = Math.ceil(
-          effort / (1 + Math.min(1.5, Math.sqrt(Math.max(0, engineer.level - 1)) * 0.2)),
-        );
+        const duration = Math.ceil(effort / ctx.maintenanceWorkSpeed(engineer));
         if (
           v.effort !== effort ||
           v.total !== duration ||

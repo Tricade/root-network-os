@@ -19,6 +19,7 @@ function harness({ capacity = true, seed = 81, credits = 1000, reserve = 100, dr
     CUSTOMER_ROOM_LIMIT: 16,
     personnelHash: (_seed, _key) => draw,
     maintenancePolicy: () => ({ reserve }),
+    serviceSetupCost: (kind, units) => Math.round(SERVICES[kind].fee * 1800) * units,
     addLog: (s, type, message) => s.log.push({ type, message, time: s.time }),
     serviceQuote: (s, _action, p) => {
       serviceQuotes++;
@@ -61,9 +62,12 @@ function harness({ capacity = true, seed = 81, credits = 1000, reserve = 100, dr
           (c) => c.roomId === 'room-1' && c.kind === group.kind,
         );
         group.units = rows.filter((c) => c.stage === 'active').reduce((n, c) => n + c.units, 0);
-        group.pending = rows.filter((c) => c.stage === 'setup').reduce((n, c) => n + c.units, 0);
+        group.pending = rows.reduce(
+          (n, c) => n + (c.stage === 'setup' ? c.units : c.growthUnits || 0),
+          0,
+        );
         group.onboarding = rows
-          .filter((c) => c.stage === 'setup')
+          .filter((c) => c.stage === 'setup' || c.work === 'growth')
           .reduce((n, c) => Math.max(n, c.workRemaining), 0);
       }
     },
@@ -135,6 +139,9 @@ function harness({ capacity = true, seed = 81, credits = 1000, reserve = 100, dr
     s,
     domain,
     source,
+    setCapacity(value) {
+      capacity = value;
+    },
     get serviceQuotes() {
       return serviceQuotes;
     },
@@ -152,6 +159,21 @@ function promise(h, request, { windowSeconds = 3600, budgetCeiling = 300 } = {})
     id: request.id,
     windowSeconds,
     budgetCeiling,
+  });
+}
+
+// A schema 10 commitment could be paid before capacity became available.
+function legacyPromise(h, request) {
+  const budgetCeiling = 300;
+  h.s.credits -= budgetCeiling;
+  Object.assign(request, {
+    status: 'promised',
+    promisedAt: h.s.time,
+    windowSeconds: 3600,
+    deadlineAt: h.s.time + 3600,
+    budgetCeiling,
+    escrow: budgetCeiling,
+    nextAttemptAt: h.s.time,
   });
 }
 
@@ -201,7 +223,7 @@ test('growth chance has a deterministic five-percent boundary and unaccepted req
   assert.equal(offered.source.satisfaction, 100);
 });
 
-test('promise quote is pure, requires an explicit allowed window and escrows at least normal setup cost', () => {
+test('promise quote is pure, requires an explicit allowed window and charges the exact setup cost', () => {
   const h = harness(),
     request = generateRequest(h),
     before = structuredClone(h.s);
@@ -212,7 +234,7 @@ test('promise quote is pure, requires an explicit allowed window and escrows at 
   });
   assert.equal(q.enabled, true, q.reason);
   assert.equal(q.setupCost, 252);
-  assert.equal(q.reservedBudget, 300);
+  assert.equal(q.cost, 252);
   assert.deepEqual(h.s, before);
   assert.equal(
     h.domain.growthQuote(h.s, 'promiseCustomerGrowth', {
@@ -231,9 +253,9 @@ test('promise quote is pure, requires an explicit allowed window and escrows at 
     false,
   );
   assert.equal(promise(h, request).ok, true);
-  assert.equal(h.s.credits, 700);
-  assert.equal(h.domain.getGrowth(h.s).reservedBudget, 300);
-  assert.equal(h.s.business.revenue, 0, 'the escrow is not revenue');
+  assert.equal(h.s.credits, 748);
+  assert.equal(h.domain.getGrowth(h.s).reservedBudget, 0);
+  assert.equal(h.s.business.revenue, 0, 'the setup fee is not revenue');
 });
 
 test('promise cannot outlive a nonrenewing contract or an existing notice', () => {
@@ -261,8 +283,8 @@ test('promise cannot outlive a nonrenewing contract or an existing notice', () =
   );
 });
 
-test('escrow cannot cross the protected reserve', () => {
-  const h = harness({ credits: 399, reserve: 100 }),
+test('the setup fee cannot cross the protected reserve', () => {
+  const h = harness({ credits: 351, reserve: 100 }),
     request = generateRequest(h);
   assert.equal(
     h.domain.growthQuote(h.s, 'promiseCustomerGrowth', {
@@ -272,149 +294,54 @@ test('escrow cannot cross the protected reserve', () => {
     }).enabled,
     false,
   );
-  assert.equal(h.s.credits, 399);
+  assert.equal(h.s.credits, 351);
 });
 
-test('provisioning retries once per minute and creates an ordinary setup contract only when capacity is available', () => {
-  const h = harness({ capacity: false }),
-    request = generateRequest(h);
-  assert.equal(promise(h, request).ok, true);
-  const initialCredits = h.s.credits,
-    initialRevenue = h.s.business.revenue;
+test('a legacy paid promise retries only once per minute and funds the existing contract when capacity becomes available', () => {
+  const h = harness({ capacity: false });
+  const request = generateRequest(h);
+  assert.equal(promise(h, request).ok, false, 'new promises require available capacity');
+  legacyPromise(h, request);
   h.s.time++;
   h.domain.advanceGrowth(h.s, 1);
-  assert.equal(h.s.customers.contracts.length, 1);
-  assert.equal(h.s.customerGrowth.requests[0].nextAttemptAt, 21661);
+  assert.equal(h.source.work, '');
+  assert.equal(request.nextAttemptAt, 21661);
   const quoteCalls = h.serviceQuotes;
   h.s.time = 21660;
   h.domain.advanceGrowth(h.s, 1);
   assert.equal(h.serviceQuotes, quoteCalls);
 
-  // The adapter's capacity flag is closed over by the quote function; replace the quote
-  // implementation to model hardware completion without changing the promised state.
-  h.domain = createCustomerGrowth({
-    ...makeContextForCapacity(h),
-  });
-  h.s.time = 21661;
+  h.setCapacity(true);
+  h.s.time++;
   h.domain.advanceGrowth(h.s, 1);
-  assert.equal(h.s.customers.contracts.length, 2);
-  const child = h.s.customers.contracts.at(-1);
-  assert.equal(child.stage, 'setup');
-  assert.equal(child.workRemaining, 600);
-  assert.equal(child.agentId, 'agent-1');
-  assert.equal(child.client, 'Fixture Labs');
-  assert.equal(
-    h.s.credits,
-    initialCredits + 48,
-    'unused escrow returns after standard fee is spent',
-  );
-  assert.equal(h.s.business.rooms[0].groups.find((g) => g.kind === 'hosting').pending, 1);
-  assert.equal(h.s.business.revenue, initialRevenue);
-  assert.equal(h.s.customerGrowth.requests[0].status, 'provisioning');
+  assert.equal(h.s.customers.contracts.length, 1);
+  assert.equal(h.source.work, 'growth');
+  assert.equal(h.source.units, 3);
+  assert.equal(h.source.growthUnits, 1);
+  assert.equal(h.source.agentId, 'agent-1');
+  assert.equal(h.s.credits, 748, 'unused old escrow is returned exactly once');
+  assert.equal(request.status, 'provisioning');
 });
 
-function makeContextForCapacity(h) {
-  const base = harnessContext(h);
-  base.serviceQuote = (s, _action, p) => ({
-    enabled: s.credits >= Math.round(SERVICES[p.kind].fee * 1800) * p.units,
-    reason: '',
-    cost: Math.round(SERVICES[p.kind].fee * 1800) * p.units,
-    duration: 600,
-    resources: { cpu: p.units * 2 },
-  });
-  return base;
-}
-
-function harnessContext(h) {
-  return {
-    SERVICES,
-    CUSTOMER_TERMS: TERMS,
-    CUSTOMER_ROOM_LIMIT: 16,
-    personnelHash: () => 0,
-    maintenancePolicy: () => ({ reserve: 100 }),
-    addLog: (s, type, message) => s.log.push({ type, message, time: s.time }),
-    serviceQuote: () => ({ enabled: false, cost: 0 }),
-    uid: (s, prefix) => `${prefix}-${s.nextId++}`,
-    makeCustomer: (s, roomId, kind, units) => ({
-      id: `customer-${s.nextId++}`,
-      client: 'New client',
-      roomId,
-      kind,
-      units,
-      term: 259200,
-      remaining: 259200,
-      stage: 'setup',
-      premium: false,
-      renew: true,
-      satisfaction: 100,
-      deficit: 0,
-      issue: '',
-      notice: 0,
-      departure: '',
-      reviewAt: s.time + 21600,
-      work: 'setup',
-      workRemaining: 600,
-      workTotal: 600,
-      agentId: null,
-      retentionUsed: false,
-    }),
-    syncCustomerGroups: (s) => {
-      for (const group of s.business.rooms[0].groups) {
-        const rows = s.customers.contracts.filter(
-          (c) => c.roomId === 'room-1' && c.kind === group.kind,
-        );
-        group.units = rows.filter((c) => c.stage === 'active').reduce((n, c) => n + c.units, 0);
-        group.pending = rows.filter((c) => c.stage === 'setup').reduce((n, c) => n + c.units, 0);
-        group.onboarding = rows
-          .filter((c) => c.stage === 'setup')
-          .reduce((n, c) => Math.max(n, c.workRemaining), 0);
-      }
-    },
-    assignCustomerWork: (s) => {
-      const busy = new Set(s.customers.contracts.map((c) => c.agentId).filter(Boolean));
-      for (const c of s.customers.contracts) {
-        if (c.work && !c.agentId) {
-          const agent = s.agents.find((a) => !busy.has(a.id));
-          if (agent) {
-            c.agentId = agent.id;
-            busy.add(agent.id);
-          }
-        }
-      }
-    },
-  };
-}
-
-test('delivery completed exactly at deadline counts as on time and remains linked against recursion', () => {
-  const h = harness(),
-    request = generateRequest(h);
+test('delivery completed exactly at the deadline credits the same contract once', () => {
+  const h = harness();
+  const request = generateRequest(h);
   assert.equal(promise(h, request).ok, true);
-  h.s.time = 21601;
-  h.domain.advanceGrowth(h.s, 1);
-  const child = h.s.customers.contracts.at(-1);
-  child.stage = 'active';
-  child.work = '';
-  child.workRemaining = child.workTotal = 0;
-  child.agentId = null;
-  h.s.time = request.deadlineAt || 25200;
-  h.domain.advanceGrowth(h.s, 1);
+  h.s.time = request.deadlineAt;
+  h.domain.finishGrowthWork(h.s, h.source);
   assert.equal(h.s.customerGrowth.requests.length, 0);
-  assert.ok(h.s.customerGrowth.linkedContracts.includes(child.id));
+  assert.equal(h.s.customers.contracts.length, 1);
+  assert.equal(h.source.units, 4);
+  assert.equal(h.source.growthUnits, undefined);
   assert.equal(h.s.reputation, 20);
   assert.equal(h.source.satisfaction, 100);
-  h.s.time = h.s.customerGrowth.nextCheckAt;
-  h.domain.advanceGrowth(h.s, 1);
-  assert.equal(
-    h.s.customerGrowth.requests.some((r) => r.sourceId === child.id),
-    false,
-  );
 });
 
 test('missed unstarted promise refunds escrow and applies one bounded reputation and relationship penalty', () => {
   const h = harness({ capacity: false }),
     request = generateRequest(h),
     startCredits = h.s.credits;
-  assert.equal(promise(h, request).ok, true);
+  legacyPromise(h, request);
   h.s.time = 25200;
   h.domain.advanceGrowth(h.s, 1);
   assert.equal(h.s.customerGrowth.requests.length, 0);
@@ -429,23 +356,17 @@ test('late started setup may finish, but applies the late penalty only once', ()
   const h = harness(),
     request = generateRequest(h);
   assert.equal(promise(h, request).ok, true);
-  h.s.time = 21601;
-  h.domain.advanceGrowth(h.s, 1);
-  const child = h.s.customers.contracts.at(-1);
   h.s.time = 25200;
   h.domain.advanceGrowth(h.s, 1);
   assert.equal(h.s.reputation, 15);
   assert.equal(h.s.customerGrowth.requests[0].latePenaltyApplied, true);
   h.domain.advanceGrowth(h.s, 1);
   assert.equal(h.s.reputation, 15);
-  child.stage = 'active';
-  child.work = '';
-  child.workRemaining = child.workTotal = 0;
-  child.agentId = null;
   h.s.time++;
-  h.domain.advanceGrowth(h.s, 1);
+  h.domain.finishGrowthWork(h.s, h.source);
   assert.equal(h.s.customerGrowth.requests.length, 0);
-  assert.ok(h.s.customerGrowth.linkedContracts.includes(child.id));
+  assert.equal(h.source.units, 4);
+  assert.equal(h.s.reputation, 15);
 });
 
 test('normalization rejects altered escrow, duplicate origins and invalid linked contract references', () => {

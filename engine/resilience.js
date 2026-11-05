@@ -17,6 +17,41 @@
     function workSnapshot(s) {
       return s.jobs.map((j) => ({ id: j.id, work: j.work }));
     }
+    const backupPrice = (sector, servers) =>
+      Math.ceil((125 + servers * 8) * (1 + Math.max(0, sector - 1) * 0.12));
+
+    function backupBudgetWarning(s, sector, servers) {
+      return s.policies.autobackup &&
+        backupPrice(sector, servers) > context.maintenancePolicy(s).backup
+        ? 'Das Backupbudget deckt nach dem Ausbau keine automatische Sicherung.'
+        : '';
+    }
+
+    function backupQuote(s) {
+      const r = s.resilience,
+        now = s.time;
+      const backupCost = backupPrice(s.sector, s.servers.length);
+      let backupReason =
+        r.operation ||
+        r.incident ||
+        r.corrupted ||
+        s.facility.operation ||
+        s.facility.centralOperation
+          ? 'Eine Krisen- oder Wartungsmaßnahme verhindert gerade eine neue Sicherung.'
+          : '';
+      if (!backupReason && now < r.backupCooldownUntil)
+        backupReason = `Die Betriebssicherung ist erst in ${Math.ceil(r.backupCooldownUntil - now)} Sekunden wieder verfügbar.`;
+      if (!backupReason) backupReason = cashReason(s, backupCost);
+      return makeOption({
+        key: 'create',
+        label: 'Betriebssicherung erstellen',
+        cost: backupCost,
+        duration: 30,
+        enabled: !backupReason,
+        reason: backupReason,
+        description: `${backupCost} Credits und 30 Sekunden mit halbiertem Auftragsdurchsatz; speichert ${s.research.toFixed(1)} Forschung und ${s.jobs.length} aktive Aufträge. Kein Datenverlust.`,
+      });
+    }
 
     function getResilience(s, rackModel = null, metrics = null) {
       const m = metrics || getMetrics(s),
@@ -33,29 +68,7 @@
             choices: incidentQuotes(s),
           }
         : null;
-      const backupCost = Math.ceil(
-        (125 + s.servers.length * 8) * (1 + Math.max(0, s.sector - 1) * 0.12),
-      );
-      let backupReason =
-        r.operation ||
-        r.incident ||
-        r.corrupted ||
-        s.facility.operation ||
-        s.facility.centralOperation
-          ? 'Eine Krisen- oder Wartungsmaßnahme verhindert gerade eine neue Sicherung.'
-          : '';
-      if (!backupReason && now < r.backupCooldownUntil)
-        backupReason = `Die Betriebssicherung ist erst in ${Math.ceil(r.backupCooldownUntil - now)} Sekunden wieder verfügbar.`;
-      if (!backupReason) backupReason = cashReason(s, backupCost);
-      const backup = makeOption({
-        key: 'create',
-        label: 'Betriebssicherung erstellen',
-        cost: backupCost,
-        duration: 30,
-        enabled: !backupReason,
-        reason: backupReason,
-        description: `${backupCost} Credits und 30 Sekunden mit halbiertem Auftragsdurchsatz; speichert ${s.research.toFixed(1)} Forschung und ${s.jobs.length} aktive Aufträge. Kein Datenverlust.`,
-      });
+      const backup = backupQuote(s);
       const policy = context.maintenancePolicy(s);
       const parts = Math.min(
         3,
@@ -90,6 +103,9 @@
       const conditions = s.servers.length
         ? s.servers.reduce((v, x) => v + x.condition, 0) / s.servers.length
         : 0;
+      const repair = context.automaticRepairTarget(s);
+      const patch = repair ? repairQuotes(s, repair)[0] : null;
+      const reroute = incident?.choices.find((o) => o.key === 'reroute');
       return {
         online: m.onlineServers,
         failed: m.failedServers,
@@ -113,6 +129,17 @@
         reserve: policy.reserve,
         backupBudget: policy.backup,
         backupSpent: s.operations.backupSpent,
+        automaticBackupReason: s.policies.autobackup
+          ? context.autoBudgetReason(s, backup, 'backup')
+          : '',
+        automaticRepairReason:
+          s.policies.autorepair && patch
+            ? context.autoBudgetReason(s, patch, 'repair') || patch.reason
+            : '',
+        automaticRerouteReason:
+          s.policies.autoReroute && reroute && !r.incident.resolution
+            ? context.autoBudgetReason(s, reroute, 'repair') || reroute.reason
+            : '',
         partsCapacity: context.partsCapacity(s),
         budgetScope:
           'Reparaturen, Backups und Beschaffung haben getrennte Stundenbudgets. Manuelle Eingriffe sind ausgenommen.',
@@ -136,6 +163,6 @@
         partsPurchase,
       };
     }
-    return { workSnapshot, getResilience };
+    return { workSnapshot, backupQuote, backupBudgetWarning, getResilience };
   };
 });

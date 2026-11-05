@@ -88,7 +88,7 @@ test('schema 9 retains its balance and pays each already booked research commitm
     total: 300,
   };
   const loaded = E.normalizeState(legacy);
-  assert.equal(loaded.version, 10);
+  assert.equal(loaded.version, 11);
   assert.equal(loaded.research, legacy.research);
   assert.deepEqual(loaded.lab, legacy.lab);
   assert.deepEqual(loaded.operations.projects, legacy.operations.projects);

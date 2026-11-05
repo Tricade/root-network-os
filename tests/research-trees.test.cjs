@@ -133,7 +133,7 @@ test('schema 6 upgrades and balances survive research migration; crafted paid pr
   assert.deepEqual(prior, source);
   assert.deepEqual(s.upgrades, prior.upgrades);
   assert.equal(s.research, prior.research);
-  assert.equal(s.version, 10);
+  assert.equal(s.version, 11);
   assert.deepEqual(s.lab, { version: 1, owned: [], project: null });
   assert.ok(E.act(s, 'buyResearch', { id: 'network-fabric' }).ok);
   for (const mutate of [

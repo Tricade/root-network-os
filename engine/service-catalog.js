@@ -44,6 +44,7 @@
       database: 'Datenbanken',
       ai: 'KI',
     };
+    const serviceSetupCost = (kind, units) => Math.round(SERVICES[kind].fee * 1800) * units;
     const zeroResources = () => Object.fromEntries(RESOURCES.map((key) => [key, 0]));
     const fraction = (used, available) =>
       Math.min(
@@ -91,6 +92,7 @@
       RESOURCES,
       SERVICES,
       PROFILES,
+      serviceSetupCost,
       zeroResources,
       fraction,
       roomDefaults,

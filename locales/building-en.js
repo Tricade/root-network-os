@@ -4,6 +4,44 @@
   if (root) root.RootBuildingEnglish = factory;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (translate) {
   const pairs = [
+    ['Teilausbau', 'Partially fitted'],
+    ['Vollausbau prüfen', 'Review full construction'],
+    ['Ersten Bauabschnitt prüfen', 'Review first phase'],
+    ['Zweiten Bauabschnitt prüfen', 'Review second phase'],
+    ['Serverraum mit zwei Rackplätzen bauen', 'Build server room with two rack slots'],
+    ['Serverraum fertig ausbauen', 'Finish fitting out server room'],
+    [
+      'Erschließt zwei nutzbare Rackplätze. Die übrigen vier können später ausgebaut werden.',
+      'Opens two usable rack slots. The other four can be fitted out later.',
+    ],
+    [
+      'Schaltet vier weitere Rackplätze frei. Bestehende Racks arbeiten während des Baus weiter.',
+      'Opens four additional rack slots. Existing racks keep running during construction.',
+    ],
+    [
+      'Räume und Untergeschosse werden separat gebaut. Ein voll ausgebauter Raum bietet sechs Rackplätze.',
+      'Rooms and basements are built separately. A fully fitted server room has six rack slots.',
+    ],
+    [
+      'Der Teilausbau ist für den ersten zusätzlichen Serverraum auf Untergeschoss 1 verfügbar.',
+      'Phased construction is available for the first additional server room on Basement 1.',
+    ],
+    [
+      'Dieser Serverraum hat keinen offenen Bauabschnitt.',
+      'This server room has no remaining construction phase.',
+    ],
+    [
+      'Der Bau kollidiert mit einem eingeplanten Bauabschnitt.',
+      'This build conflicts with a scheduled construction phase.',
+    ],
+    [
+      'Erster Bauabschnitt fertig. Zwei Rackplätze sind verfügbar.',
+      'First phase complete. Two rack slots are available.',
+    ],
+    [
+      'Serverraum fertig ausgebaut. Vier weitere Rackplätze sind verfügbar.',
+      'Server room fit-out complete. Four more rack slots are available.',
+    ],
     ['Hardware verwalten', 'Manage hardware'],
     ['Details öffnen', 'View details'],
     ['Ein Erfolg wartet auf dich', 'An achievement is waiting for you'],
@@ -214,8 +252,9 @@
         `Basement ${floor} · Room ${room} · ${racks} rack${racks === '1' ? '' : 's'}`,
     ],
     [
-      /^(\d+) \/ 6 Racks · (\d+) Server$/,
-      (_, racks, servers) => `${racks} / 6 racks · ${servers} server${servers === '1' ? '' : 's'}`,
+      /^(\d+) \/ (\d+) Racks · (\d+) Server$/,
+      (_, racks, slots, servers) =>
+        `${racks} / ${slots} racks · ${servers} server${servers === '1' ? '' : 's'}`,
     ],
     [/^Raum (\d+) ist bereit$/, (_, room) => `Room ${room} is ready`],
     [/^Bauplatz (\d+)$/, (_, n) => `Plot ${n}`],

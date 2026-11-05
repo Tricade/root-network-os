@@ -7,6 +7,16 @@
   'use strict';
   return function createBuilding(context) {
     const { MAX_RACKS, RACKS_PER_ROOM, ROOMS_PER_FLOOR, MAX_ROOMS, MAX_FLOORS, finite } = context;
+    const constructionKinds = {
+      buildFloor: 'floor',
+      buildRoom: 'room',
+      buildServiceRoom: 'service',
+      buildRoomStage: 'room-stage',
+      fitOutRoom: 'fit-out',
+    };
+    const constructionTypes = new Set(Object.values(constructionKinds));
+    const STAGE_SLOTS = 2;
+    const roomRackSlots = (room) => room.rackSlots ?? RACKS_PER_ROOM;
     const services = [
       { id: 'control', name: 'Kontrollraum', unlockSector: 2, cost: 20000000 },
       { id: 'cooling', name: 'Klimaraum', unlockSector: 4, cost: 25000000 },
@@ -44,33 +54,52 @@
       return buildingState(s).specialRooms.includes(id);
     }
 
-    function constructionQuote(s, kind, floor, roomType = null, floorRoomCount = null) {
+    function constructionQuote(s, kind, floor, targetId = null, floorRoomCount = null) {
       const b = buildingState(s),
-        isRoom = kind === 'room',
+        staged = kind === 'room-stage',
+        isRoom = kind === 'room' || staged,
+        fitOut = kind === 'fit-out',
         isService = kind === 'service';
-      const service = services.find((item) => item.id === roomType);
-      const targetFloor = isRoom ? floor : isService ? 1 : b.floors + 1;
+      const service = services.find((item) => item.id === targetId);
+      const targetRoom = fitOut ? b.rooms.find((room) => room.id === targetId) : null;
+      const targetFloor = fitOut
+        ? (targetRoom?.floor ?? null)
+        : isRoom
+          ? floor
+          : isService
+            ? 1
+            : b.floors + 1;
       const validFloor =
         Number.isInteger(targetFloor) && targetFloor >= 1 && targetFloor <= b.floors;
       const depth = Number.isInteger(targetFloor) && targetFloor > 0 ? targetFloor : 1;
       const countOnFloor = floorRoomCount ?? b.rooms.filter((room) => room.floor === floor).length;
-      const cost = isService
-        ? service?.cost || 0
-        : isRoom
-          ? Math.ceil(Math.min(5e13, 2e7 * b.rooms.length ** 1.35 * (1 + (depth - 1) * 0.15)))
-          : Math.ceil(Math.min(2e14, 5e8 * b.floors ** 2.6));
-      const duration = isService
-        ? 1800
-        : isRoom
-          ? Math.min(7200, Math.ceil(1800 * (1 + (b.rooms.length - 1) * 0.1 + (depth - 1) * 0.15)))
-          : Math.min(21600, Math.ceil(7200 * (1 + (b.floors - 1) * 0.25)));
+      const cost = fitOut
+        ? 14e6
+        : staged
+          ? 6e6
+          : isService
+            ? service?.cost || 0
+            : isRoom
+              ? Math.ceil(Math.min(5e13, 2e7 * b.rooms.length ** 1.35 * (1 + (depth - 1) * 0.15)))
+              : Math.ceil(Math.min(2e14, 5e8 * b.floors ** 2.6));
+      const duration =
+        staged || fitOut
+          ? 900
+          : isService
+            ? 1800
+            : isRoom
+              ? Math.min(
+                  7200,
+                  Math.ceil(1800 * (1 + (b.rooms.length - 1) * 0.1 + (depth - 1) * 0.15)),
+                )
+              : Math.min(21600, Math.ceil(7200 * (1 + (b.floors - 1) * 0.25)));
       let reason;
-      if (!['room', 'floor', 'service'].includes(kind) || (isService && !service))
+      if (!constructionTypes.has(kind) || (isService && !service))
         reason = 'Dieser Raumtyp ist unbekannt.';
       else if (b.project) reason = 'Ein Bauprojekt läuft bereits.';
       else if (context.globalIncident(s))
         reason = 'Während einer offenen Krise kann kein Bauprojekt beginnen.';
-      else if (isService && serviceRoomOwned(s, roomType))
+      else if (isService && serviceRoomOwned(s, targetId))
         reason = 'Dieser Raum wurde bereits gebaut.';
       else if (isService && s.sector < service.unlockSector)
         reason = `Dieser Raum wird ab Sektor ${service.unlockSector} freigeschaltet.`;
@@ -79,32 +108,63 @@
         reason = 'Dieses Untergeschoss hat bereits vier Serverräume.';
       else if (isRoom && b.rooms.length >= MAX_ROOMS)
         reason = 'Die maximale Gebäudekapazität ist erreicht.';
+      else if (staged && (b.rooms.length !== 1 || floor !== 1))
+        reason =
+          'Der Teilausbau ist für den ersten zusätzlichen Serverraum auf Untergeschoss 1 verfügbar.';
+      else if (fitOut && targetRoom?.rackSlots !== STAGE_SLOTS)
+        reason = 'Dieser Serverraum hat keinen offenen Bauabschnitt.';
       else if (kind === 'floor' && b.floors >= MAX_FLOORS)
         reason = 'Die maximale Zahl der Untergeschosse ist erreicht.';
       else reason = context.cashReason(s, cost);
       return {
-        label: isService
-          ? `${service?.name || 'Technikraum'} bauen`
-          : isRoom
-            ? 'Unterirdischen Serverraum bauen'
-            : 'Neues Untergeschoss bauen',
-        description: isService
-          ? 'Aushub, Stahlbeton, Abdichtung und Anschlüsse im Technikflügel von Untergeschoss 1. Geräte werden anschließend separat installiert.'
-          : isRoom
-            ? `Aushub, Stahlbeton, Abdichtung und Anschlüsse für Raum ${b.rooms.length + 1} auf Untergeschoss ${depth}. Nach Fertigstellung Platz für sechs Racks.`
-            : `Aushub, Tragwerk, Treppenzugang und Erschließung für Untergeschoss ${targetFloor}. Vier Bauplätze für separat zu kaufende Serverräume.`,
+        kind,
+        label: staged
+          ? 'Serverraum mit zwei Rackplätzen bauen'
+          : fitOut
+            ? 'Serverraum fertig ausbauen'
+            : isService
+              ? `${service?.name || 'Technikraum'} bauen`
+              : isRoom
+                ? 'Unterirdischen Serverraum bauen'
+                : 'Neues Untergeschoss bauen',
+        description: staged
+          ? 'Erschließt zwei nutzbare Rackplätze. Die übrigen vier können später ausgebaut werden.'
+          : fitOut
+            ? 'Schaltet vier weitere Rackplätze frei. Bestehende Racks arbeiten während des Baus weiter.'
+            : isService
+              ? 'Aushub, Stahlbeton, Abdichtung und Anschlüsse im Technikflügel von Untergeschoss 1. Geräte werden anschließend separat installiert.'
+              : isRoom
+                ? `Aushub, Stahlbeton, Abdichtung und Anschlüsse für Raum ${b.rooms.length + 1} auf Untergeschoss ${depth}. Nach Fertigstellung Platz für sechs Racks.`
+                : `Aushub, Tragwerk, Treppenzugang und Erschließung für Untergeschoss ${targetFloor}. Vier Bauplätze für separat zu kaufende Serverräume.`,
         cost,
         duration,
         enabled: !reason,
         reason,
         floor: targetFloor,
-        roomId: isService ? roomType : isRoom ? `room-${b.rooms.length + 1}` : null,
-        roomType: isService ? roomType : null,
+        roomId: isService
+          ? targetId
+          : fitOut
+            ? (targetRoom?.id ?? null)
+            : isRoom
+              ? `room-${b.rooms.length + 1}`
+              : null,
+        roomType: isService ? targetId : null,
         warnings: [
           'Der volle Betrag wird beim Baustart bezahlt. Die Fläche ist erst nach Fertigstellung verfügbar.',
           'Der vorhandene Betrieb und Reparaturen laufen während des Baus weiter.',
         ],
       };
+    }
+
+    function quoteConstructionAction(s, action, payload) {
+      if (!Object.hasOwn(constructionKinds, action)) return null;
+      const kind = constructionKinds[action];
+      return constructionQuote(
+        s,
+        kind,
+        payload.floor,
+        kind === 'fit-out' ? payload.roomId : payload.roomType,
+      );
     }
 
     function getConstructionProject(s) {
@@ -116,7 +176,11 @@
           ? `${services.find((item) => item.id === project.roomType).name} bauen`
           : project.kind === 'floor'
             ? `Untergeschoss ${project.floor} bauen`
-            : `Raum ${b.rooms.length + 1} bauen`;
+            : project.kind === 'fit-out'
+              ? 'Serverraum fertig ausbauen'
+              : project.kind === 'room-stage'
+                ? 'Serverraum mit zwei Rackplätzen bauen'
+                : `Raum ${b.rooms.length + 1} bauen`;
       return {
         ...project,
         label,
@@ -128,7 +192,11 @@
       const b = buildingState(s),
         counts = new Map();
       for (const room of b.rooms) counts.set(room.floor, (counts.get(room.floor) || 0) + 1);
-      const rackCapacity = Math.min(MAX_RACKS, b.rooms.length * RACKS_PER_ROOM);
+      const rackCapacity = Math.min(
+        MAX_RACKS,
+        b.rooms.reduce((sum, room) => sum + roomRackSlots(room), 0),
+      );
+      const partial = b.rooms.find((room) => room.rackSlots === STAGE_SLOTS);
       return {
         floorCount: b.floors,
         roomCount: b.rooms.length,
@@ -136,6 +204,7 @@
         freeRackSlots: Math.max(0, rackCapacity - s.facility.racks.length),
         project: getConstructionProject(s),
         buyFloor: constructionQuote(s, 'floor'),
+        fitOutRoom: partial ? constructionQuote(s, 'fit-out', partial.floor, partial.id) : null,
         serviceRooms: services.map((item) => ({
           ...item,
           owned: serviceRoomOwned(s, item.id),
@@ -145,15 +214,24 @@
           number: i + 1,
           roomCount: counts.get(i + 1) || 0,
           buyRoom: constructionQuote(s, 'room', i + 1, null, counts.get(i + 1) || 0),
+          stageRoom: i === 0 && b.rooms.length === 1 ? constructionQuote(s, 'room-stage', 1) : null,
         })),
       };
     }
 
     function startConstruction(s, action, payload) {
-      const kind =
-        action === 'buildFloor' ? 'floor' : action === 'buildServiceRoom' ? 'service' : 'room';
-      const q = constructionQuote(s, kind, payload.floor, payload.roomType);
+      const q = quoteConstructionAction(s, action, payload);
+      if (!q) return null;
       if (!q.enabled) return { ok: false, message: q.reason };
+      const plan = s.operations?.queue;
+      if (plan?.length) {
+        const plannedState = {
+          ...s,
+          facility: { ...s.facility, building: { ...buildingState(s), project: q } },
+        };
+        if (!context.planTargetsValid(plannedState, plan))
+          return { ok: false, message: 'Der Bau kollidiert mit einem eingeplanten Bauabschnitt.' };
+      }
       if (!s.facility.building) {
         s.facility.building = legacyBuilding(s.facility.racks, s.sector);
         s.facility.racks.forEach((rack, index) => {
@@ -162,7 +240,7 @@
       }
       s.credits -= q.cost;
       s.facility.building.project = {
-        kind,
+        kind: q.kind,
         floor: q.floor,
         roomId: q.roomId,
         roomType: q.roomType,
@@ -178,21 +256,37 @@
       return { ok: true, message: 'Bauauftrag vergeben. Der vorhandene Betrieb läuft weiter.' };
     }
 
+    function addBuiltSpace(building, project) {
+      if (project.kind === 'floor') building.floors = project.floor;
+      else if (project.kind === 'service') building.specialRooms.push(project.roomType);
+      else if (project.kind === 'fit-out') {
+        const room = building.rooms.find((r) => r.id === project.roomId);
+        if (room) delete room.rackSlots;
+      } else
+        building.rooms.push({
+          id: project.roomId,
+          floor: project.floor,
+          ...(project.kind === 'room-stage' ? { rackSlots: STAGE_SLOTS } : {}),
+        });
+    }
+
     function advanceConstruction(s, dt) {
       const b = s.facility.building,
         p = b?.project;
       if (!p) return;
       p.remaining = Math.max(0, p.remaining - dt);
       if (p.remaining > 0) return;
+      addBuiltSpace(b, p);
       let message;
       if (p.kind === 'floor') {
-        b.floors = p.floor;
         message = `Untergeschoss ${p.floor} fertiggestellt. Vier Raumbauplätze sind verfügbar.`;
       } else if (p.kind === 'service') {
-        b.specialRooms.push(p.roomType);
         message = `${services.find((item) => item.id === p.roomType).name} fertiggestellt.`;
-      } else {
-        b.rooms.push({ id: p.roomId, floor: p.floor });
+      } else if (p.kind === 'fit-out')
+        message = 'Serverraum fertig ausgebaut. Vier weitere Rackplätze sind verfügbar.';
+      else if (p.kind === 'room-stage')
+        message = 'Erster Bauabschnitt fertig. Zwei Rackplätze sind verfügbar.';
+      else {
         message = `Raum ${b.rooms.length} auf Untergeschoss ${p.floor} fertiggestellt. Sechs Rackplätze sind verfügbar.`;
       }
       b.project = null;
@@ -231,7 +325,16 @@
         counts.set(room.floor, (counts.get(room.floor) || 0) + 1);
         if (counts.get(room.floor) > ROOMS_PER_FLOOR || (index === 0 && room.floor !== 1))
           throw new Error('Ungültige Raumverteilung.');
-        return { id: room.id, floor: room.floor };
+        if (
+          room.rackSlots !== undefined &&
+          (index !== 1 || room.floor !== 1 || room.rackSlots !== STAGE_SLOTS)
+        )
+          throw new Error('Ungültiger Bauabschnitt des Serverraums.');
+        return {
+          id: room.id,
+          floor: room.floor,
+          ...(room.rackSlots ? { rackSlots: room.rackSlots } : {}),
+        };
       });
       const specialRooms = b.specialRooms.map((id) => {
         if (!services.some((item) => item.id === id)) throw new Error('Ungültiger Technikraum.');
@@ -244,18 +347,20 @@
 
     function normalizeConstruction(s, input) {
       if (input === null) return null;
-      if (!input || !['room', 'floor', 'service'].includes(input.kind))
-        throw new Error('Ungültiges Bauprojekt.');
+      if (!input || !constructionTypes.has(input.kind)) throw new Error('Ungültiges Bauprojekt.');
       const b = buildingState(s),
         p = input;
       const validFloor = Number.isInteger(p.floor) && p.floor >= 1 && p.floor <= MAX_FLOORS;
       if (
         !validFloor ||
         (p.kind === 'floor' && (p.floor !== b.floors + 1 || b.floors >= MAX_FLOORS)) ||
-        (p.kind === 'room' &&
+        (['room', 'room-stage'].includes(p.kind) &&
           (p.floor > b.floors ||
             b.rooms.length >= MAX_ROOMS ||
             b.rooms.filter((room) => room.floor === p.floor).length >= ROOMS_PER_FLOOR)) ||
+        (p.kind === 'room-stage' && (b.rooms.length !== 1 || p.floor !== 1)) ||
+        (p.kind === 'fit-out' &&
+          !b.rooms.some((r) => r.id === p.roomId && r.rackSlots === STAGE_SLOTS)) ||
         (p.kind === 'service' &&
           (p.floor !== 1 ||
             !services.some((item) => item.id === p.roomType && s.sector >= item.unlockSector) ||
@@ -264,8 +369,9 @@
         throw new Error('Ungültiges Bauziel.');
       // Cash and operational locks may change after payment. Validate the immutable quote
       // terms, not today's affordability/enabled flag, so a crisis cannot destroy a build.
-      const q = constructionQuote(s, p.kind, p.floor, p.roomType);
+      const q = constructionQuote(s, p.kind, p.floor, p.kind === 'fit-out' ? p.roomId : p.roomType);
       if (
+        p.floor !== q.floor ||
         p.roomId !== q.roomId ||
         (p.roomType ?? null) !== q.roomType ||
         p.total !== q.duration ||
@@ -290,7 +396,8 @@
       const building = buildingState(s),
         legacy = !s.facility.building;
       const serverCounts = new Map(),
-        assigned = new Map(building.rooms.map((room) => [room.id, []]));
+        assigned = new Map(building.rooms.map((room) => [room.id, []])),
+        limits = new Map(building.rooms.map((room) => [room.id, roomRackSlots(room)]));
       for (const server of s.servers)
         serverCounts.set(server.rackId, (serverCounts.get(server.rackId) || 0) + 1);
       s.facility.racks.forEach((rack, index) => {
@@ -298,7 +405,7 @@
           ? building.rooms[Math.floor(index / RACKS_PER_ROOM)]?.id
           : rack.roomId;
         const racks = assigned.get(roomId);
-        if (!racks || racks.length >= RACKS_PER_ROOM)
+        if (!racks || racks.length >= limits.get(roomId))
           throw new Error('Ungültige Raumzuordnung eines Racks.');
         racks.push(rack.id);
       });
@@ -309,11 +416,15 @@
         number: index + 1,
         rackIds: assigned.get(room.id),
         rackCount: assigned.get(room.id).length,
+        rackCapacity: limits.get(room.id),
         serverCount: assigned
           .get(room.id)
           .reduce((sum, id) => sum + (serverCounts.get(id) || 0), 0),
       }));
-      const rackCapacity = Math.min(MAX_RACKS, rooms.length * RACKS_PER_ROOM);
+      const rackCapacity = Math.min(
+        MAX_RACKS,
+        rooms.reduce((sum, room) => sum + room.rackCapacity, 0),
+      );
       return {
         racksPerRoom: RACKS_PER_ROOM,
         roomsPerFloor: ROOMS_PER_FLOOR,
@@ -329,10 +440,13 @@
     }
     return {
       rackLimit,
+      roomRackSlots,
       legacyBuilding,
       buildingState,
       serviceRoomOwned,
       constructionQuote,
+      quoteConstructionAction,
+      addBuiltSpace,
       getBuildingModel,
       getConstructionProject,
       startConstruction,

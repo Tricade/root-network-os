@@ -6,7 +6,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
   return function (ctx) {
-    const { clamp, RESOURCES, fraction, zeroResources } = ctx;
+    const { clamp, fraction } = ctx;
     function serviceMetrics(s, base, hardware, customers, research) {
       const services = ctx.serviceSnapshot(s, hardware, customers);
       const active = s.agents.filter((a) => ctx.agentProductive(s, a, customers.assignments));
@@ -64,10 +64,6 @@
         s.facility.racks.length * 0.025;
       const rawIncome = services.gross - upkeep;
       const recoveryAllowance = base.onlineServers === 0 ? Math.max(0, 0.08 - rawIncome) : 0;
-      const projectDemand = zeroResources(),
-        jobNeeds = s.jobs.map(ctx.jobResources);
-      for (const needs of jobNeeds) for (const key of RESOURCES) projectDemand[key] += needs[key];
-      const jobFactor = fraction(projectDemand, services.free);
       const workBase = services.free.cpu * 0.15;
       const workforce =
         1 +
@@ -77,6 +73,10 @@
             (sum, a) => sum + a.level * (a.focus === 'income' ? 2 : 1) * ctx.agentEffects(a).work,
             0,
           ) / 200,
+        ) +
+        Math.min(
+          0.15,
+          active.reduce((sum, a) => sum + ctx.agentSpecialtyBonus(a, 'projects'), 0),
         );
       const workPerSecond =
         workBase *
@@ -86,32 +86,12 @@
         workforce *
         (s.resilience.operation?.kind === 'backup' ? 0.5 : 1) *
         (s.resilience.agentEffects.optimizeRemaining > 0 ? 1.15 : 1);
-      // A GPU shortage blocks GPU work, not unrelated CPU work. Resource shares
-      // remain proportional, so accepting more projects never creates capacity.
-      const readiness = jobNeeds.map((needs) =>
-        Math.min(
-          1,
-          ...RESOURCES.filter((k) => needs[k] > 0).map(
-            (k) => services.free[k] / Math.max(projectDemand[k], 0.001),
-          ),
-        ),
-      );
-      const weights = s.jobs.map(
-        (j, i) =>
-          readiness[i] *
-          (s.policies.priority === 'income'
-            ? j.reward / j.totalWork
-            : s.policies.priority === 'research'
-              ? j.science / j.totalWork
-              : 1),
-      );
-      const total = weights.reduce((a, b) => a + b, 0);
-      const jobRates = Object.fromEntries(
-        s.jobs.map((j, i) => [
-          j.id,
-          total ? ((workPerSecond * weights[i]) / total) * readiness[i] : 0,
-        ]),
-      );
+      const {
+        demand: projectDemand,
+        readiness,
+        jobRates,
+      } = ctx.allocateProjectWork(s.jobs, services.free, workPerSecond, s.policies.priority);
+      const jobFactor = fraction(projectDemand, services.free);
       return {
         ...base,
         heat,

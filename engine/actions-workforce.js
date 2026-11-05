@@ -36,6 +36,19 @@
         addLog(s, 'success', `${x.name} erreicht Stufe ${x.level}.`);
         return { ok: true, message: 'Agent entwickelt.' };
       }
+      if (action === 'specializeAgent') {
+        const q = context.quoteAgentSpecialty(s, payload.id, payload.specialty);
+        if (!q.enabled) return fail(q.reason);
+        const agent = s.agents.find((a) => a.id === payload.id);
+        s.credits -= q.cost;
+        agent.specialty = payload.specialty;
+        addLog(
+          s,
+          'success',
+          `${agent.name}: Spezialisierung „${context.AGENT_SPECIALTIES[agent.specialty].name}“ aktiviert.`,
+        );
+        return { ok: true, message: 'Spezialisierung aktiviert.' };
+      }
       if (action === 'dispatchAgent') {
         const agent = s.agents.find((x) => x.id === payload.id);
         if (!agent) return fail('Agent nicht gefunden.');

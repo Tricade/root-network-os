@@ -25,7 +25,7 @@
       else if (input.version === 6) state = context.normalizeV6(input);
       else if (input.version === 7) state = context.normalizeV7(input);
       else if (input.version === 8) state = context.normalizeV8(input);
-      else if (input.version === 9 || input.version === 10) state = context.normalizeV9(input);
+      else if ([9, 10, 11].includes(input.version)) state = context.normalizeV9(input);
       else throw new Error('Diese Netzwerkstand-Version wird nicht unterstützt.');
       if (input.version < 4) {
         context.migrateBusiness(state);
@@ -35,8 +35,12 @@
       if (input.version < 5) context.migratePersonnel(state);
       if (input.version < 6) context.migrateCustomers(state);
       if (input.version < 7) context.migrateResearch(state);
-      if (input.version < 8) context.migratePlanning(state);
-      state.version = 10;
+      if (input.version < 8) {
+        if (state.customers.contracts.some((c) => c.work === 'growth'))
+          throw new Error('Ungültige Kundenwachstumspläne.');
+        context.migratePlanning(state);
+      }
+      state.version = 11;
       updateAchievementUnlocks(state);
       return state;
     }

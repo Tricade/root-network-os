@@ -53,7 +53,11 @@ function fixture({ engineers = 1, supplyAfter = 0.98 } = {}) {
     maintenancePolicy: (state) => ({ reserve: state.creditsReserve }),
     serverLinkState: () => true,
   };
-  Object.assign(ctx, require('../engine/preventive-save.js')({}));
+  Object.assign(
+    ctx,
+    require('../engine/agent-development.js')(ctx),
+    require('../engine/preventive-save.js')(ctx),
+  );
   const domain = createPreventiveMaintenance(ctx);
   s.preventiveMaintenance = domain.preventiveMaintenanceDefaults(0);
   s.preventiveMaintenance.policy.minimumSupply = 0.95;

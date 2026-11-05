@@ -13,10 +13,10 @@
       for (const room of s.facility.building.rooms)
         if (!known.has(room.id)) s.business.rooms.push(ctx.roomDefaults(room.id));
     }
-    function serviceQuote(s, action, p = {}) {
+    function serviceQuote(s, action, p = {}, sharedSnapshot = null) {
       const room = s.business?.rooms.find((r) => r.roomId === p.roomId);
       if (!room) return { enabled: false, reason: 'Raum nicht gefunden.', cost: 0 };
-      const snapshot = ctx.serviceSnapshot(s);
+      const snapshot = sharedSnapshot || ctx.serviceSnapshot(s);
       const model = snapshot.rooms.find((r) => r.roomId === p.roomId);
       let cost = 0,
         duration = 0,
@@ -44,30 +44,29 @@
           for (const job of s.jobs)
             for (const [key, value] of Object.entries(ctx.jobResources(job)))
               projects[key] += value;
-          capacity = Math.max(
-            0,
-            Math.floor(
-              Math.min(
-                model.crewCapacity - model.groups.reduce((n, g) => n + g.units + g.pending, 0),
-                ...RESOURCES.filter((k) => def.needs[k]).map(
-                  (k) =>
-                    Math.min(
-                      model.available[k] * reserve - model.reserved[k],
-                      snapshot.committedFree[k] - projects[k],
-                    ) /
-                    (def.needs[k] * efficiency),
-                ),
-              ),
+          const crewFree =
+            model.crewCapacity - model.groups.reduce((n, g) => n + g.units + g.pending, 0);
+          const hardwareFree = Math.min(
+            ...RESOURCES.filter((k) => def.needs[k]).map(
+              (k) =>
+                Math.min(
+                  model.available[k] * reserve - model.reserved[k],
+                  snapshot.committedFree[k] - projects[k],
+                ) /
+                (def.needs[k] * efficiency),
             ),
           );
-          // The catalog charges an integer setup price per service unit.
-          cost = Math.round(def.fee * 1800) * units;
+          capacity = Math.max(0, Math.floor(Math.min(crewFree, hardwareFree)));
+          cost = ctx.serviceSetupCost(p.kind, units);
           duration = 600;
           label = 'Kundenvertrag abschließen';
           if (s.sector < def.sector) reason = 'Diese Kundengruppe ist noch nicht freigeschaltet.';
           else if (group.pending) reason = 'Die Aufnahme dieser Kundengruppe läuft bereits.';
-          else if (units > capacity || units + group.units > 1e6)
-            reason = 'Kapazität oder Team fehlen für diese Zusage.';
+          else if (units > crewFree)
+            reason = 'Das Raumteam hat zu wenige freie Betreuungseinheiten.';
+          else if (units > hardwareFree) reason = 'Die Hardware hat zu wenig freie Kapazität.';
+          else if (units + group.units > 1e6)
+            reason = 'Die Dienstgrenze dieses Raums ist erreicht.';
         }
       } else if (action === 'configureServiceRoom') {
         if (!Object.hasOwn(PROFILES, p.profile) || ![0, 0.2, 0.35].includes(Number(p.reserve)))

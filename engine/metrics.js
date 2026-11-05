@@ -298,7 +298,7 @@
         expansionReady:
           !incidentActive &&
           s.credits >= sectorCost &&
-          s.servers.length >= Math.min(serverLimit, 2 + s.sector) &&
+          onlineServers >= Math.min(serverLimit, 2 + s.sector) &&
           s.counters.jobs >= s.sector * 3,
         jobRates,
         activeLoad,

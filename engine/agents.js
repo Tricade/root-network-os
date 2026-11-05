@@ -56,9 +56,11 @@
                   label:
                     customer.work === 'setup'
                       ? 'Kundeneinrichtung'
-                      : customer.work === 'retention'
-                        ? 'Kundenrückgewinnung'
-                        : 'Kundenbetreuung',
+                      : customer.work === 'growth'
+                        ? 'Kundenerweiterung'
+                        : customer.work === 'retention'
+                          ? 'Kundenrückgewinnung'
+                          : 'Kundenbetreuung',
                   remaining: customer.workRemaining,
                   total: customer.workTotal,
                 }

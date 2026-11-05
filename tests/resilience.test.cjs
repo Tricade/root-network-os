@@ -178,7 +178,7 @@ test('new state exposes a read-only resilience model and consequential starting 
   ]) {
     assert.ok(Object.hasOwn(model, field), `read model exposes ${field}`);
   }
-  assert.equal(state.version, 10);
+  assert.equal(state.version, 11);
   assert.deepEqual(state, before, 'reading resilience must not change persisted state');
   assert.equal(model.online, state.servers.length);
   assert.equal(model.failed, 0);
@@ -208,7 +208,7 @@ test('v1 migration preserves purchased assets and progress while adding a fresh 
   old.upgrades = { routing: 4, cooling: 2 };
   old.policies = { power: 'eco', autocontract: true, autorepair: false, priority: 'income' };
   const migrated = normalizeState(old);
-  assert.equal(migrated.version, 10);
+  assert.equal(migrated.version, 11);
   assert.equal(migrated.networkName, old.networkName);
   for (const key of ['credits', 'research', 'reputation', 'lifetimeCredits', 'sector', 'time'])
     assert.equal(migrated[key], old[key], `${key} survives migration`);
@@ -332,7 +332,7 @@ test('v2 migration packs legacy assets into physical hardware without inventing 
   old.servers[0].mode = 'eco';
   old.jobs[0].work = 18.25;
   const migrated = normalizeState(old);
-  assert.equal(migrated.version, 10);
+  assert.equal(migrated.version, 11);
   for (const key of [
     'networkName',
     'credits',
@@ -342,10 +342,10 @@ test('v2 migration packs legacy assets into physical hardware without inventing 
     'sector',
     'time',
     'upgrades',
-    'policies',
   ]) {
     assert.deepEqual(migrated[key], old[key], `${key} survives v2 migration`);
   }
+  assert.deepEqual(migrated.policies, { ...old.policies, autoReroute: false });
   for (const [id, claimed] of Object.entries(old.achievements))
     if (claimed) assert.equal(migrated.achievements[id], true, `${id} claimed state survives`);
   assert.equal(
@@ -400,7 +400,7 @@ test('v2 migration preserves an active repair and its remaining maintenance time
   const priorOperation = structuredClone(old.resilience.operation);
   const priorCredits = old.credits;
   const migrated = normalizeState(old);
-  assert.equal(migrated.version, 10);
+  assert.equal(migrated.version, 11);
   assert.deepEqual(migrated.resilience.operation, priorOperation);
   assert.equal(
     migrated.servers.find((server) => server.id === priorOperation.serverId)?.status,
@@ -430,7 +430,7 @@ test('v2 migration preserves an active major crisis and already-damaged assets',
   ).condition;
   const priorCredits = old.credits;
   const migrated = normalizeState(old);
-  assert.equal(migrated.version, 10);
+  assert.equal(migrated.version, 11);
   assert.deepEqual(migrated.resilience.incident, priorIncident);
   assert.equal(
     migrated.servers.find((server) => server.id === priorIncident.affected[0]).status,
@@ -467,7 +467,7 @@ test('v2 roundtrip keeps failed nodes, operation progress, snapshot, and protect
   assert.equal(act(state, 'repairServer', { id: state.servers[0].id, method: 'patch' }).ok, true);
   const modelBefore = getResilience(state);
   const restored = normalizeState(JSON.parse(JSON.stringify(state)));
-  assert.equal(restored.version, 10);
+  assert.equal(restored.version, 11);
   assert.equal(restored.servers[0].status, 'repairing');
   assert.equal(restored.resilience.operation.remaining, state.resilience.operation.remaining);
   assert.equal(
@@ -807,6 +807,41 @@ test('major crisis choices quote the consequences that are actually charged and 
     }
     assert.ok(outcomes.size >= 2, `${kind} choices have distinct outcomes`);
   }
+});
+
+test('the optional power plan uses the paid reroute once and respects budget and reserve across reload', () => {
+  const baseline = incidentFixture('power', false);
+  const quote = getResilience(baseline).incident.choices.find((o) => o.key === 'reroute');
+  const idle = structuredClone(baseline);
+  advance(idle, 1);
+  assert.equal(idle.resilience.operation, null);
+
+  const blocked = structuredClone(baseline);
+  assert.ok(act(blocked, 'setPolicy', { key: 'autoReroute', value: true }).ok);
+  blocked.operations.limits.repair = quote.cost - 1;
+  advance(blocked, 1);
+  assert.equal(blocked.resilience.operation, null);
+  assert.match(getResilience(blocked).automaticRerouteReason, /Stundenbudget/);
+  blocked.operations.limits.repair = quote.cost;
+  blocked.operations.limits.reserve = Math.ceil(blocked.credits);
+  advance(blocked, 1);
+  assert.equal(blocked.resilience.operation, null);
+  assert.match(getResilience(blocked).automaticRerouteReason, /Geldreserve/);
+
+  const s = structuredClone(baseline);
+  assert.ok(act(s, 'setPolicy', { key: 'autoReroute', value: true }).ok);
+  s.operations.limits.repair = quote.cost;
+  s.operations.limits.reserve = 0;
+  advance(s, 1);
+  assert.equal(s.resilience.budgetSpent, quote.cost);
+  assert.equal(s.resilience.operation.total, quote.duration);
+  assert.equal(s.resilience.incident.resolution, 'reroute');
+  const loaded = normalizeState(s);
+  assert.equal(loaded.policies.autoReroute, true);
+  advance(loaded, quote.duration);
+  assert.equal(loaded.resilience.incident, null);
+  assert.equal(loaded.resilience.operation, null);
+  assert.equal(loaded.resilience.budgetSpent, quote.cost);
 });
 
 test('each major crisis has a free manual escape even with no credits or parts', () => {
