@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 74" role="img" aria-labelledby="title">
-  <title id="title">Local desktop and browser runtime · Web and first person · English and German · Version 1.7.1 preview · AI-assisted development</title>
+  <title id="title">Local desktop and browser runtime · Web and first person · English and German · Version 1.8.0 preview · AI-assisted development</title>
   <rect width="1200" height="74" rx="12" fill="#121913"/>
   <g stroke="#2c3828"><path d="M240 17v40M480 17v40M720 17v40M960 17v40"/></g>
   <g fill="#91a187" font-family="monospace" font-size="9" text-anchor="middle" letter-spacing="1.6">
     <text x="120" y="27">RUNTIME</text><text x="360" y="27">TWO INTERFACES</text><text x="600" y="27">LANGUAGES</text><text x="840" y="27">RELEASE</text><text x="1080" y="27">DEVELOPMENT</text>
   </g>
   <g fill="#d8e9c5" font-family="Arial,Helvetica,sans-serif" font-size="15" text-anchor="middle" font-weight="700">
-    <text x="120" y="51">Desktop + browser</text><text x="360" y="51">Web + first person</text><text x="600" y="51">English / Deutsch</text><text x="840" y="51">1.7.1 preview</text><text x="1080" y="51">AI-assisted</text>
+    <text x="120" y="51">Desktop + browser</text><text x="360" y="51">Web + first person</text><text x="600" y="51">English / Deutsch</text><text x="840" y="51">1.8.0 preview</text><text x="1080" y="51">AI-assisted</text>
   </g>
 </svg>
