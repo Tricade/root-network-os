@@ -10,7 +10,7 @@ The application uses Node.js built-ins and vendored browser modules. Browser mod
 | NumPy               | 2.5.4            | Optional procedural geometry/textures             |
 | Pillow              | 13.0.0           | Optional base texture generation                  |
 | ESLint / @eslint/js | 10.14.0 / 10.0.1 | Development-only static checks                    |
-| globals             | 17.13.0          | Development-only browser/Node global declarations |
+| globals             | 17.14.0          | Development-only browser/Node global declarations |
 | Prettier            | 3.9.10           | Development-only formatting                       |
 
 Development dependencies are pinned in `package-lock.json` and installed with `npm ci --ignore-scripts`. Build/lint tools are not loaded by browser mode. Packaged desktop mode loads the separately declared updater runtime dependencies. Node 24.22.1 meets ESLint 10.14.0's `^20.19.0 || ^22.13.0 || >=24` requirement. Flat configuration follows the [exact ESLint 10.14.0 documentation](https://github.com/eslint/eslint/blob/v10.14.0/docs/src/use/configure/configuration-files.md); formatting follows the [Prettier 3.9.10 configuration documentation](https://github.com/prettier/prettier/blob/3.9.10/docs/configuration.md). CommonJS/native-module compatibility is checked against [Node 24.22.1 modules](https://github.com/nodejs/node/blob/v24.22.1/doc/api/modules.md). Lint and parser success alone are not browser compatibility evidence.
@@ -45,7 +45,7 @@ The vendored Three.js files and interpreter versions embedded in scripts or work
 
 ## Desktop versions and audit scope
 
-The lockfile pins Electron **45.2.1**, electron-builder **26.18.0**, electron-updater **6.8.11** and semver **7.8.5**. Electron 45.2.1 actually reports Node 24.22.1 / Chromium 156.0.8078.75 in the desktop smoke test. Packaging inspection explicitly depends on `@electron/asar` **4.3.1**, shared with the builder through the overrides below. See [desktop architecture, exact-version sources and build commands](desktop.md).
+The lockfile pins Electron **45.2.3**, electron-builder **26.18.0**, electron-updater **6.8.11** and semver **7.8.6**. Electron 45.2.3 embeds Node 24.22.2 and Chromium 156.0.8078.80. Packaging inspection explicitly depends on `@electron/asar` **4.3.1**, shared with the builder through the overrides below. [Electron 45.2.3 release notes](https://releases.electronjs.org/release/v45.2.3) · [Desktop build and verification](desktop.md)
 
 The release/build workflows additionally pin official upload-artifact **7.0.2** and download-artifact **8.0.2** to full commits, both using Node 24 action runtimes. Repository checks remain read-only; only the final tag-triggered release job has `contents: write`. Dependabot covers runtime and development npm dependencies.
 

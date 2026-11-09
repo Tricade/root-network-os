@@ -257,7 +257,7 @@ async function startDesktop(options = {}) {
 }
 
 // Electron's development launcher imports this entry point. require.main is
-// not this module there (45.2.1 default_app/main.ts); packaged CJS uses _load.
+// not this module there (45.2.3 default_app/main.ts). Packaged CJS uses _load.
 const testOutput = process.argv.find((value) => value.startsWith('--test-output='));
 const start =
   process.argv.includes('--self-test') && testOutput

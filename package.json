@@ -33,15 +33,15 @@
   "devDependencies": {
     "@electron/asar": "4.3.1",
     "@eslint/js": "10.0.1",
-    "electron": "45.2.1",
+    "electron": "45.2.3",
     "electron-builder": "26.18.0",
     "eslint": "10.14.0",
-    "globals": "17.13.0",
+    "globals": "17.14.0",
     "prettier": "3.9.10"
   },
   "dependencies": {
     "electron-updater": "6.8.11",
-    "semver": "7.8.5"
+    "semver": "7.8.6"
   },
   "overrides": {
     "@electron/asar": {
